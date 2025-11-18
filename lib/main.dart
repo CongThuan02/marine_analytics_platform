@@ -1,9 +1,10 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:marine_analytics_platform/presentation/viewmodels/ship_list_view.dart';
-import 'package:marine_analytics_platform/ship_module.dart';
+import 'package:marine_analytics_platform/presentation/viewmodels/home.dart';
 
-void main() {
-  setupShipModule();
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(const MyApp());
 }
 
@@ -16,7 +17,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
-      home: ShipListView(),
+      home: Home(),
     );
   }
 }

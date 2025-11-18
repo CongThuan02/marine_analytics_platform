@@ -7,33 +7,39 @@ class ShipListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => context.read<ShipBloc>()..add(LoadShipsEvent()),
-      child: Scaffold(
-        appBar: AppBar(title: Text("All Ships")),
-        body: BlocBuilder<ShipBloc, ShipState>(
-          builder: (context, state) {
-            if (state.loading) {
-              return Center(child: CircularProgressIndicator());
-            }
+    return BlocProvider(create: (_) => ShipBloc()..add(LoadShipsEvent()), child: _ShipListViews());
+  }
+}
 
-            if (state.error != null) {
-              return Center(child: Text(state.error!));
-            }
+class _ShipListViews extends StatelessWidget {
+  const _ShipListViews({super.key});
 
-            return ListView.builder(
-              itemCount: state.ships.length,
-              itemBuilder: (context, index) {
-                final ship = state.ships[index];
-                return ListTile(
-                  title: Text(ship.name),
-                  subtitle: Text(ship.type),
-                  trailing: Text("${ship.createdAt.day}/${ship.createdAt.month}/${ship.createdAt.year}"),
-                );
-              },
-            );
-          },
-        ),
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("All Ships")),
+      body: BlocBuilder<ShipBloc, ShipState>(
+        builder: (context, state) {
+          if (state.loading) {
+            return Center(child: CircularProgressIndicator());
+          }
+
+          if (state.error != null) {
+            return Center(child: Text(state.error!));
+          }
+
+          return ListView.builder(
+            itemCount: state.ships.length,
+            itemBuilder: (context, index) {
+              final ship = state.ships[index];
+              return ListTile(
+                title: Text(ship.name),
+                subtitle: Text(ship.type),
+                trailing: Text("${ship.createdAt.day}/${ship.createdAt.month}/${ship.createdAt.year}"),
+              );
+            },
+          );
+        },
       ),
     );
   }
