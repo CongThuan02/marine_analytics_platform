@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "311915419198",
+    "project_id": "marine-analytics-platform",
+    "storage_bucket": "marine-analytics-platform.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:311915419198:android:3d851ca60e37e22bd6a36f",
+        "android_client_info": {
+          "package_name": "marine.analytics.platform.marine_analytics_platform"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDbG47lUQkSUHqwsaiYCy2a7XEyw7M-mxk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
