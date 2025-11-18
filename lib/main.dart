@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:marine_analytics_platform/presentation/viewmodels/ship_list_view.dart';
+import 'package:marine_analytics_platform/ship_module.dart';
 
 void main() {
+  setupShipModule();
   runApp(const MyApp());
 }
 
@@ -13,7 +16,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: ShipListView(),
     );
   }
 }
