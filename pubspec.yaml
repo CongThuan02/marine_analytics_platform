@@ -36,6 +36,8 @@ dependencies:
   cupertino_icons: ^1.0.8
   firebase_core: ^4.2.1
   firebase_storage: ^13.0.4
+  syncfusion_flutter_calendar: ^31.2.12
+  syncfusion_flutter_charts: ^31.2.12
 
 dev_dependencies:
   flutter_test:
