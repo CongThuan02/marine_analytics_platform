@@ -4,7 +4,7 @@ import 'package:marine_analytics_platform/global.dart';
 class AreaRepository {
   Future<String> CreateArea({required AreaModel area}) async {
     try {
-      final res = await supabase.from('areas').insert({'name': area.name});
+      await supabase.from('areas').insert({'name': area.name});
       return "Thêm dữ liệu thành công";
     } catch (e) {
       return "Thêm dữ liệu thất bại ${e}";
@@ -14,21 +14,21 @@ class AreaRepository {
   Future<List<AreaModel>?> getAllArea() async {
     try {
       final res = await supabase.from('areas').select();
-
+      print(res);
       final List<AreaModel> data = res.map((e) => AreaModel.fromMap(e)).toList();
       return data;
-    } catch (e) {
-      return null;
+    } catch (e, st) {
+      print('Error fetching areas: $e');
+      print('StackTrace: $st');
+      return [];
     }
   }
+
   Future<String> deleteArea({required String id}) async {
-    try{
-      final response = await supabase
-          .from('areas')
-          .delete()
-          .eq('id', id);
+    try {
+      await supabase.from('areas').delete().eq('id', id);
       return "Xoá khu vực thành công";
-    }catch (e){
+    } catch (e) {
       return "Xóa thất bại";
     }
   }

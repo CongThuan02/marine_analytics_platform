@@ -18,9 +18,10 @@ class PieChartNoModel extends StatelessWidget {
       width: MediaQuery.of(context).size.width * 0.9,
       height: MediaQuery.of(context).size.width * 0.9,
       child: SfCircularChart(
+
         title: ChartTitle(text: 'Expenses Breakdown'),
         legend: Legend(isVisible: true, overflowMode: LegendItemOverflowMode.wrap),
-        tooltipBehavior: TooltipBehavior(enable: true),
+        tooltipBehavior: TooltipBehavior(enable: false),
         enableMultiSelection: false,
 
         series: <PieSeries<Map<String, dynamic>, String>>[
@@ -28,7 +29,7 @@ class PieChartNoModel extends StatelessWidget {
             dataSource: data,
             xValueMapper: (datum, _) => datum['category'] as String,
             yValueMapper: (datum, _) => double.parse('${datum['value']}'),
-            dataLabelSettings: const DataLabelSettings(isVisible: false),
+            dataLabelSettings: const DataLabelSettings(isVisible: true,labelPosition: .outside),
             explode: true, // Tách miếng khi click
             explodeIndex: 0,
           ),

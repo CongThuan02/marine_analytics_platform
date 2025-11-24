@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:marine_analytics_platform/presentation/views/areas/create/page.dart';
+import 'package:marine_analytics_platform/presentation/views/department/page.dart';
 import 'package:marine_analytics_platform/presentation/views/history_page.dart';
 import 'package:marine_analytics_platform/presentation/views/home.dart';
 import 'package:marine_analytics_platform/presentation/views/intro.dart';
@@ -10,6 +11,7 @@ final appRouter = GoRouter(
   initialLocation: '/',
   routes: [
     GoRoute(path: '/intro', builder: (context, state) => IntroView()),
+    GoRoute(path: '/department', name: '/department',builder: (context, state) => DepartmentPage()),
     GoRoute(path: '/create/area', name: '/create/area', builder: (context, state) => CreateAreaPage()),
     ShellRoute(
       builder: (context, state, child) {

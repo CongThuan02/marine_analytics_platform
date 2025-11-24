@@ -29,7 +29,7 @@ class AreaBloc extends Bloc<AreaEvent, AreaState> {
   }
 
   Future<void> _getAreas(GetAreas event, Emitter<AreaState> emit) async {
-    emit(state.copyWith(status: Status.loading));
+    emit(state.copyWith(status: Status.loading,areas: []));
     final res = await _areaRepository.getAllArea();
     emit(state.copyWith(status: Status.loaded, areas: res ?? []));
   }

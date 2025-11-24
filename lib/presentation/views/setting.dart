@@ -7,19 +7,29 @@ class SettingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Cài đặt")),
+      appBar: AppBar(title: Text("Cài đặt"),centerTitle: true,),
       body: Column(
         crossAxisAlignment: .center,
         spacing: 12,
         children: [
           Padding(
-            padding: const EdgeInsets.all(12.0),
+            padding: .symmetric(horizontal: 12),
             child: ElevatedButton(
               onPressed: () {
                 context.pushNamed('/create/area');
               },
               style: ElevatedButton.styleFrom(minimumSize: Size(MediaQuery.of(context).size.width * 0.8, 50)),
               child: Center(child: Text("Quản lý khu vực")),
+            ),
+          ),
+          Padding(
+            padding: .symmetric(horizontal: 12),
+            child: ElevatedButton(
+              onPressed: () {
+                context.pushNamed('/department');
+              },
+              style: ElevatedButton.styleFrom(minimumSize: Size(MediaQuery.of(context).size.width * 0.8, 50)),
+              child: Center(child: Text("Quản lý loại chất thải")),
             ),
           ),
         ],
