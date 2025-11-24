@@ -22,59 +22,94 @@ class _CreateAreaPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // context.loaderOverlay.hide();
     return BlocBuilder<AreaBloc, AreaState>(
       builder: (context, state) {
-        return Scaffold(
-          appBar: AppBar(title: Text("Danh sách khu vực")),
-          body: state.areas != null && state.areas != [] && state.status != Status.loading
-              ? Padding(
-                  padding: const EdgeInsets.only(bottom: 28.0),
-                  child: Column(
-                    children: [
-                      IconButton(
-                        onPressed: () {
-                          context.read<AreaBloc>().add(GetAreas());
-                        },
-                        icon: Icon(Icons.add),
-                      ),
-                      Expanded(
-                        child: ListView.separated(
-                          padding: EdgeInsets.symmetric(horizontal: 16),
-                          itemBuilder: (context, index) {
-                            return Text('${state.areas?[index].name}');
-                          },
-                          separatorBuilder: (context, index) => SizedBox(height: 12),
-                          itemCount: state.areas?.length ?? 0,
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-              : SizedBox.shrink(),
-          floatingActionButton: FloatingActionButton(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadiusGeometry.circular(50)),
-            onPressed: () {
-              final bloc = context.read<AreaBloc>();
-              showModalBottomSheet(
-                context: context,
-                builder: (context) {
-                  return BlocProvider.value(
-                    value: bloc,
-                    child: BlocListener<AreaBloc, AreaState>(
-                      listener: (context, state) {
-                        if (state.status == Status.loading) {
-                          context.loaderOverlay.show();
-                        }
-                        if (state.status == Status.success) {
-                          showTopSnackBar(Overlay.of(context), CustomSnackBar.success(message: state.message));
-                          context.pop(true);
-                          context.loaderOverlay.hide();
-                        }
-                        if (state.status == Status.loaded) {
-                          context.loaderOverlay.hide();
-                        }
+        return BlocListener<AreaBloc, AreaState>(
+          listener: (context, state) {
+            if (state.status == Status.loading) {
+              context.loaderOverlay.show();
+            }
+            if (state.status == Status.success) {
+              showTopSnackBar(Overlay.of(context), CustomSnackBar.success(message: state.message));
+              context.pop(true);
+              context.loaderOverlay.hide();
+            }
+            if (state.status == Status.loaded) {
+              context.loaderOverlay.hide();
+            }
+          },
+          child: Scaffold(
+            appBar: AppBar(title: Text("Danh sách khu vực")),
+            body: state.areas != null && state.areas != [] && state.status != Status.loading
+                ? Padding(
+                    padding: const EdgeInsets.only(bottom: 28.0),
+                    child: RefreshIndicator(
+                      onRefresh: () async {
+                        context.read<AreaBloc>().add(GetAreas());
                       },
+                      child: ListView.separated(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        itemBuilder: (context, index) {
+                          return InkWell(
+                            onLongPress: () {
+                              final bloc = context.read<AreaBloc>();
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return BlocProvider.value(
+                                    value: bloc,
+                                    child: BlocBuilder<AreaBloc, AreaState>(
+                                      builder: (context, state) {
+                                        return AlertDialog(
+                                          title: Text('Bạn có chắc muốn xoá ${state.areas?[index].name}'),
+
+                                          actions: <Widget>[
+                                            ElevatedButton(
+                                              onPressed: () {
+                                                context.pop();
+                                              },
+                                              child: Text("Đóng"),
+                                            ),
+                                            ElevatedButton(
+                                              onPressed: () {
+                                                bloc.add(DeleteArea(id: state.areas?[index].id ?? ''));
+                                              },
+                                              child: Text("Xoá"),
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    ),
+                                  );
+                                },
+                              ).then((value) {
+                                if (value == true) {
+                                  bloc.add(GetAreas());
+                                }
+                              });
+                            },
+                            child: Container(
+                              padding: .symmetric(horizontal: 16, vertical: 12),
+                              decoration: BoxDecoration(border: Border.all(), borderRadius: .circular(12)),
+                              child: Text('${state.areas?[index].name}'),
+                            ),
+                          );
+                        },
+                        separatorBuilder: (context, index) => SizedBox(height: 12),
+                        itemCount: state.areas?.length ?? 0,
+                      ),
+                    ),
+                  )
+                : SizedBox.shrink(),
+            floatingActionButton: FloatingActionButton(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadiusGeometry.circular(50)),
+              onPressed: () {
+                final bloc = context.read<AreaBloc>();
+                showModalBottomSheet(
+                  context: context,
+                  builder: (context) {
+                    return BlocProvider.value(
+                      value: bloc,
                       child: BlocBuilder<AreaBloc, AreaState>(
                         builder: (context, state) {
                           return SizedBox(
@@ -136,14 +171,14 @@ class _CreateAreaPage extends StatelessWidget {
                           );
                         },
                       ),
-                    ),
-                  );
-                },
-              ).then((value) {
-                bloc.add(GetAreas());
-              });
-            },
-            child: Icon(Icons.add),
+                    );
+                  },
+                ).then((value) {
+                  bloc.add(GetAreas());
+                });
+              },
+              child: Icon(Icons.add),
+            ),
           ),
         );
       },

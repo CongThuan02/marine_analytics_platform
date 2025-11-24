@@ -23,3 +23,9 @@ class UpdateFieldName extends AreaEvent {
 }
 
 class GetAreas extends AreaEvent {}
+class DeleteArea extends AreaEvent{
+  final String id;
+  const DeleteArea({required this.id});
+  @override
+  List<Object?> get props => [id];
+}

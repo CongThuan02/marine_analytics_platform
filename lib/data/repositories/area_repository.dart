@@ -16,10 +16,20 @@ class AreaRepository {
       final res = await supabase.from('areas').select();
 
       final List<AreaModel> data = res.map((e) => AreaModel.fromMap(e)).toList();
-      print(data);
       return data;
     } catch (e) {
-      print(e);
+      return null;
+    }
+  }
+  Future<String> deleteArea({required String id}) async {
+    try{
+      final response = await supabase
+          .from('areas')
+          .delete()
+          .eq('id', id);
+      return "Xoá khu vực thành công";
+    }catch (e){
+      return "Xóa thất bại";
     }
   }
 }

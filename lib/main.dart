@@ -1,48 +1,90 @@
+import 'dart:async';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:marine_analytics_platform/routes/app_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:toastification/toastification.dart';
-import 'package:uni_links/uni_links.dart';
 
-Future<void> initUniLinks() async {
-  try {
-    // Khi app đang chạy nền hoặc foreground
-    uriLinkStream.listen((Uri? uri) {
-      if (uri != null) {
-        _handleDeepLink(uri);
+/// --- Deep link handler Flutter-native ---
+class DeepLinkService with WidgetsBindingObserver {
+  static final DeepLinkService _instance = DeepLinkService._();
+  DeepLinkService._();
+  factory DeepLinkService() => _instance;
+
+  String? lastLink;
+  final StreamController<Uri> _linkStream = StreamController.broadcast();
+
+  Stream<Uri> get stream => _linkStream.stream;
+
+  Future<void> init() async {
+    WidgetsBinding.instance.addObserver(this);
+    await _getInitialLink();
+  }
+
+  Future<void> _getInitialLink() async {
+    try {
+      final uriString = WidgetsBinding.instance.platformDispatcher.defaultRouteName;
+      if (uriString != "/") {
+        final uri = Uri.parse(uriString);
+        lastLink = uriString;
+        _linkStream.add(uri);
       }
-    });
-
-    // Khi app vừa mở từ QR
-    final initialUri = await getInitialUri();
-    if (initialUri != null) {
-      _handleDeepLink(initialUri);
+    } catch (e) {
+      print("Initial link error: $e");
     }
-  } on PlatformException {
-    print("object");
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    try {
+      final uriString = WidgetsBinding.instance.platformDispatcher.defaultRouteName;
+      if (uriString != lastLink && uriString != "/") {
+        final uri = Uri.parse(uriString);
+        lastLink = uriString;
+        _linkStream.add(uri);
+      }
+    } catch (_) {}
   }
 }
 
-void _handleDeepLink(Uri uri) {
+/// Khởi tạo deep link và lắng nghe
+Future<void> initDeepLinks() async {
+  final deepLinkService = DeepLinkService();
+  await deepLinkService.init();
+
+  deepLinkService.stream.listen((uri) async {
+    await _handleDeepLink(uri); // 💥 chạy async, tránh block main thread
+  });
+}
+
+/// Xử lý deep link
+Future<void> _handleDeepLink(Uri uri) async {
   if (uri.pathSegments.contains('ship')) {
+    // Delay 0 để không block main thread
+    await Future.delayed(Duration.zero);
     appRouter.go('/intro');
   }
-  // print(uri.data);
 }
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // 🔹 Init Supabase
   await Supabase.initialize(
     url: 'https://dbgmyreieahiqnwlcxzq.supabase.co',
     anonKey:
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRiZ215cmVpZWFoaXFud2xjeHpxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM4OTMwMjIsImV4cCI6MjA3OTQ2OTAyMn0.NfxVXz85VI1bN0wfpnxIYMIlndaDMev1cg4_1YRlQek',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRiZ215cmVpZWFoaXFud2xjeHpxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM4OTMwMjIsImV4cCI6MjA3OTQ2OTAyMn0.NfxVXz85VI1bN0wfpnxIYMIlndaDMev1cg4_1YRlQek',
   );
-  await initUniLinks();
+
+  // 🔹 Init deep link (Flutter-native)
+  await initDeepLinks();
+
+  // 🔹 Init Firebase
   await Firebase.initializeApp();
-  runApp(MyApp());
+
+  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
@@ -56,12 +98,11 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return GlobalLoaderOverlay(
-      duration: Durations.medium4,
-      reverseDuration: Durations.medium4,
-      overlayColor: Colors.grey.withValues(alpha: 0.8),
+      duration: const Duration(milliseconds: 400),
+      reverseDuration: const Duration(milliseconds: 400),
+      overlayColor: Colors.grey.withOpacity(0.8),
       overlayWidgetBuilder: (_) {
-        //ignored progress for the moment
-        return Center(child: CircularProgressIndicator());
+        return const Center(child: CircularProgressIndicator());
       },
       child: MaterialApp.router(
         title: 'Flutter Demo',

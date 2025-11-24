@@ -16,6 +16,7 @@ class AreaBloc extends Bloc<AreaEvent, AreaState> {
     on<CreateArea>(_createArea);
     on<UpdateFieldName>(_updateFileName);
     on<GetAreas>(_getAreas);
+    on<DeleteArea>(_deleteAreas);
   }
   Future<void> _createArea(CreateArea event, Emitter<AreaState> emit) async {
     emit(state.copyWith(status: Status.loading));
@@ -27,9 +28,14 @@ class AreaBloc extends Bloc<AreaEvent, AreaState> {
     emit(state.copyWith(name: event.name, status: Status.init));
   }
 
-  void _getAreas(GetAreas event, Emitter<AreaState> emit) async {
+  Future<void> _getAreas(GetAreas event, Emitter<AreaState> emit) async {
     emit(state.copyWith(status: Status.loading));
     final res = await _areaRepository.getAllArea();
     emit(state.copyWith(status: Status.loaded, areas: res ?? []));
+  }
+  Future<void> _deleteAreas(DeleteArea event, Emitter<AreaState> emit) async {
+    emit(state.copyWith(status: Status.loading));
+    var res = await _areaRepository.deleteArea(id: event.id);
+    emit(state.copyWith(message: res, status: Status.success));
   }
 }
