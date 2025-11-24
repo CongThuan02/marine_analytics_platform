@@ -62,19 +62,29 @@ class _CreateAreaPage extends StatelessWidget {
                                       builder: (context, state) {
                                         return AlertDialog(
                                           title: Text('Bạn có chắc muốn xoá ${state.areas?[index].name}'),
+                                          content: Text("Lưu ý: xoá xong bạn không thể khôi phục lại dữ liệu"),
 
                                           actions: <Widget>[
-                                            ElevatedButton(
-                                              onPressed: () {
-                                                context.pop();
-                                              },
-                                              child: Text("Đóng"),
-                                            ),
-                                            ElevatedButton(
-                                              onPressed: () {
-                                                bloc.add(DeleteArea(id: state.areas?[index].id ?? ''));
-                                              },
-                                              child: Text("Xoá"),
+                                            Row(
+                                              spacing: 12,
+                                              children: [
+                                                Expanded(
+                                                  child: ElevatedButton(
+                                                    onPressed: () {
+                                                      context.pop();
+                                                    },
+                                                    child: Text("Đóng"),
+                                                  ),
+                                                ),
+                                                Expanded(
+                                                  child: ElevatedButton(
+                                                    onPressed: () {
+                                                      bloc.add(DeleteArea(id: state.areas?[index].id ?? ''));
+                                                    },
+                                                    child: Text("Xoá"),
+                                                  ),
+                                                ),
+                                              ],
                                             ),
                                           ],
                                         );

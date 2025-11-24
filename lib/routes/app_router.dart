@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:marine_analytics_platform/presentation/views/areas/create/page.dart';
+import 'package:marine_analytics_platform/presentation/views/history_page.dart';
 import 'package:marine_analytics_platform/presentation/views/home.dart';
 import 'package:marine_analytics_platform/presentation/views/intro.dart';
 import 'package:marine_analytics_platform/presentation/views/setting.dart';
-import 'package:marine_analytics_platform/presentation/views/ship_list_view.dart';
 
 final appRouter = GoRouter(
   initialLocation: '/',
@@ -50,7 +50,7 @@ final appRouter = GoRouter(
       },
       routes: [
         GoRoute(name: '/', path: '/', builder: (_, __) => const HomePage()),
-        GoRoute(path: '/ships', builder: (_, __) => const ShipListView()),
+        GoRoute(path: '/ships', builder: (_, __) => const HistoryPage()),
         GoRoute(path: '/settings', builder: (_, __) => const SettingsPage()),
       ],
     ),
