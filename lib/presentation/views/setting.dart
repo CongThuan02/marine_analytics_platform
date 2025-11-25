@@ -256,7 +256,7 @@ class SettingsPage extends StatelessWidget {
 
       // Close loading dialog
       if (context.mounted) {
-        Navigator.pop(context);
+        context.pop();
       }
 
       // Navigate to login
@@ -273,7 +273,7 @@ class SettingsPage extends StatelessWidget {
     } catch (e) {
       // Close loading dialog
       if (context.mounted) {
-        Navigator.pop(context);
+        context.pop();
       }
 
       // Show error

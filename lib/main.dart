@@ -3,9 +3,12 @@ import 'dart:async';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:loader_overlay/loader_overlay.dart';
+import 'package:marine_analytics_platform/core/services/fcm_service.dart';
 import 'package:marine_analytics_platform/core/theme/app_theme.dart';
 import 'package:marine_analytics_platform/routes/app_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+import 'global.dart';
 
 /// --- Deep link handler Flutter-native ---
 class DeepLinkService with WidgetsBindingObserver {
@@ -75,7 +78,7 @@ Future<void> main() async {
   await Supabase.initialize(
     url: 'https://dbgmyreieahiqnwlcxzq.supabase.co',
     anonKey:
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRiZ215cmVpZWFoaXFud2xjeHpxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM4OTMwMjIsImV4cCI6MjA3OTQ2OTAyMn0.NfxVXz85VI1bN0wfpnxIYMIlndaDMev1cg4_1YRlQek',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRiZ215cmVpZWFoaXFud2xjeHpxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM4OTMwMjIsImV4cCI6MjA3OTQ2OTAyMn0.NfxVXz85VI1bN0wfpnxIYMIlndaDMev1cg4_1YRlQek',
   );
 
   // 🔹 Init deep link (Flutter-native)
@@ -83,6 +86,16 @@ Future<void> main() async {
 
   // 🔹 Init Firebase
   await Firebase.initializeApp();
+
+  // 🔹 Init FCM (Firebase Cloud Messaging)
+  // Chỉ init nếu user đã đăng nhập
+  if (supabase.auth.currentSession != null) {
+    try {
+      await FCMService().initialize();
+    } catch (e) {
+      print('⚠️ FCM init error: $e');
+    }
+  }
 
   runApp(const MyApp());
 }

@@ -8,20 +8,38 @@ class WasteStatsRepository {
     String _formatDate(DateTime date) =>
         '${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
 
-    final response = await supabase
-        .from('waste_entries')
-        .select(
-          '''
+    try {
+      // Sử dụng RPC function để bypass RLS và lấy dữ liệu của tất cả người dùng
+      final response = await supabase.rpc(
+        'get_waste_stats_all_users',
+        params: {
+          'start_date': _formatDate(range.start),
+          'end_date': _formatDate(range.end),
+        },
+      );
+
+      final data = (response as List<dynamic>).cast<Map<String, dynamic>>();
+      return _buildStatsFromRpc(data);
+    } catch (e) {
+      // Fallback: Nếu function chưa được deploy, dùng query trực tiếp
+      print('⚠️ RPC function not found, using direct query. Error: $e');
+      print('📝 Please deploy supabase_stats_all_users.sql to see all users data');
+      
+      final response = await supabase
+          .from('waste_entries')
+          .select(
+            '''
         quantity,
         date,
         waste_types(name, unit)
       ''',
-        )
-        .gte('date', _formatDate(range.start))
-        .lte('date', _formatDate(range.end));
+          )
+          .gte('date', _formatDate(range.start))
+          .lte('date', _formatDate(range.end));
 
-    final data = (response as List<dynamic>).cast<Map<String, dynamic>>();
-    return _buildStats(data);
+      final data = (response as List<dynamic>).cast<Map<String, dynamic>>();
+      return _buildStats(data);
+    }
   }
 
   _DateRange _calculateRange(StatsPeriod period, DateTime reference) {
@@ -54,6 +72,35 @@ class WasteStatsRepository {
       total += qtyInKg;
 
       final name = (wasteType['name'] ?? 'Không xác định').toString();
+      final key = name; // Không cần unit trong key vì tất cả đều là kg
+
+      final existing = breakdownMap[key];
+      if (existing == null) {
+        breakdownMap[key] = WasteBreakdown(name: name, unit: 'kg', quantity: qtyInKg);
+      } else {
+        breakdownMap[key] = WasteBreakdown(name: name, unit: 'kg', quantity: existing.quantity + qtyInKg);
+      }
+    }
+
+    final breakdowns = breakdownMap.values.toList()
+      ..sort((a, b) => b.quantity.compareTo(a.quantity));
+
+    return WasteStats(totalQuantity: total, entryCount: rows.length, breakdowns: breakdowns);
+  }
+
+  WasteStats _buildStatsFromRpc(List<Map<String, dynamic>> rows) {
+    double total = 0;
+    final Map<String, WasteBreakdown> breakdownMap = {};
+
+    for (final row in rows) {
+      final qty = (row['quantity'] as num?)?.toDouble() ?? 0;
+      final unit = row['waste_type_unit']?.toString()?.toLowerCase();
+      
+      // Chuyển đổi tất cả về kg
+      final qtyInKg = _convertToKg(qty, unit);
+      total += qtyInKg;
+
+      final name = (row['waste_type_name'] ?? 'Không xác định').toString();
       final key = name; // Không cần unit trong key vì tất cả đều là kg
 
       final existing = breakdownMap[key];

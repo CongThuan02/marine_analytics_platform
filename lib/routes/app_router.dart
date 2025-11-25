@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:marine_analytics_platform/global.dart';
 import 'package:marine_analytics_platform/presentation/views/alerts/page.dart';
-import 'package:marine_analytics_platform/presentation/views/alerts/test_alerts_page.dart';
+import 'package:marine_analytics_platform/presentation/views/alerts/create_test_alert_page.dart';
 import 'package:marine_analytics_platform/presentation/views/areas/create/page.dart';
+import 'package:marine_analytics_platform/test_supabase_connection.dart';
 import 'package:marine_analytics_platform/presentation/views/department/page.dart';
 import 'package:marine_analytics_platform/presentation/views/history_page.dart';
 import 'package:marine_analytics_platform/presentation/views/home.dart';
@@ -42,7 +43,8 @@ final appRouter = GoRouter(
     GoRoute(path: '/wasteLimit', name: '/wasteLimit', builder: (context, state) => const WasteLimitPage()),
     GoRoute(path: '/reminder', name: '/reminder', builder: (context, state) => const ReminderPage()),
     GoRoute(path: '/alerts', name: '/alerts', builder: (context, state) => const AlertsPage()),
-    GoRoute(path: '/alerts/test', name: '/alerts/test', builder: (context, state) => const TestAlertsPage()),
+    GoRoute(path: '/alerts/test', name: '/alerts/test', builder: (context, state) => const CreateTestAlertPage()),
+    GoRoute(path: '/test-connection', name: '/test-connection', builder: (context, state) => const TestSupabaseConnectionPage()),
     GoRoute(path: '/create/area', name: '/create/area', builder: (context, state) => CreateAreaPage()),
     GoRoute(path: '/login', name: '/login', builder: (context, state) => LoginPage()),
     GoRoute(path: '/register', name: '/register', builder: (context, state) => RegisterPage()),

@@ -16,18 +16,41 @@ class AlertRepository {
 
   /// Lấy cảnh báo hôm nay
   Future<List<AlertModel>> fetchToday() async {
-    final today = DateTime.now();
-    final startOfDay = DateTime(today.year, today.month, today.day);
-    
-    final response = await supabase
-        .from('alerts')
-        .select('*, areas(name), waste_types(name, unit)')
-        .gte('created_at', startOfDay.toIso8601String())
-        .order('created_at', ascending: false);
+    try {
+      final today = DateTime.now();
+      final startOfDay = DateTime(today.year, today.month, today.day);
+      
+      print('🔍 Fetching alerts from: ${startOfDay.toIso8601String()}');
+      
+      final response = await supabase
+          .from('alerts')
+          .select('*, areas(name), waste_types(name, unit)')
+          .gte('created_at', startOfDay.toIso8601String())
+          .order('created_at', ascending: false);
 
-    return (response as List)
-        .map((json) => AlertModel.fromJson(json))
-        .toList();
+      print('📦 Response: $response');
+      print('📊 Total alerts: ${(response as List).length}');
+
+      final alerts = (response as List)
+          .map((json) {
+            try {
+              return AlertModel.fromJson(json);
+            } catch (e) {
+              print('❌ Error parsing alert: $e');
+              print('   JSON: $json');
+              return null;
+            }
+          })
+          .whereType<AlertModel>()
+          .toList();
+      
+      print('✅ Parsed ${alerts.length} alerts');
+      return alerts;
+    } catch (e, stackTrace) {
+      print('❌ Error fetching alerts: $e');
+      print('   Stack: $stackTrace');
+      rethrow;
+    }
   }
 
   /// Lấy cảnh báo theo khu vực

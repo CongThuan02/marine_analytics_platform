@@ -57,8 +57,8 @@ class _FormTextFieldState extends State<FormTextField> {
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: TextField(
-                  controller: TextEditingController(text: field.value)
-                    ..selection = TextSelection.collapsed(offset: field.value?.length ?? 0),
+                  // controller: TextEditingController(text: field.value)
+                  //   ..selection = TextSelection.collapsed(offset: field.value?.length ?? 0),
                   obscureText: hidePassword,
                   autofocus: widget.autofocus,
                   onChanged: (value) {
