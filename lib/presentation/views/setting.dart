@@ -7,7 +7,7 @@ class SettingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Cài đặt"),centerTitle: true,),
+      appBar: AppBar(title: Text("Cài đặt"), centerTitle: true),
       body: Column(
         crossAxisAlignment: .center,
         spacing: 12,
@@ -29,7 +29,17 @@ class SettingsPage extends StatelessWidget {
                 context.pushNamed('/department');
               },
               style: ElevatedButton.styleFrom(minimumSize: Size(MediaQuery.of(context).size.width * 0.8, 50)),
-              child: Center(child: Text("Quản lý loại chất thải")),
+              child: Center(child: Text("Quản lý phòng ban")),
+            ),
+          ),
+          Padding(
+            padding: .symmetric(horizontal: 12),
+            child: ElevatedButton(
+              onPressed: () {
+                context.pushNamed('/wasteType');
+              },
+              style: ElevatedButton.styleFrom(minimumSize: Size(MediaQuery.of(context).size.width * 0.8, 50)),
+              child: Center(child: Text("Quả lý loại chất thải")),
             ),
           ),
         ],

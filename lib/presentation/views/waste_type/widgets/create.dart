@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:marine_analytics_platform/presentation/blocs/department/department_bloc.dart';
+import 'package:marine_analytics_platform/presentation/blocs/waste_type/waste_type_bloc.dart';
 import 'package:marine_analytics_platform/presentation/widgets/form_slect/form_select.dart';
 import 'package:marine_analytics_platform/presentation/widgets/form_text_field.dart';
 
-class CreateDepartment extends StatelessWidget {
-  const CreateDepartment({super.key});
+class CreateWasteType extends StatelessWidget {
+  const CreateWasteType({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final bloc = context.read<DepartmentBloc>();
+    final bloc = context.read<WasteTypeBloc>();
     return ConstrainedBox(
       constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.8),
       child: Padding(
@@ -24,9 +24,9 @@ class CreateDepartment extends StatelessWidget {
                   child: Column(
                     spacing: 12,
                     children: [
-                      BlocSelector<DepartmentBloc, DepartmentState, String>(
+                      BlocSelector<WasteTypeBloc, WasteTypeState, String>(
                         selector: (state) {
-                          return state.departmentModel.name ?? '';
+                          return state.wasteTypeModel?.name ?? '';
                         },
                         builder: (context, name) {
                           return FormTextField(
@@ -35,32 +35,35 @@ class CreateDepartment extends StatelessWidget {
                             name: 'name',
                             label: "Name",
                             onChanged: (value) {
-                              bloc.add(UpdateFieldDepartmentEvent(key: 'name', value: value));
+                              bloc.add(UpdateFieldWasteTypeEvent(key: 'name', value: value));
                             },
                           );
                         },
                       ),
                       FormSelect(
-                        tableName: 'areas',
-                        name: 'area_id',
-                        valueKey: 'id',
-                        lableKey: 'name',
+                        // tableName: 'areas',
+                        iniItems: [
+                          {'id': 'kg', 'name': 'kg'},
+                          {'id': 'm³', 'name': 'm³'},
+                          {'id': 'L', 'name': 'L'},
+                        ],
+                        name: 'unit',
                         onChange: (value) {
-                          bloc.add(UpdateFieldDepartmentEvent(key: 'area_id', value: value));
+                          bloc.add(UpdateFieldWasteTypeEvent(key: 'unit', value: value));
                         },
                       ),
-                      SizedBox(height: MediaQuery.of(context).viewInsets.bottom ?? 20),
+                      SizedBox(height: MediaQuery.of(context).viewInsets.bottom),
                     ],
                   ),
                 ),
               ),
               ElevatedButton(
                 onPressed: () {
-                  bloc.add(CreateDepartmentEvent());
+                  bloc.add(CreateWasteTypeEvent());
                 },
                 child: Center(child: Text("Lưu")),
               ),
-              SizedBox(height: MediaQuery.of(context).viewInsets.bottom ?? 20),
+              SizedBox(height: MediaQuery.of(context).viewInsets.bottom),
             ],
           ),
         ),

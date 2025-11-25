@@ -2,38 +2,38 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:marine_analytics_platform/core/constants/enum_status.dart';
-import 'package:marine_analytics_platform/presentation/blocs/department/department_bloc.dart';
-import 'package:marine_analytics_platform/presentation/views/department/widget/create.dart';
+import 'package:marine_analytics_platform/presentation/blocs/waste_type/waste_type_bloc.dart';
+import 'package:marine_analytics_platform/presentation/views/waste_type/widgets/create.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
-class DepartmentPage extends StatelessWidget {
-  const DepartmentPage({super.key});
+class WasteTypePage extends StatelessWidget {
+  const WasteTypePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(create: (_) => DepartmentBloc()..add(GetDepartmentEvent()), child: const _DepartmentPage());
+    return BlocProvider(create: (_) => WasteTypeBloc()..add(GetWasteTypeEvent()), child: const _WasteTypePage());
   }
 }
 
-class _DepartmentPage extends StatelessWidget {
-  const _DepartmentPage({super.key});
+class _WasteTypePage extends StatelessWidget {
+  const _WasteTypePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final bloc = context.read<DepartmentBloc>();
+    final bloc = context.read<WasteTypeBloc>();
 
-    return BlocListener<DepartmentBloc, DepartmentState>(
+    return BlocListener<WasteTypeBloc, WasteTypeState>(
       listener: (context, state) {
         if (state.status == Status.success) {
           showTopSnackBar(Overlay.of(context), CustomSnackBar.success(message: "Thành công"));
-          bloc.add(GetDepartmentEvent());
+          bloc.add(GetWasteTypeEvent());
           context.pop();
         }
       },
       child: Scaffold(
-        appBar: AppBar(title: const Text("Danh sách phòng ban")),
-        body: BlocBuilder<DepartmentBloc, DepartmentState>(
+        appBar: AppBar(title: const Text("Danh sách loại chất thải")),
+        body: BlocBuilder<WasteTypeBloc, WasteTypeState>(
           builder: (context, state) {
             if (state.status == Status.loading) {
               return const Center(child: CircularProgressIndicator());
@@ -55,7 +55,7 @@ class _DepartmentPage extends StatelessWidget {
                     decoration: BoxDecoration(border: Border.all(), borderRadius: BorderRadius.circular(12)),
                     child: Row(
                       mainAxisAlignment: .spaceBetween,
-                      children: [Text('Name: ${item.name ?? ""}'), Text("Area: ${item.areaModel?.name ?? ""}")],
+                      children: [Text("Name: ${item.name ?? ""}"), Text("Unit: ${item.unit ?? ""}")],
                     ),
                   ),
                 );
@@ -65,14 +65,15 @@ class _DepartmentPage extends StatelessWidget {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () async {
+            final bloc = context.read<WasteTypeBloc>();
             await showModalBottomSheet(
               context: context,
               isScrollControlled: true,
               useSafeArea: true,
-              builder: (context) => BlocProvider.value(value: bloc, child: CreateDepartment()),
+              builder: (context) => BlocProvider.value(value: bloc, child: CreateWasteType()),
             );
 
-            bloc.add(GetDepartmentEvent());
+            bloc.add(GetWasteTypeEvent());
           },
           child: const Icon(Icons.add),
         ),
@@ -80,7 +81,7 @@ class _DepartmentPage extends StatelessWidget {
     );
   }
 
-  void _showDeleteDialog(BuildContext context, DepartmentBloc bloc, String id, String name) {
+  void _showDeleteDialog(BuildContext context, WasteTypeBloc bloc, String id, String name) {
     showDialog(
       context: context,
       builder: (context) {
@@ -97,7 +98,7 @@ class _DepartmentPage extends StatelessWidget {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
-                      bloc.add(DeleteDepartmentEvent(id));
+                      bloc.add(DeleteWasteTypeEvent(id));
                     },
                     child: const Text("Xoá"),
                   ),

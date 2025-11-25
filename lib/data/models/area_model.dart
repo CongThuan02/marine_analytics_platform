@@ -16,7 +16,7 @@ class AreaModel extends Equatable {
   }
 
   factory AreaModel.fromMap(Map<String, dynamic> map) {
-    return AreaModel(id: map['id'] as String, name: map['name'] as String, createAt: map['created_at'] as String);
+    return AreaModel(id: map['id'], name: map['name'], createAt: map['created_at']);
   }
 
   @override

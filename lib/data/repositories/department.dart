@@ -14,7 +14,8 @@ class DepartmentRepository {
 
   Future<List<DepartmentModel>?> getDepartment() async {
     try {
-      final res = await supabase.from('departments').select();
+      final res = await supabase.from('departments').select('id, name, areas(id, name)');
+      // print(res);
       if (res != []) {
         List<DepartmentModel> data = res.map((e) => DepartmentModel.fromMap(e)).toList();
         return data;

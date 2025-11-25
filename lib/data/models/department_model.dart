@@ -1,12 +1,14 @@
 import 'package:equatable/equatable.dart';
+import 'package:marine_analytics_platform/data/models/area_model.dart';
 
 class DepartmentModel extends Equatable {
   final String? id;
   final String? name;
   final String? areaId;
   final String? createdAt;
+  final AreaModel? areaModel;
 
-  const DepartmentModel({this.id, this.name, this.areaId, this.createdAt});
+  const DepartmentModel({this.id, this.name, this.areaId, this.createdAt, this.areaModel});
 
   @override
   bool operator ==(Object other) =>
@@ -26,12 +28,13 @@ class DepartmentModel extends Equatable {
     return 'DepartmentModel{' + ' id: $id,' + ' name: $name,' + ' areaId: $areaId,' + ' createdAt: $createdAt,' + '}';
   }
 
-  DepartmentModel copyWith({String? id, String? name, String? areaId, String? createdAt}) {
+  DepartmentModel copyWith({String? id, String? name, String? areaId, String? createdAt, AreaModel? areaModel}) {
     return DepartmentModel(
       id: id ?? this.id,
       name: name ?? this.name,
       areaId: areaId ?? this.areaId,
       createdAt: createdAt ?? this.createdAt,
+      areaModel: areaModel ?? this.areaModel,
     );
   }
 
@@ -40,10 +43,13 @@ class DepartmentModel extends Equatable {
   }
 
   factory DepartmentModel.fromMap(Map<String, dynamic> map) {
-    print(map);
-    var a = DepartmentModel(id: map['id'], name: map['name'], areaId: map['area_id'], createdAt: map['created_at']);
-    print(a);
-    return a;
+    return DepartmentModel(
+      id: map['id'],
+      name: map['name'],
+      areaId: map['area_id'],
+      createdAt: map['created_at'],
+      areaModel: map['areas'] != null ? AreaModel.fromMap(map['areas']) : null,
+    );
   }
 
   @override

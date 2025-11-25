@@ -1,18 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:marine_analytics_platform/global.dart';
 import 'package:marine_analytics_platform/presentation/views/areas/create/page.dart';
 import 'package:marine_analytics_platform/presentation/views/department/page.dart';
 import 'package:marine_analytics_platform/presentation/views/history_page.dart';
 import 'package:marine_analytics_platform/presentation/views/home.dart';
 import 'package:marine_analytics_platform/presentation/views/intro.dart';
+import 'package:marine_analytics_platform/presentation/views/login/page.dart';
+import 'package:marine_analytics_platform/presentation/views/register/page.dart';
 import 'package:marine_analytics_platform/presentation/views/setting.dart';
+import 'package:marine_analytics_platform/presentation/views/waste_type/page.dart';
 
 final appRouter = GoRouter(
+  redirect: (context, state) {
+    final currentSession = supabase.auth.currentSession;
+    if (currentSession == null) {
+      if (state.fullPath != "/register") return '/login';
+    } else {
+      return '/';
+    }
+  },
   initialLocation: '/',
   routes: [
     GoRoute(path: '/intro', builder: (context, state) => IntroView()),
-    GoRoute(path: '/department', name: '/department',builder: (context, state) => DepartmentPage()),
+    GoRoute(path: '/department', name: '/department', builder: (context, state) => DepartmentPage()),
+    GoRoute(path: '/wasteType', name: '/wasteType', builder: (context, state) => WasteTypePage()),
     GoRoute(path: '/create/area', name: '/create/area', builder: (context, state) => CreateAreaPage()),
+    GoRoute(path: '/login', name: '/login', builder: (context, state) => LoginPage()),
+    GoRoute(path: '/register', name: '/register', builder: (context, state) => RegisterPage()),
     ShellRoute(
       builder: (context, state, child) {
         int currentIndex = 0;
