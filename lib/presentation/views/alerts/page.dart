@@ -10,7 +10,7 @@ class AlertsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(create: (context) => AlertBloc()..add(LoadTodayAlerts()), child: const _AlertsView());
+    return BlocProvider(create: (context) => AlertBloc()..add(LoadAlerts()), child: const _AlertsView());
   }
 }
 
@@ -26,7 +26,7 @@ class _AlertsView extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () {
-              context.read<AlertBloc>().add(LoadTodayAlerts());
+              context.read<AlertBloc>().add(LoadAlerts());
             },
           ),
           PopupMenuButton<String>(

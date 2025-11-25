@@ -63,7 +63,7 @@ class AlertBloc extends Bloc<AlertEvent, AlertState> {
   ) async {
     try {
       await _repository.delete(event.id);
-      add(LoadTodayAlerts());
+      add(LoadAlerts()); // Load tất cả alerts sau khi xóa
     } catch (e) {
       emit(AlertError(e.toString()));
     }
@@ -75,7 +75,7 @@ class AlertBloc extends Bloc<AlertEvent, AlertState> {
   ) async {
     try {
       await _repository.deleteOld();
-      add(LoadTodayAlerts());
+      add(LoadAlerts()); // Load tất cả alerts sau khi xóa cũ
     } catch (e) {
       emit(AlertError(e.toString()));
     }
