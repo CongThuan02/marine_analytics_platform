@@ -3,12 +3,34 @@ import 'package:marine_analytics_platform/global.dart';
 import 'package:marine_analytics_platform/presentation/blocs/department/department_bloc.dart';
 
 class DepartmentRepository {
-  Future<String> CreateDepartment({required DepartmentModel department}) async {
+  Future<String> createDepartment({required DepartmentModel department}) async {
     try {
       await supabase.from('departments').insert({'name': department.name, 'area_id': department.areaId});
       return "Thêm dữ liệu thành công";
     } catch (e) {
       return "Thêm dữ liệu thất bại ${e}";
+    }
+  }
+
+  Future<List<DepartmentModel>?> getDepartment() async {
+    try {
+      final res = await supabase.from('departments').select();
+      if (res != []) {
+        List<DepartmentModel> data = res.map((e) => DepartmentModel.fromMap(e)).toList();
+        return data;
+      }
+    } catch (e) {
+      rethrow;
+    }
+    return null;
+  }
+
+  Future<String> deleteDepartment({required String id}) async {
+    try {
+      await supabase.from('departments').delete().eq('id', id);
+      return "Xoá phòng ban thành công";
+    } catch (e) {
+      return "Xóa thất bại";
     }
   }
 }

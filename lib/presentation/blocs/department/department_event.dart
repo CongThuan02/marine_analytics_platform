@@ -19,3 +19,18 @@ class UpdateFieldDepartmentEvent extends DepartmentEvent {
   @override
   List<Object?> get props => [value, key];
 }
+
+class GetDepartmentEvent extends DepartmentEvent {
+  @override
+  // TODO: implement props
+  List<Object?> get props => [];
+}
+
+class DeleteDepartmentEvent extends DepartmentEvent {
+  final String id;
+
+  const DeleteDepartmentEvent(this.id);
+
+  @override
+  List<Object> get props => [id];
+}
