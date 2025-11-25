@@ -46,18 +46,21 @@ class WasteStatsRepository {
 
     for (final row in rows) {
       final qty = (row['quantity'] as num?)?.toDouble() ?? 0;
-      total += qty;
-
       final wasteType = (row['waste_types'] as Map<String, dynamic>?) ?? {};
+      final unit = wasteType['unit']?.toString()?.toLowerCase();
+      
+      // Chuyển đổi tất cả về kg
+      final qtyInKg = _convertToKg(qty, unit);
+      total += qtyInKg;
+
       final name = (wasteType['name'] ?? 'Không xác định').toString();
-      final unit = wasteType['unit']?.toString();
-      final key = '$name|$unit';
+      final key = name; // Không cần unit trong key vì tất cả đều là kg
 
       final existing = breakdownMap[key];
       if (existing == null) {
-        breakdownMap[key] = WasteBreakdown(name: name, unit: unit, quantity: qty);
+        breakdownMap[key] = WasteBreakdown(name: name, unit: 'kg', quantity: qtyInKg);
       } else {
-        breakdownMap[key] = WasteBreakdown(name: name, unit: unit, quantity: existing.quantity + qty);
+        breakdownMap[key] = WasteBreakdown(name: name, unit: 'kg', quantity: existing.quantity + qtyInKg);
       }
     }
 
@@ -65,6 +68,41 @@ class WasteStatsRepository {
       ..sort((a, b) => b.quantity.compareTo(a.quantity));
 
     return WasteStats(totalQuantity: total, entryCount: rows.length, breakdowns: breakdowns);
+  }
+
+  /// Chuyển đổi các đơn vị khác nhau về kg
+  double _convertToKg(double quantity, String? unit) {
+    if (unit == null || unit.isEmpty) return quantity;
+    
+    final unitLower = unit.toLowerCase().trim();
+    
+    // Đơn vị khối lượng
+    switch (unitLower) {
+      case 'kg':
+      case 'kilogram':
+      case 'kilo':
+        return quantity;
+      case 'g':
+      case 'gram':
+        return quantity / 1000;
+      case 'mg':
+      case 'milligram':
+        return quantity / 1000000;
+      case 't':
+      case 'ton':
+      case 'tonne':
+      case 'tấn':
+        return quantity * 1000;
+      case 'lb':
+      case 'pound':
+        return quantity * 0.453592;
+      case 'oz':
+      case 'ounce':
+        return quantity * 0.0283495;
+      default:
+        // Nếu không nhận diện được đơn vị, giả định là kg
+        return quantity;
+    }
   }
 }
 

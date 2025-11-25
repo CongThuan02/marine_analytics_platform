@@ -9,7 +9,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Home")),
+      appBar: AppBar(),
       body: DefaultTabController(
         length: 3,
         initialIndex: 0,
@@ -31,7 +31,10 @@ class HomePage extends StatelessWidget {
               ],
             ),
             Expanded(
-              child: TabBarView(physics: NeverScrollableScrollPhysics(), children: [OverviewDay(), OverviewMoth(), OverviewYear()]),
+              child: TabBarView(
+                physics: NeverScrollableScrollPhysics(),
+                children: [OverviewDay(), OverviewMoth(), OverviewYear()],
+              ),
             ),
           ],
         ),

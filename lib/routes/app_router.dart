@@ -8,7 +8,9 @@ import 'package:marine_analytics_platform/presentation/views/home.dart';
 import 'package:marine_analytics_platform/presentation/views/intro.dart';
 import 'package:marine_analytics_platform/presentation/views/login/page.dart';
 import 'package:marine_analytics_platform/presentation/views/register/page.dart';
+import 'package:marine_analytics_platform/presentation/views/reminder/page.dart';
 import 'package:marine_analytics_platform/presentation/views/setting.dart';
+import 'package:marine_analytics_platform/presentation/views/waste_limit/page.dart';
 import 'package:marine_analytics_platform/presentation/views/waste_type/page.dart';
 
 final appRouter = GoRouter(
@@ -35,6 +37,8 @@ final appRouter = GoRouter(
     GoRoute(path: '/intro', builder: (context, state) => IntroView()),
     GoRoute(path: '/department', name: '/department', builder: (context, state) => DepartmentPage()),
     GoRoute(path: '/wasteType', name: '/wasteType', builder: (context, state) => WasteTypePage()),
+    GoRoute(path: '/wasteLimit', name: '/wasteLimit', builder: (context, state) => const WasteLimitPage()),
+    GoRoute(path: '/reminder', name: '/reminder', builder: (context, state) => const ReminderPage()),
     GoRoute(path: '/create/area', name: '/create/area', builder: (context, state) => CreateAreaPage()),
     GoRoute(path: '/login', name: '/login', builder: (context, state) => LoginPage()),
     GoRoute(path: '/register', name: '/register', builder: (context, state) => RegisterPage()),

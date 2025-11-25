@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:loader_overlay/loader_overlay.dart';
+import 'package:marine_analytics_platform/core/theme/app_theme.dart';
 import 'package:marine_analytics_platform/routes/app_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:toastification/toastification.dart';
 
 /// --- Deep link handler Flutter-native ---
 class DeepLinkService with WidgetsBindingObserver {
@@ -105,7 +105,8 @@ class _MyAppState extends State<MyApp> {
         return const Center(child: CircularProgressIndicator());
       },
       child: MaterialApp.router(
-        title: 'Flutter Demo',
+        title: 'Marine Analytics Platform',
+        theme: AppTheme.lightTheme,
         routerConfig: appRouter,
         builder: (context, child) {
           return child!;
