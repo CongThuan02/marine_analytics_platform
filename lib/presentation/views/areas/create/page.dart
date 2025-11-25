@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:marine_analytics_platform/core/constants/enum_status.dart';
+import 'package:marine_analytics_platform/core/theme/app_theme.dart';
 import 'package:marine_analytics_platform/presentation/blocs/area/area_bloc.dart';
 import 'package:marine_analytics_platform/presentation/widgets/form_text_field.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
@@ -13,7 +14,10 @@ class CreateAreaPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(create: (context) => AreaBloc()..add(GetAreas()), child: _CreateAreaPage());
+    return BlocProvider(
+      create: (context) => AreaBloc()..add(GetAreas()),
+      child: const _CreateAreaPage(),
+    );
   }
 }
 
@@ -22,175 +26,299 @@ class _CreateAreaPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AreaBloc, AreaState>(
+    return BlocConsumer<AreaBloc, AreaState>(
+      listener: (context, state) {
+        if (state.status == Status.loading) {
+          context.loaderOverlay.show();
+        }
+        if (state.status == Status.success) {
+          showTopSnackBar(
+            Overlay.of(context),
+            CustomSnackBar.success(message: state.message),
+          );
+          context.pop(true);
+          context.loaderOverlay.hide();
+        }
+        if (state.status == Status.loaded) {
+          context.loaderOverlay.hide();
+        }
+      },
       builder: (context, state) {
-        return BlocListener<AreaBloc, AreaState>(
-          listener: (context, state) {
-            if (state.status == Status.loading) {
-              context.loaderOverlay.show();
-            }
-            if (state.status == Status.success) {
-              showTopSnackBar(Overlay.of(context), CustomSnackBar.success(message: state.message));
-              context.pop(true);
-              context.loaderOverlay.hide();
-            }
-            if (state.status == Status.loaded) {
-              context.loaderOverlay.hide();
-            }
-          },
-          child: Scaffold(
-            appBar: AppBar(title: Text("Danh sách khu vực")),
-            body: state.areas != null && state.areas != [] && state.status != Status.loading
-                ? Padding(
-                    padding: const EdgeInsets.only(bottom: 28.0),
-                    child: RefreshIndicator(
-                      onRefresh: () async {
-                        context.read<AreaBloc>().add(GetAreas());
-                      },
-                      child: ListView.separated(
-                        padding: EdgeInsets.symmetric(horizontal: 16),
-                        itemBuilder: (context, index) {
-                          return InkWell(
-                            onLongPress: () {
-                              final bloc = context.read<AreaBloc>();
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return BlocProvider.value(
-                                    value: bloc,
-                                    child: BlocBuilder<AreaBloc, AreaState>(
-                                      builder: (context, state) {
-                                        return AlertDialog(
-                                          title: Text('Bạn có chắc muốn xoá ${state.areas?[index].name}'),
-                                          content: Text("Lưu ý: xoá xong bạn không thể khôi phục lại dữ liệu"),
+        final bloc = context.read<AreaBloc>();
 
-                                          actions: <Widget>[
-                                            Row(
-                                              spacing: 12,
-                                              children: [
-                                                Expanded(
-                                                  child: ElevatedButton(
-                                                    onPressed: () {
-                                                      context.pop();
-                                                    },
-                                                    child: Text("Đóng"),
-                                                  ),
-                                                ),
-                                                Expanded(
-                                                  child: ElevatedButton(
-                                                    onPressed: () {
-                                                      bloc.add(DeleteArea(id: state.areas?[index].id ?? ''));
-                                                    },
-                                                    child: Text("Xoá"),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        );
-                                      },
-                                    ),
-                                  );
-                                },
-                              ).then((value) {
-                                if (value == true) {
-                                  bloc.add(GetAreas());
-                                }
-                              });
-                            },
-                            child: Container(
-                              padding: .symmetric(horizontal: 16, vertical: 12),
-                              decoration: BoxDecoration(border: Border.all(), borderRadius: .circular(12)),
-                              child: Text('${state.areas?[index].name}'),
-                            ),
-                          );
-                        },
-                        separatorBuilder: (context, index) => SizedBox(height: 12),
-                        itemCount: state.areas?.length ?? 0,
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text("Quản lý Khu vực"),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.refresh),
+                onPressed: () => bloc.add(GetAreas()),
+              ),
+            ],
+          ),
+          body: _buildBody(context, state, bloc),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () => _showCreateBottomSheet(context, bloc),
+            child: const Icon(Icons.add),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildBody(BuildContext context, AreaState state, AreaBloc bloc) {
+    if (state.status == Status.loading && (state.areas == null || state.areas!.isEmpty)) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    final areas = state.areas ?? [];
+
+    if (areas.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.location_on_outlined,
+              size: 80,
+              color: AppTheme.primaryGreenLight,
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Chưa có khu vực nào',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Nhấn nút + để thêm khu vực mới',
+              style: TextStyle(color: Colors.grey.shade600),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return RefreshIndicator(
+      onRefresh: () async => bloc.add(GetAreas()),
+      child: ListView.builder(
+        padding: const EdgeInsets.all(16),
+        itemCount: areas.length,
+        itemBuilder: (context, index) {
+          final area = areas[index];
+
+          return Card(
+            margin: const EdgeInsets.only(bottom: 12),
+            elevation: 0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+              side: BorderSide(color: Colors.grey.shade200),
+            ),
+            child: InkWell(
+              onLongPress: () => _showDeleteDialog(context, bloc, area.id ?? '', area.name ?? ''),
+              borderRadius: BorderRadius.circular(12),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: AppTheme.accentBlue.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Icon(
+                        Icons.location_city,
+                        color: AppTheme.accentBlue,
+                        size: 24,
                       ),
                     ),
-                  )
-                : SizedBox.shrink(),
-            floatingActionButton: FloatingActionButton(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadiusGeometry.circular(50)),
-              onPressed: () {
-                final bloc = context.read<AreaBloc>();
-                showModalBottomSheet(
-                  context: context,
-                  builder: (context) {
-                    return BlocProvider.value(
-                      value: bloc,
-                      child: BlocBuilder<AreaBloc, AreaState>(
-                        builder: (context, state) {
-                          return SizedBox(
-                            width: MediaQuery.of(context).size.width,
-                            child: SingleChildScrollView(
-                              physics: NeverScrollableScrollPhysics(),
-                              child: Column(
-                                spacing: 12,
-                                mainAxisSize: .min,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: .center,
-                                    crossAxisAlignment: .center,
-                                    children: [
-                                      Expanded(
-                                        child: Center(
-                                          child: Text(
-                                            "Thêm mới khu vực",
-                                            style: TextStyle(fontSize: 24, fontWeight: .w500),
-                                          ),
-                                        ),
-                                      ),
-                                      Align(
-                                        alignment: .bottomRight,
-                                        child: IconButton(
-                                          onPressed: () {
-                                            context.pop();
-                                          },
-                                          icon: Icon(Icons.close_rounded),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Column(
-                                      spacing: 12,
-                                      children: [
-                                        FormTextField(
-                                          autofocus: true,
-                                          name: 'area',
-                                          label: 'Tên khu vực',
-                                          onChanged: (value) {
-                                            bloc.add(UpdateFieldName(name: value ?? ''));
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      context.read<AreaBloc>().add(CreateArea());
-                                    },
-                                    child: Text("Thêm"),
-                                  ),
-                                  SizedBox(height: MediaQuery.of(context).viewInsets.bottom),
-                                ],
-                              ),
-                            ),
-                          );
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Text(
+                        area.name ?? 'Không có tên',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.delete_outline, color: Colors.red),
+                      onPressed: () => _showDeleteDialog(
+                        context,
+                        bloc,
+                        area.id ?? '',
+                        area.name ?? '',
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  void _showCreateBottomSheet(BuildContext context, AreaBloc bloc) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (bottomSheetContext) => BlocProvider.value(
+        value: bloc,
+        child: Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(bottomSheetContext).viewInsets.bottom,
+          ),
+          child: Container(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Handle bar
+                Container(
+                  margin: const EdgeInsets.only(top: 12, bottom: 8),
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                // Title
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.add_location, color: AppTheme.primaryGreen),
+                      const SizedBox(width: 12),
+                      const Text(
+                        'Thêm khu vực mới',
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                      const Spacer(),
+                      IconButton(
+                        icon: const Icon(Icons.close),
+                        onPressed: () => Navigator.pop(bottomSheetContext),
+                      ),
+                    ],
+                  ),
+                ),
+                const Divider(height: 1),
+                // Form
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      FormTextField(
+                        autofocus: true,
+                        name: 'area',
+                        label: 'Tên khu vực',
+                        onChanged: (value) {
+                          bloc.add(UpdateFieldName(name: value ?? ''));
                         },
                       ),
-                    );
-                  },
-                ).then((value) {
-                  bloc.add(GetAreas());
-                });
-              },
-              child: Icon(Icons.add),
+                      const SizedBox(height: 24),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: OutlinedButton(
+                              onPressed: () => Navigator.pop(bottomSheetContext),
+                              child: const Text('Hủy'),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            flex: 2,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                bloc.add(CreateArea());
+                              },
+                              child: const Text('Thêm khu vực'),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
+        ),
+      ),
+    ).then((_) => bloc.add(GetAreas()));
+  }
+
+  void _showDeleteDialog(BuildContext context, AreaBloc bloc, String id, String name) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: Row(
+            children: [
+              const Icon(Icons.warning_amber_rounded, color: Colors.red),
+              const SizedBox(width: 12),
+              const Expanded(child: Text('Xác nhận xóa')),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Bạn có chắc muốn xóa khu vực "$name"?',
+                style: const TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.red.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.red.shade200),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.info_outline, size: 20, color: Colors.red.shade700),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Dữ liệu không thể khôi phục sau khi xóa',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.red.shade700,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Hủy'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                bloc.add(DeleteArea(id: id));
+                Navigator.pop(dialogContext);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Xóa'),
+            ),
+          ],
         );
       },
     );

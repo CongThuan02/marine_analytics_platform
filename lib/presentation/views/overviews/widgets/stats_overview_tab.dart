@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:marine_analytics_platform/core/constants/enum_status.dart';
 import 'package:marine_analytics_platform/core/theme/app_theme.dart';
 import 'package:marine_analytics_platform/data/models/waste_stats.dart';
@@ -100,9 +101,92 @@ class _StatsOverviewView extends StatelessWidget {
                 const SizedBox(height: 16),
                 _BarChartWidget(breakdowns: stats.breakdowns),
                 const SizedBox(height: 32),
-                Text(
-                  'Chi tiết theo loại chất thải',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Chi tiết theo loại chất thải',
+                          style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: AppTheme.primaryGreen.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            'Tổng: ${_formatQuantity(stats.totalQuantity)} kg',
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: AppTheme.primaryGreen,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    // Debug info - hiển thị tổng các breakdown
+                    Builder(
+                      builder: (context) {
+                        final breakdownTotal = stats.breakdowns.fold<double>(0, (sum, item) => sum + item.quantity);
+                        final percentageTotal = stats.breakdowns.fold<double>(
+                          0,
+                          (sum, item) =>
+                              sum + (stats.totalQuantity > 0 ? (item.quantity / stats.totalQuantity * 100) : 0),
+                        );
+                        final isMatching = (breakdownTotal - stats.totalQuantity).abs() < 0.01;
+
+                        return Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: isMatching ? Colors.green.shade50 : Colors.orange.shade50,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: isMatching ? Colors.green.shade200 : Colors.orange.shade200),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(
+                                    isMatching ? Icons.check_circle_outline : Icons.warning_amber_rounded,
+                                    size: 16,
+                                    color: isMatching ? Colors.green.shade700 : Colors.orange.shade700,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      'Kiểm tra dữ liệu',
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.bold,
+                                        color: isMatching ? Colors.green.shade700 : Colors.orange.shade700,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Tổng breakdown: ${_formatQuantity(breakdownTotal)} kg\n'
+                                'Tổng stats: ${_formatQuantity(stats.totalQuantity)} kg\n'
+                                'Tổng %: ${percentageTotal.toStringAsFixed(1)}%\n'
+                                'Số loại: ${stats.breakdowns.length} | Entries: ${stats.entryCount}',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  color: isMatching ? Colors.green.shade700 : Colors.orange.shade700,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 12),
                 ListView.separated(
@@ -112,8 +196,9 @@ class _StatsOverviewView extends StatelessWidget {
                   separatorBuilder: (_, __) => const SizedBox(height: 8),
                   itemBuilder: (context, index) {
                     final item = stats.breakdowns[index];
-                    final percentage = (item.quantity / stats.totalQuantity * 100);
-                    return _BreakdownTile(item: item, percentage: percentage);
+                    // Tránh chia cho 0
+                    final percentage = stats.totalQuantity > 0 ? (item.quantity / stats.totalQuantity * 100) : 0.0;
+                    return _BreakdownTile(item: item, percentage: percentage, totalQuantity: stats.totalQuantity);
                   },
                 ),
               ],
@@ -175,7 +260,6 @@ class _PeriodSelector extends StatelessWidget {
   }
 
   Future<DateTime?> _showMonthYearPicker(BuildContext context, DateTime initialDate) async {
-
     final result = await showDialog<DateTime>(
       context: context,
       builder: (BuildContext context) {
@@ -424,11 +508,14 @@ class _SummaryCard extends StatelessWidget {
 class _BreakdownTile extends StatelessWidget {
   final WasteBreakdown item;
   final double percentage;
+  final double totalQuantity;
 
-  const _BreakdownTile({required this.item, required this.percentage});
+  const _BreakdownTile({required this.item, required this.percentage, required this.totalQuantity});
 
   @override
   Widget build(BuildContext context) {
+    final validPercentage = percentage.isFinite && !percentage.isNaN ? percentage.clamp(0.0, 100.0) : 0.0;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -455,7 +542,7 @@ class _BreakdownTile extends StatelessWidget {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
-                  '${percentage.toStringAsFixed(1)}%',
+                  '${validPercentage.toStringAsFixed(2)}%',
                   style: const TextStyle(color: AppTheme.primaryGreen, fontWeight: FontWeight.bold, fontSize: 14),
                 ),
               ),
@@ -466,19 +553,33 @@ class _BreakdownTile extends StatelessWidget {
             children: [
               Icon(Icons.scale, size: 20, color: Colors.grey.shade600),
               const SizedBox(width: 8),
-              Text(
-                '${_formatQuantity(item.quantity)} kg',
-                style: Theme.of(
-                  context,
-                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: AppTheme.primaryGreen),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '${_formatQuantity(item.quantity)} kg',
+                      style: Theme.of(
+                        context,
+                      ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: AppTheme.primaryGreen),
+                    ),
+                    if (totalQuantity > 0) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        'Tổng: ${_formatQuantity(totalQuantity)} kg',
+                        style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                      ),
+                    ],
+                  ],
+                ),
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           ClipRRect(
             borderRadius: BorderRadius.circular(4),
             child: LinearProgressIndicator(
-              value: percentage / 100,
+              value: validPercentage / 100,
               minHeight: 8,
               backgroundColor: Colors.grey.shade200,
               valueColor: const AlwaysStoppedAnimation<Color>(AppTheme.primaryGreenLight),
@@ -514,24 +615,33 @@ class _PieChartWidget extends StatelessWidget {
           isVisible: true,
           position: LegendPosition.bottom,
           overflowMode: LegendItemOverflowMode.wrap,
-          textStyle: const TextStyle(fontSize: 12),
+          textStyle: const TextStyle(fontSize: 11),
+          toggleSeriesVisibility: true,
         ),
-        tooltipBehavior: TooltipBehavior(enable: true, format: 'point.x: point.y kg'),
+        tooltipBehavior: TooltipBehavior(enable: true, format: 'point.x\npoint.y kg (point.percentage%)'),
         series: <PieSeries<WasteBreakdown, String>>[
           PieSeries<WasteBreakdown, String>(
             dataSource: breakdowns,
             xValueMapper: (data, _) => data.name,
             yValueMapper: (data, _) => data.quantity,
-            dataLabelMapper: (data, _) => '${_formatQuantity(data.quantity)} kg',
+            dataLabelMapper: (data, index) {
+              // Chỉ hiển thị label cho các phần lớn hơn 5%
+              final total = breakdowns.fold<double>(0, (sum, item) => sum + item.quantity);
+              final percent = (data.quantity / total) * 100;
+              if (percent < 5) return '';
+              return '${percent.toStringAsFixed(1)}%';
+            },
             dataLabelSettings: const DataLabelSettings(
               isVisible: true,
               labelPosition: ChartDataLabelPosition.outside,
-              textStyle: TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+              textStyle: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+              connectorLineSettings: ConnectorLineSettings(type: ConnectorType.curve, length: '10%'),
             ),
             explode: true,
             explodeIndex: 0,
-            explodeOffset: '10%',
+            explodeOffset: '5%',
             pointColorMapper: (data, index) => _getChartColor(index),
+            enableTooltip: true,
           ),
         ],
       ),
@@ -539,15 +649,20 @@ class _PieChartWidget extends StatelessWidget {
   }
 }
 
-class _BarChartWidget extends StatelessWidget {
+class _BarChartWidget extends StatefulWidget {
   final List<WasteBreakdown> breakdowns;
 
   const _BarChartWidget({required this.breakdowns});
 
   @override
+  State<_BarChartWidget> createState() => _BarChartWidgetState();
+}
+
+class _BarChartWidgetState extends State<_BarChartWidget> {
+  @override
   Widget build(BuildContext context) {
     return Container(
-      height: 350,
+      height: 380,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -560,32 +675,96 @@ class _BarChartWidget extends StatelessWidget {
           textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
         ),
         primaryXAxis: CategoryAxis(
-          labelStyle: const TextStyle(fontSize: 11),
+          labelStyle: const TextStyle(fontSize: 10),
           majorGridLines: const MajorGridLines(width: 0),
+          labelRotation: widget.breakdowns.length > 5 ? -45 : 0,
+          maximumLabelWidth: 80,
         ),
         primaryYAxis: NumericAxis(
-          title: AxisTitle(text: 'Khối lượng (kg)'),
-          labelFormat: '{value}',
+          title: AxisTitle(text: 'Khối lượng (kg)', textStyle: const TextStyle(fontSize: 12)),
+          numberFormat: _getNumberFormat(widget.breakdowns),
           majorGridLines: MajorGridLines(width: 1, color: Colors.grey.shade200),
+          minimum: 0,
+          maximum: _calculateMaxValue(widget.breakdowns),
+          interval: _calculateInterval(widget.breakdowns),
+          labelStyle: const TextStyle(fontSize: 10),
         ),
-        tooltipBehavior: TooltipBehavior(enable: true, format: 'point.x: point.y kg'),
+        tooltipBehavior: TooltipBehavior(
+          enable: true,
+          format: 'point.x\npoint.y kg',
+          textStyle: const TextStyle(fontSize: 12),
+        ),
+        zoomPanBehavior: ZoomPanBehavior(
+          enablePinching: true,
+          enableDoubleTapZooming: true,
+          enablePanning: true,
+          zoomMode: ZoomMode.xy,
+        ),
         series: <ColumnSeries<WasteBreakdown, String>>[
           ColumnSeries<WasteBreakdown, String>(
-            dataSource: breakdowns,
-            xValueMapper: (data, _) => data.name,
+            dataSource: widget.breakdowns,
+            xValueMapper: (data, _) => _truncateName(data.name),
             yValueMapper: (data, _) => data.quantity,
             dataLabelMapper: (data, _) => _formatQuantity(data.quantity),
             dataLabelSettings: const DataLabelSettings(
               isVisible: true,
-              textStyle: TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+              textStyle: TextStyle(fontSize: 9, fontWeight: FontWeight.bold),
+              labelAlignment: ChartDataLabelAlignment.top,
+              angle: 0,
             ),
             pointColorMapper: (data, index) => _getChartColor(index),
-            borderRadius: const BorderRadius.only(topLeft: Radius.circular(8), topRight: Radius.circular(8)),
+            borderRadius: const BorderRadius.only(topLeft: Radius.circular(6), topRight: Radius.circular(6)),
+            spacing: 0.2,
           ),
         ],
       ),
     );
   }
+
+  String _truncateName(String name) {
+    if (name.length <= 15) return name;
+    return '${name.substring(0, 12)}...';
+  }
+}
+
+double? _calculateMaxValue(List<WasteBreakdown> breakdowns) {
+  if (breakdowns.isEmpty) return null;
+
+  final maxValue = breakdowns.map((e) => e.quantity).reduce((a, b) => a > b ? a : b);
+
+  // Thêm 10% buffer để chart không bị sát trần
+  return maxValue * 1.1;
+}
+
+double? _calculateInterval(List<WasteBreakdown> breakdowns) {
+  if (breakdowns.isEmpty) return null;
+
+  final maxValue = breakdowns.map((e) => e.quantity).reduce((a, b) => a > b ? a : b);
+
+  // Tính interval dựa trên max value
+  if (maxValue <= 10) return 2;
+  if (maxValue <= 50) return 10;
+  if (maxValue <= 100) return 20;
+  if (maxValue <= 500) return 100;
+  if (maxValue <= 1000) return 200;
+  return (maxValue / 5).roundToDouble();
+}
+
+NumberFormat _getNumberFormat(List<WasteBreakdown> breakdowns) {
+  if (breakdowns.isEmpty) return NumberFormat('#,##0.##');
+
+  final maxValue = breakdowns.map((e) => e.quantity).reduce((a, b) => a > b ? a : b);
+
+  // Nếu số lớn hơn 1000, dùng compact format (1K, 1M)
+  if (maxValue >= 1000000) {
+    return NumberFormat.compact(locale: 'vi');
+  } else if (maxValue >= 1000) {
+    return NumberFormat('#,##0', 'vi');
+  } else if (maxValue < 10) {
+    return NumberFormat('#,##0.#', 'vi');
+  }
+
+  return NumberFormat('#,##0', 'vi');
 }
 
 Color _getChartColor(int index) {

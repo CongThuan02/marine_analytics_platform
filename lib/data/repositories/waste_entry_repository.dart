@@ -6,8 +6,7 @@ class WasteEntryRepository {
     try {
       final response = await supabase
           .from('waste_entries')
-          .select(
-            '''
+          .select('''
         id,
         user_id,
         department_id,
@@ -20,14 +19,11 @@ class WasteEntryRepository {
         departments(id, name),
         areas(id, name),
         waste_types(id, name, unit)
-        ''',
-          )
+        ''')
           .order('date', ascending: false)
           .order('created_at', ascending: false);
 
-      return (response as List<dynamic>)
-          .map((item) => WasteEntryModel.fromMap(item as Map<String, dynamic>))
-          .toList();
+      return (response as List<dynamic>).map((item) => WasteEntryModel.fromMap(item as Map<String, dynamic>)).toList();
     } catch (e) {
       throw Exception('Không thể tải lịch sử chất thải: $e');
     }
@@ -76,8 +72,8 @@ class WasteEntryRepository {
       await supabase.from('waste_entries').insert(payload);
       return 'Ghi nhận chất thải thành công.';
     } catch (e) {
+      print(e);
       throw Exception('Không thể lưu dữ liệu: $e');
     }
   }
 }
-

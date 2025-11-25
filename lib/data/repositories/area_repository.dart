@@ -7,6 +7,7 @@ class AreaRepository {
       await supabase.from('areas').insert({'name': area.name});
       return "Thêm dữ liệu thành công";
     } catch (e) {
+      print(e);
       return "Thêm dữ liệu thất bại ${e}";
     }
   }
@@ -24,7 +25,7 @@ class AreaRepository {
 
   Future<String> deleteArea({required String id}) async {
     try {
-      await supabase.from('areas').delete().eq('id', id);
+      var a = await supabase.from('areas').delete().eq('id', id);
       return "Xoá khu vực thành công";
     } catch (e) {
       return "Xóa thất bại";
