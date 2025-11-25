@@ -15,6 +15,7 @@ class FormSelect extends StatelessWidget {
   final List<Map<String, dynamic>>? iniItems;
   final Function(String value)? onChange;
   final List<String? Function(String?)>? validators;
+  final String Function(Map<String, dynamic> item)? itemLabelBuilder;
 
   const FormSelect({
     this.iniItems,
@@ -26,6 +27,7 @@ class FormSelect extends StatelessWidget {
     this.lableKey = "name",
     this.onChange,
     this.validators,
+    this.itemLabelBuilder,
   });
 
   List<Map<String, dynamic>> _buildItems(FormSelectState state) {
@@ -42,6 +44,9 @@ class FormSelect extends StatelessWidget {
       (item) => item[valueKey]?.toString() == selectedValue,
       orElse: () => {lableKey: 'Chọn'},
     );
+    if (itemLabelBuilder != null) {
+      return itemLabelBuilder!(match);
+    }
     return match[lableKey]?.toString() ?? 'Chọn';
   }
 
@@ -80,13 +85,16 @@ class FormSelect extends StatelessWidget {
                         itemBuilder: (context, index) {
                           final item = availableItems[index];
                           final value = item[valueKey]?.toString();
+                          final text = itemLabelBuilder != null
+                              ? itemLabelBuilder!(item)
+                              : (item[lableKey]?.toString() ?? '');
                           return InkWell(
                             onTap: () => Navigator.pop(context, item),
                             child: Padding(
                               padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
                               child: Row(
                                 children: [
-                                  Expanded(child: Text(item[lableKey]?.toString() ?? '')),
+                                  Expanded(child: Text(text)),
                                   if (value == bloc.state.selected)
                                     const Icon(Icons.check, color: Colors.red, size: 18),
                                 ],

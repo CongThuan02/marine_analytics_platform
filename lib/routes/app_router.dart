@@ -14,11 +14,21 @@ import 'package:marine_analytics_platform/presentation/views/waste_type/page.dar
 final appRouter = GoRouter(
   redirect: (context, state) {
     final currentSession = supabase.auth.currentSession;
+    final isLoggingIn = state.matchedLocation == '/login';
+    final isRegistering = state.matchedLocation == '/register';
+
     if (currentSession == null) {
-      if (state.fullPath != "/register") return '/login';
-    } else {
+      if (!isLoggingIn && !isRegistering) {
+        return '/login';
+      }
+      return state.fullPath;
+    }
+
+    if (isLoggingIn || isRegistering) {
       return '/';
     }
+
+    return null;
   },
   initialLocation: '/',
   routes: [
