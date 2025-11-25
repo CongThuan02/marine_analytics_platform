@@ -5,9 +5,19 @@ class FormTextField extends StatelessWidget {
   final String name;
   final String? label;
   final String? hintText;
+  final String? value;
+  final bool autofocus;
   final void Function(String?)? onChanged;
 
-  const FormTextField({super.key, required this.name, this.label, this.onChanged, this.hintText});
+  const FormTextField({
+    this.autofocus = false,
+    super.key,
+    required this.name,
+    this.label,
+    this.onChanged,
+    this.hintText,
+    this.value,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -16,6 +26,8 @@ class FormTextField extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
         child: FormBuilderTextField(
+          autofocus: autofocus,
+          initialValue: value,
           onChanged: onChanged,
           name: name,
           decoration: InputDecoration(border: .none, hintText: hintText, label: label != null ? Text(label!) : null),

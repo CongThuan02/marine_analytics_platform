@@ -18,7 +18,7 @@ class CreateAreaPage extends StatelessWidget {
 }
 
 class _CreateAreaPage extends StatelessWidget {
-  const _CreateAreaPage({super.key});
+  const _CreateAreaPage();
 
   @override
   Widget build(BuildContext context) {
@@ -159,6 +159,7 @@ class _CreateAreaPage extends StatelessWidget {
                                       spacing: 12,
                                       children: [
                                         FormTextField(
+                                          autofocus: true,
                                           name: 'area',
                                           label: 'Tên khu vực',
                                           onChanged: (value) {

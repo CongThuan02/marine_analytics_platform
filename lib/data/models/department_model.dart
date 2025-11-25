@@ -40,12 +40,10 @@ class DepartmentModel extends Equatable {
   }
 
   factory DepartmentModel.fromMap(Map<String, dynamic> map) {
-    return DepartmentModel(
-      id: map['id'] as String,
-      name: map['name'] as String,
-      areaId: map['area_id'] as String,
-      createdAt: map['created_at'] as String,
-    );
+    print(map);
+    var a = DepartmentModel(id: map['id'], name: map['name'], areaId: map['area_id'], createdAt: map['created_at']);
+    print(a);
+    return a;
   }
 
   @override

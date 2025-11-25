@@ -14,7 +14,7 @@ class AreaRepository {
   Future<List<AreaModel>?> getAllArea() async {
     try {
       final res = await supabase.from('areas').select();
-      print(res);
+      print('res.runtimeType-------------${res.runtimeType}');
       final List<AreaModel> data = res.map((e) => AreaModel.fromMap(e)).toList();
       return data;
     } catch (e, st) {
