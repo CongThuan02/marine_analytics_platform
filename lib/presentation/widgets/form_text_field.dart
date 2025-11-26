@@ -13,7 +13,7 @@ class FormTextField extends StatefulWidget {
   final void Function(String?)? onChanged;
   final List<String? Function(String?)>? validators;
 
-  FormTextField({
+  const FormTextField({
     super.key,
     required this.name,
     this.label,
@@ -49,35 +49,29 @@ class _FormTextFieldState extends State<FormTextField> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              decoration: BoxDecoration(
-                border: Border.all(color: field.hasError ? Colors.red : Colors.grey),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: TextField(
-                  // controller: TextEditingController(text: field.value)
-                  //   ..selection = TextSelection.collapsed(offset: field.value?.length ?? 0),
-                  obscureText: hidePassword,
-                  autofocus: widget.autofocus,
-                  onChanged: (value) {
-                    field.didChange(value);
-                    widget.onChanged?.call(value);
-                  },
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintText: widget.hintText,
-                    labelText: widget.label,
-                    suffixIcon: widget.isPassword
-                        ? IconButton(
-                            onPressed: () {
-                              setState(() => hidePassword = !hidePassword);
-                            },
-                            icon: Icon(hidePassword ? Icons.visibility_off : Icons.visibility),
-                          )
-                        : widget.suffixIcon,
-                  ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: TextField(
+                // controller: TextEditingController(text: field.value)
+                //   ..selection = TextSelection.collapsed(offset: field.value?.length ?? 0),
+                obscureText: hidePassword,
+                autofocus: widget.autofocus,
+                onChanged: (value) {
+                  field.didChange(value);
+                  widget.onChanged?.call(value);
+                },
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  hintText: widget.hintText,
+                  labelText: widget.label,
+                  suffixIcon: widget.isPassword
+                      ? IconButton(
+                          onPressed: () {
+                            setState(() => hidePassword = !hidePassword);
+                          },
+                          icon: Icon(hidePassword ? Icons.visibility_off : Icons.visibility),
+                        )
+                      : widget.suffixIcon,
                 ),
               ),
             ),

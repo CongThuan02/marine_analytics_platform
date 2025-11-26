@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:marine_analytics_platform/core/constants/app_strings.dart';
 
 import 'overviews/day.dart';
 import 'overviews/moth.dart';
@@ -25,9 +26,9 @@ class HomePage extends StatelessWidget {
               labelColor: Colors.white,
 
               tabs: [
-                Tab(child: Text("Ngày")),
-                Tab(child: Text("Tháng")),
-                Tab(child: Text("Năm")),
+                Tab(child: Text("Day")),
+                Tab(child: Text("Month")),
+                Tab(child: Text("Year")),
               ],
             ),
             Expanded(

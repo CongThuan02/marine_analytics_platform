@@ -4,6 +4,7 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:go_router/go_router.dart';
 import 'package:loader_overlay/loader_overlay.dart';
+import 'package:marine_analytics_platform/core/constants/app_strings.dart';
 import 'package:marine_analytics_platform/core/constants/enum_status.dart';
 import 'package:marine_analytics_platform/data/models/singUp.dart';
 import 'package:marine_analytics_platform/presentation/blocs/register/register_bloc.dart';
@@ -44,7 +45,7 @@ class _RegisterViewState extends State<_RegisterView> {
   void _onSubmit() {
     final formState = _formKey.currentState;
     if (!(formState?.saveAndValidate() ?? false)) {
-      _showSnackBar('Vui lòng kiểm tra lại thông tin.', isError: true);
+      _showSnackBar('Please check your information.', isError: true);
       return;
     }
 
@@ -81,7 +82,7 @@ class _RegisterViewState extends State<_RegisterView> {
         }
       },
       child: Scaffold(
-        appBar: AppBar(title: const Text("Đăng ký tài khoản")),
+        appBar: AppBar(title: const Text(AppStrings.register)),
         body: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24),
@@ -91,28 +92,28 @@ class _RegisterViewState extends State<_RegisterView> {
                 children: [
                   FormTextField(
                     name: "email",
-                    label: "Email",
+                    label: AppStrings.email,
                     validators: [FormBuilderValidators.required(), FormBuilderValidators.email()],
                   ),
                   const SizedBox(height: 16),
                   FormTextField(
                     name: "password",
                     isPassword: true,
-                    label: "Mật khẩu",
+                    label: AppStrings.password,
                     validators: [
                       FormBuilderValidators.required(),
-                      FormBuilderValidators.minLength(6, errorText: 'Tối thiểu 6 ký tự'),
+                      FormBuilderValidators.minLength(6, errorText: 'Minimum 6 characters'),
                     ],
                   ),
                   const SizedBox(height: 16),
                   FormSelect(
                     name: "department_id",
-                    label: "Phòng ban",
+                    label: "Department",
                     tableName: "departments",
                     validators: [
                       (value) {
                         if (value == null || value == 'chon') {
-                          return 'Vui lòng chọn phòng ban';
+                          return 'Please select a department';
                         }
                         return null;
                       },
@@ -121,16 +122,16 @@ class _RegisterViewState extends State<_RegisterView> {
                   const SizedBox(height: 16),
                   FormSelect(
                     name: 'role',
-                    label: 'Vai trò',
+                    label: 'Role',
                     iniItems: const [
-                      {'id': 'admin', 'name': 'Quản trị'},
-                      {'id': 'staff', 'name': 'Nhân viên'},
-                      {'id': 'viewer', 'name': 'Quan sát'},
+                      {'id': 'admin', 'name': 'Admin'},
+                      {'id': 'staff', 'name': 'Staff'},
+                      {'id': 'viewer', 'name': 'Viewer'},
                     ],
                     validators: [
                       (value) {
                         if (value == null || value == 'chon') {
-                          return 'Vui lòng chọn vai trò';
+                          return 'Please select a role';
                         }
                         return null;
                       },
@@ -141,7 +142,7 @@ class _RegisterViewState extends State<_RegisterView> {
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: _onSubmit,
-                      child: const Text("Đăng ký"),
+                      child: const Text(AppStrings.register),
                     ),
                   ),
                 ],

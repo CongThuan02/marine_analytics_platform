@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:marine_analytics_platform/core/constants/app_strings.dart';
 import 'package:marine_analytics_platform/core/theme/app_theme.dart';
 import 'package:marine_analytics_platform/data/models/alert_model.dart';
 import 'package:marine_analytics_platform/presentation/blocs/alert/alert_bloc.dart';
@@ -55,7 +56,7 @@ class AlertCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          alert.areaName ?? 'Khu vực không xác định',
+                          alert.areaName ?? 'Unknown Area',
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -63,7 +64,7 @@ class AlertCard extends StatelessWidget {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          alert.wasteTypeName ?? 'Loại chất thải không xác định',
+                          alert.wasteTypeName ?? 'Unknown Waste Type',
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.grey.shade600,
@@ -109,7 +110,7 @@ class AlertCard extends StatelessWidget {
                   Expanded(
                     child: _buildStatItem(
                       icon: Icons.trending_up,
-                      label: 'Hôm nay',
+                      label: 'Today',
                       value: '${_formatQuantity(alert.totalToday)} ${alert.wasteTypeUnit ?? 'kg'}',
                       color: color,
                     ),
@@ -118,7 +119,7 @@ class AlertCard extends StatelessWidget {
                   Expanded(
                     child: _buildStatItem(
                       icon: Icons.speed,
-                      label: 'Hạn mức',
+                      label: 'Limit',
                       value: '${_formatQuantity(alert.limitValue)} ${alert.wasteTypeUnit ?? 'kg'}',
                       color: AppTheme.primaryGreen,
                     ),
@@ -167,7 +168,7 @@ class AlertCard extends StatelessWidget {
                   TextButton.icon(
                     onPressed: () => _confirmDelete(context),
                     icon: const Icon(Icons.close, size: 18),
-                    label: const Text('Đóng'),
+                    label: const Text(AppStrings.close),
                     style: TextButton.styleFrom(
                       foregroundColor: Colors.grey.shade600,
                     ),
@@ -243,11 +244,11 @@ class AlertCard extends StatelessWidget {
     final diff = now.difference(dateTime);
 
     if (diff.inMinutes < 1) {
-      return 'Vừa xong';
+      return 'Just now';
     } else if (diff.inHours < 1) {
-      return '${diff.inMinutes} phút trước';
+      return '${diff.inMinutes}m ago';
     } else if (diff.inDays < 1) {
-      return '${diff.inHours} giờ trước';
+      return '${diff.inHours}h ago';
     } else {
       return '${dateTime.day}/${dateTime.month}/${dateTime.year} ${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}';
     }
@@ -257,19 +258,19 @@ class AlertCard extends StatelessWidget {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Đóng cảnh báo'),
-        content: const Text('Bạn có muốn đóng cảnh báo này?'),
+        title: const Text(AppStrings.deleteAlert),
+        content: const Text(AppStrings.deleteAlertConfirm),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Hủy'),
+            child: const Text(AppStrings.cancel),
           ),
           ElevatedButton(
             onPressed: () {
               context.read<AlertBloc>().add(DeleteAlert(alert.id));
               Navigator.pop(dialogContext);
             },
-            child: const Text('Đóng'),
+            child: const Text(AppStrings.close),
           ),
         ],
       ),

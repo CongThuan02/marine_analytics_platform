@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:marine_analytics_platform/core/constants/app_strings.dart';
 import 'package:marine_analytics_platform/core/theme/app_theme.dart';
+import 'package:marine_analytics_platform/data/models/alert_model.dart';
 import 'package:marine_analytics_platform/presentation/blocs/alert/alert_bloc.dart';
 import 'package:marine_analytics_platform/presentation/views/alerts/widgets/alert_card.dart';
 
@@ -21,7 +23,7 @@ class _AlertsView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Cảnh báo Hạn mức'),
+        title: const Text(AppStrings.alertsTitle),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -44,13 +46,15 @@ class _AlertsView extends StatelessWidget {
                   children: [
                     Icon(Icons.bug_report, size: 20, color: Colors.orange),
                     SizedBox(width: 8),
-                    Text('Test tạo cảnh báo'),
+                    Text(AppStrings.testCreateAlert),
                   ],
                 ),
               ),
               const PopupMenuItem(
                 value: 'delete_old',
-                child: Row(children: [Icon(Icons.delete_sweep, size: 20), SizedBox(width: 8), Text('Xóa cảnh báo cũ')]),
+                child: Row(
+                  children: [Icon(Icons.delete_sweep, size: 20), SizedBox(width: 8), Text(AppStrings.deleteOldAlerts)],
+                ),
               ),
             ],
           ),
@@ -70,16 +74,16 @@ class _AlertsView extends StatelessWidget {
                   Icon(Icons.error_outline, size: 64, color: Colors.red.shade300),
                   const SizedBox(height: 16),
                   Text(
-                    'Lỗi: ${state.message}',
+                    '${AppStrings.error}: ${state.message}',
                     style: TextStyle(color: Colors.red.shade700),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () {
-                      context.read<AlertBloc>().add(LoadTodayAlerts());
+                      context.read<AlertBloc>().add(LoadAlerts());
                     },
-                    child: const Text('Thử lại'),
+                    child: const Text('Retry'),
                   ),
                 ],
               ),
@@ -94,81 +98,59 @@ class _AlertsView extends StatelessWidget {
                   children: [
                     Icon(Icons.check_circle_outline, size: 80, color: AppTheme.success),
                     const SizedBox(height: 16),
-                    const Text('Không có cảnh báo', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
+                    const Text(AppStrings.noAlerts, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
                     const SizedBox(height: 8),
-                    Text('Tất cả khu vực đều trong hạn mức', style: TextStyle(color: Colors.grey.shade600)),
+                    Text('All areas are within limits', style: TextStyle(color: Colors.grey.shade600)),
                   ],
                 ),
               );
             }
 
-            // Group alerts by level
-            final criticalAlerts = state.alerts.where((a) => a.percent >= 100).toList();
-            final warningAlerts = state.alerts.where((a) => a.percent >= 80 && a.percent < 100).toList();
-            final infoAlerts = state.alerts.where((a) => a.percent < 80).toList();
-
             return RefreshIndicator(
               onRefresh: () async {
-                context.read<AlertBloc>().add(LoadTodayAlerts());
+                context.read<AlertBloc>().add(LoadAlerts());
               },
-              child: ListView(
-                padding: const EdgeInsets.all(16),
+              child: Column(
                 children: [
-                  // Summary card
-                  _buildSummaryCard(context, state.alerts.length, criticalAlerts.length, warningAlerts.length),
-                  const SizedBox(height: 24),
-
-                  // Critical alerts
-                  if (criticalAlerts.isNotEmpty) ...[
-                    _buildSectionTitle('Vượt hạn mức (${criticalAlerts.length})'),
-                    const SizedBox(height: 12),
-                    ...criticalAlerts.map((alert) => AlertCard(alert: alert)),
-                    const SizedBox(height: 24),
-                  ],
-
-                  // Warning alerts
-                  if (warningAlerts.isNotEmpty) ...[
-                    _buildSectionTitle('Gần vượt hạn mức (${warningAlerts.length})'),
-                    const SizedBox(height: 12),
-                    ...warningAlerts.map((alert) => AlertCard(alert: alert)),
-                    const SizedBox(height: 24),
-                  ],
-
-                  // Info alerts
-                  if (infoAlerts.isNotEmpty) ...[
-                    _buildSectionTitle('Thông tin (${infoAlerts.length})'),
-                    const SizedBox(height: 12),
-                    ...infoAlerts.map((alert) => AlertCard(alert: alert)),
-                  ],
+                  _buildSummarySection(state.alerts),
+                  Expanded(
+                    child: ListView.separated(
+                      padding: const EdgeInsets.all(16),
+                      itemCount: state.alerts.length,
+                      separatorBuilder: (_, __) => const SizedBox(height: 12),
+                      itemBuilder: (context, index) {
+                        return AlertCard(alert: state.alerts[index]);
+                      },
+                    ),
+                  ),
                 ],
               ),
             );
           }
 
-          return const SizedBox();
+          return const SizedBox.shrink();
         },
       ),
     );
   }
 
-  Widget _buildSummaryCard(BuildContext context, int total, int critical, int warning) {
+  Widget _buildSummarySection(List<AlertModel> alerts) {
+    final total = alerts.length;
+    final critical = alerts.where((a) => a.level == AlertLevel.critical).length;
+    final warning = alerts.where((a) => a.level == AlertLevel.warning).length;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [AppTheme.primaryGreen.withOpacity(0.1), AppTheme.primaryGreenLight.withOpacity(0.05)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppTheme.primaryGreen.withOpacity(0.3), width: 1),
+        color: AppTheme.primaryGreenLight.withOpacity(0.1),
+        border: Border(bottom: BorderSide(color: Colors.grey.shade200)),
       ),
       child: Row(
         children: [
           Expanded(
             child: _buildSummaryItem(
               icon: Icons.warning_amber_rounded,
-              label: 'Tổng cảnh báo',
+              label: 'Total Alerts',
               value: total.toString(),
               color: AppTheme.primaryGreen,
             ),
@@ -177,7 +159,7 @@ class _AlertsView extends StatelessWidget {
           Expanded(
             child: _buildSummaryItem(
               icon: Icons.error,
-              label: 'Vượt mức',
+              label: 'Critical',
               value: critical.toString(),
               color: Colors.red,
             ),
@@ -186,7 +168,7 @@ class _AlertsView extends StatelessWidget {
           Expanded(
             child: _buildSummaryItem(
               icon: Icons.info,
-              label: 'Cảnh báo',
+              label: 'Warning',
               value: warning.toString(),
               color: Colors.orange,
             ),
@@ -204,26 +186,14 @@ class _AlertsView extends StatelessWidget {
   }) {
     return Column(
       children: [
-        Icon(icon, color: color, size: 24),
-        const SizedBox(height: 8),
+        Icon(icon, color: color, size: 28),
+        const SizedBox(height: 4),
         Text(
           value,
           style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: color),
         ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-          textAlign: TextAlign.center,
-        ),
+        Text(label, style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
       ],
-    );
-  }
-
-  Widget _buildSectionTitle(String title) {
-    return Text(
-      title,
-      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.primaryGreen),
     );
   }
 
@@ -235,19 +205,19 @@ class _AlertsView extends StatelessWidget {
           children: [
             Icon(Icons.delete_sweep, color: Colors.orange),
             SizedBox(width: 12),
-            Text('Xóa cảnh báo cũ'),
+            Text(AppStrings.deleteOldAlerts),
           ],
         ),
-        content: const Text('Bạn có muốn xóa tất cả cảnh báo trước hôm nay?', style: TextStyle(fontSize: 16)),
+        content: const Text('Delete all alerts before today?', style: TextStyle(fontSize: 16)),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Hủy')),
+          TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text(AppStrings.cancel)),
           ElevatedButton(
             onPressed: () {
               context.read<AlertBloc>().add(DeleteOldAlerts());
               Navigator.pop(dialogContext);
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Đã xóa cảnh báo cũ')));
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Old alerts deleted')));
             },
-            child: const Text('Xóa'),
+            child: const Text(AppStrings.delete),
           ),
         ],
       ),
