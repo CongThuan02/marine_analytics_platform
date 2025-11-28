@@ -12,7 +12,7 @@ class AlertInitial extends AlertState {}
 class AlertLoading extends AlertState {}
 
 class AlertLoaded extends AlertState {
-  final List<AlertModel> alerts;
+  final List<Alert> alerts;
 
   const AlertLoaded(this.alerts);
 

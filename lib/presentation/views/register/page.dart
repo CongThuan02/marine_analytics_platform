@@ -112,7 +112,7 @@ class _RegisterViewState extends State<_RegisterView> {
                     tableName: "departments",
                     validators: [
                       (value) {
-                        if (value == null || value == 'chon') {
+                        if (value == null || value == 'select') {
                           return 'Please select a department';
                         }
                         return null;
@@ -130,7 +130,7 @@ class _RegisterViewState extends State<_RegisterView> {
                     ],
                     validators: [
                       (value) {
-                        if (value == null || value == 'chon') {
+                        if (value == null || value == 'select') {
                           return 'Please select a role';
                         }
                         return null;

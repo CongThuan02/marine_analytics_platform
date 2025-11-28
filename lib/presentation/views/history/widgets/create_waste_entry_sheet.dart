@@ -4,6 +4,7 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:marine_analytics_platform/core/constants/enum_status.dart';
 import 'package:marine_analytics_platform/data/models/waste_entry_model.dart';
+import 'package:marine_analytics_platform/global.dart';
 import 'package:marine_analytics_platform/presentation/blocs/waste_entry/waste_entry_bloc.dart';
 import 'package:marine_analytics_platform/presentation/widgets/form_slect/form_select.dart';
 import 'package:marine_analytics_platform/presentation/widgets/form_text_field.dart';
@@ -29,26 +30,40 @@ class _CreateWasteEntrySheetState extends State<CreateWasteEntrySheet> {
         }
       },
       child: SingleChildScrollView(
-        padding: EdgeInsets.only(left: 16, right: 16, top: 16, bottom: bottom + 24),
+        padding: EdgeInsets.only(
+          left: 16,
+          right: 16,
+          top: 16,
+          bottom: bottom + 24,
+        ),
         child: FormBuilder(
           key: _formKey,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             spacing: 16,
             children: [
-              Container(width: 50, height: 4, decoration: BoxDecoration(color: Colors.grey.shade400, borderRadius: BorderRadius.circular(4))),
+              Container(
+                width: 50,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade400,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ),
               Text(
-                "Ghi nhận chất thải",
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+                "Record Waste",
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
               ),
               FormSelect(
                 name: 'area_id',
-                label: 'Khu vực',
+                label: 'Area',
                 tableName: 'areas',
                 validators: [
                   (value) {
-                    if (value == null || value == 'chon') {
-                      return 'Vui lòng chọn khu vực';
+                    if (value == null || value == 'select') {
+                      return 'Please select an area';
                     }
                     return null;
                   },
@@ -56,12 +71,12 @@ class _CreateWasteEntrySheetState extends State<CreateWasteEntrySheet> {
               ),
               FormSelect(
                 name: 'department_id',
-                label: 'Phòng ban',
+                label: 'Department',
                 tableName: 'departments',
                 validators: [
                   (value) {
-                    if (value == null || value == 'chon') {
-                      return 'Vui lòng chọn phòng ban';
+                    if (value == null || value == 'select') {
+                      return 'Please select a department';
                     }
                     return null;
                   },
@@ -69,18 +84,19 @@ class _CreateWasteEntrySheetState extends State<CreateWasteEntrySheet> {
               ),
               FormSelect(
                 name: 'waste_type_id',
-                label: 'Loại chất thải',
+                label: 'Waste Type',
                 tableName: 'waste_types',
                 itemLabelBuilder: (item) {
-                  final name = item['name']?.toString() ?? 'Chọn';
+                  final name = item['name']?.toString() ?? 'Select';
                   final unit = item['unit']?.toString();
-                  if (unit == null || unit.isEmpty || unit == 'null') return name;
+                  if (unit == null || unit.isEmpty || unit == 'null')
+                    return name;
                   return '$name ($unit)';
                 },
                 validators: [
                   (value) {
-                    if (value == null || value == 'chon') {
-                      return 'Vui lòng chọn loại chất thải';
+                    if (value == null || value == 'select') {
+                      return 'Please select a waste type';
                     }
                     return null;
                   },
@@ -89,22 +105,23 @@ class _CreateWasteEntrySheetState extends State<CreateWasteEntrySheet> {
               _DateField(),
               FormTextField(
                 name: 'quantity',
-                label: 'Số lượng',
-                hintText: 'Ví dụ: 12.5',
+                label: 'Quantity',
+                hintText: 'Example: 12.5',
                 validators: [
-                  FormBuilderValidators.required(errorText: 'Vui lòng nhập số lượng'),
-                  FormBuilderValidators.numeric(errorText: 'Số lượng phải là số'),
+                  FormBuilderValidators.required(
+                    errorText: 'Please enter quantity',
+                  ),
+                  FormBuilderValidators.numeric(
+                    errorText: 'Quantity must be a number',
+                  ),
                 ],
               ),
-              FormTextField(
-                name: 'qr_code',
-                label: 'QR Code (tuỳ chọn)',
-              ),
+              FormTextField(name: 'qr_code', label: 'QR Code (optional)'),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: _handleSubmit,
-                  child: const Text("Lưu"),
+                  child: const Text("Save"),
                 ),
               ),
             ],
@@ -123,17 +140,20 @@ class _CreateWasteEntrySheetState extends State<CreateWasteEntrySheet> {
     final quantity = _parseQuantity(quantityString);
 
     if (quantity == null) {
-      _showSnackBar(context, 'Số lượng không hợp lệ');
+      _showSnackBar(context, 'Invalid quantity');
       return;
     }
 
     final entry = WasteEntryModel(
-      areaId: values['area_id'] as String?,
-      departmentId: values['department_id'] as String?,
-      wasteTypeId: values['waste_type_id'] as String?,
-      date: values['date'] as DateTime?,
+      id: '',
+      userId: supabase.auth.currentUser?.id ?? '',
+      areaId: values['area_id'] as String? ?? '',
+      departmentId: values['department_id'] as String? ?? '',
+      wasteTypeId: values['waste_type_id'] as String? ?? '',
+      date: values['date'] as DateTime? ?? DateTime.now(),
       quantity: quantity,
       qrCode: (values['qr_code'] as String?)?.trim(),
+      createdAt: DateTime.now(),
     );
 
     context.read<WasteEntryBloc>().add(CreateWasteEntry(entry));
@@ -160,7 +180,7 @@ class _DateField extends StatelessWidget {
       name: 'date',
       initialValue: DateTime.now(),
       validator: (value) {
-        if (value == null) return 'Vui lòng chọn ngày ghi nhận';
+        if (value == null) return 'Please select entry date';
         return null;
       },
       builder: (field) {
@@ -181,8 +201,10 @@ class _DateField extends StatelessWidget {
           onTap: pickDate,
           child: InputDecorator(
             decoration: InputDecoration(
-              labelText: 'Ngày ghi nhận',
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              labelText: 'Entry Date',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
               errorText: field.errorText,
               suffixIcon: const Icon(Icons.calendar_today),
             ),
@@ -194,7 +216,7 @@ class _DateField extends StatelessWidget {
   }
 
   String _formatDate(DateTime? date) {
-    if (date == null) return 'Chọn ngày';
+    if (date == null) return 'Select Date';
 
     final day = date.day.toString().padLeft(2, '0');
     final month = date.month.toString().padLeft(2, '0');
@@ -202,4 +224,3 @@ class _DateField extends StatelessWidget {
     return '$day/$month/$year';
   }
 }
-

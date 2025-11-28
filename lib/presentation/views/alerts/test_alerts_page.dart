@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:marine_analytics_platform/core/theme/app_theme.dart';
 import 'package:marine_analytics_platform/global.dart';
 
-/// Trang test để tạo alerts thủ công
+/// Test page to create alerts manually
 class TestAlertsPage extends StatefulWidget {
   const TestAlertsPage({super.key});
 
@@ -17,9 +17,7 @@ class _TestAlertsPageState extends State<TestAlertsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Test Tạo Cảnh báo'),
-      ),
+      appBar: AppBar(title: const Text('Test Create Alert')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -40,16 +38,16 @@ class _TestAlertsPageState extends State<TestAlertsPage> {
                       Icon(Icons.info_outline, color: Colors.blue.shade700),
                       const SizedBox(width: 8),
                       const Text(
-                        'Hướng dẫn',
+                        'Instructions',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
                   const SizedBox(height: 8),
                   const Text(
-                    '1. Đảm bảo đã có waste_limits trong database\n'
-                    '2. Đảm bảo đã có waste_entries cho hôm nay\n'
-                    '3. Nhấn nút bên dưới để kiểm tra và tạo cảnh báo',
+                    '1. Ensure waste_limits exist in database\n'
+                    '2. Ensure waste_entries exist for today\n'
+                    '3. Press button below to check and create alerts',
                     style: TextStyle(fontSize: 13),
                   ),
                 ],
@@ -65,7 +63,7 @@ class _TestAlertsPageState extends State<TestAlertsPage> {
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
                   : const Icon(Icons.refresh),
-              label: Text(_loading ? 'Đang kiểm tra...' : 'Kiểm tra & Tạo Cảnh báo'),
+              label: Text(_loading ? 'Checking...' : 'Check & Create Alerts'),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.all(16),
               ),
@@ -74,7 +72,7 @@ class _TestAlertsPageState extends State<TestAlertsPage> {
             ElevatedButton.icon(
               onPressed: _loading ? null : _createTestAlert,
               icon: const Icon(Icons.add_alert),
-              label: const Text('Tạo Cảnh báo Test'),
+              label: const Text('Create Test Alert'),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.all(16),
                 backgroundColor: Colors.orange,
@@ -84,7 +82,7 @@ class _TestAlertsPageState extends State<TestAlertsPage> {
             ElevatedButton.icon(
               onPressed: _loading ? null : _deleteAllAlerts,
               icon: const Icon(Icons.delete_sweep),
-              label: const Text('Xóa Tất cả Cảnh báo'),
+              label: const Text('Delete All Alerts'),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.all(16),
                 backgroundColor: Colors.red,
@@ -95,12 +93,12 @@ class _TestAlertsPageState extends State<TestAlertsPage> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: _message.contains('Lỗi')
+                  color: _message.contains('Error')
                       ? Colors.red.shade50
                       : Colors.green.shade50,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: _message.contains('Lỗi')
+                    color: _message.contains('Error')
                         ? Colors.red.shade200
                         : Colors.green.shade200,
                   ),
@@ -108,7 +106,7 @@ class _TestAlertsPageState extends State<TestAlertsPage> {
                 child: Text(
                   _message,
                   style: TextStyle(
-                    color: _message.contains('Lỗi')
+                    color: _message.contains('Error')
                         ? Colors.red.shade700
                         : Colors.green.shade700,
                   ),
@@ -131,7 +129,7 @@ class _TestAlertsPageState extends State<TestAlertsPage> {
       final dateStr =
           '${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}';
 
-      // Lấy tất cả waste_limits
+      // Get all waste_limits
       final limitsResponse = await supabase
           .from('waste_limits')
           .select('*, areas(name), waste_types(name, unit)');
@@ -140,7 +138,7 @@ class _TestAlertsPageState extends State<TestAlertsPage> {
 
       if (limits.isEmpty) {
         setState(() {
-          _message = 'Không có hạn mức nào được đặt. Vui lòng tạo hạn mức trước.';
+          _message = 'No limits set. Please create limits first.';
           _loading = false;
         });
         return;
@@ -148,13 +146,13 @@ class _TestAlertsPageState extends State<TestAlertsPage> {
 
       int alertsCreated = 0;
 
-      // Kiểm tra từng hạn mức
+      // Check each limit
       for (final limit in limits) {
         final areaId = limit['area_id'];
         final wasteTypeId = limit['waste_type_id'];
         final dailyLimit = (limit['daily_limit'] as num).toDouble();
 
-        // Tính tổng waste entries cho hôm nay
+        // Calculate total waste entries for today
         final entriesResponse = await supabase
             .from('waste_entries')
             .select('quantity')
@@ -170,7 +168,7 @@ class _TestAlertsPageState extends State<TestAlertsPage> {
 
         final percent = (total / dailyLimit) * 100;
 
-        // Nếu >= 80%, tạo cảnh báo
+        // If >= 80%, create alert
         if (percent >= 80) {
           final areaName = limit['areas']['name'];
           final wasteTypeName = limit['waste_types']['name'];
@@ -182,8 +180,8 @@ class _TestAlertsPageState extends State<TestAlertsPage> {
             'limit_value': dailyLimit,
             'percent': percent,
             'message': percent >= 100
-                ? '🔴 VƯỢT HẠN MỨC: $wasteTypeName tại $areaName đã vượt ${percent.toStringAsFixed(0)}%'
-                : '⚠️ CẢNH BÁO: $wasteTypeName tại $areaName đã đạt ${percent.toStringAsFixed(0)}% hạn mức',
+                ? '🔴 LIMIT EXCEEDED: $wasteTypeName at $areaName has exceeded ${percent.toStringAsFixed(0)}%'
+                : '⚠️ WARNING: $wasteTypeName at $areaName has reached ${percent.toStringAsFixed(0)}% of limit',
           });
 
           alertsCreated++;
@@ -192,13 +190,13 @@ class _TestAlertsPageState extends State<TestAlertsPage> {
 
       setState(() {
         _message = alertsCreated > 0
-            ? 'Đã tạo $alertsCreated cảnh báo mới!'
-            : 'Không có khu vực nào vượt ngưỡng 80%.';
+            ? 'Created $alertsCreated new alerts!'
+            : 'No areas exceeded threshold 80%.';
         _loading = false;
       });
     } catch (e) {
       setState(() {
-        _message = 'Lỗi: $e';
+        _message = 'Error: $e';
         _loading = false;
       });
     }
@@ -211,15 +209,17 @@ class _TestAlertsPageState extends State<TestAlertsPage> {
     });
 
     try {
-      // Lấy area và waste_type đầu tiên
+      // Get first area and waste_type
       final areasResponse = await supabase.from('areas').select().limit(1);
-      final wasteTypesResponse =
-          await supabase.from('waste_types').select().limit(1);
+      final wasteTypesResponse = await supabase
+          .from('waste_types')
+          .select()
+          .limit(1);
 
       if ((areasResponse as List).isEmpty ||
           (wasteTypesResponse as List).isEmpty) {
         setState(() {
-          _message = 'Cần có ít nhất 1 khu vực và 1 loại chất thải';
+          _message = 'Need at least 1 area and 1 waste type';
           _loading = false;
         });
         return;
@@ -228,7 +228,7 @@ class _TestAlertsPageState extends State<TestAlertsPage> {
       final area = areasResponse[0];
       final wasteType = wasteTypesResponse[0];
 
-      // Tạo alert test
+      // Create test alert
       await supabase.from('alerts').insert({
         'area_id': area['id'],
         'waste_type_id': wasteType['id'],
@@ -236,16 +236,16 @@ class _TestAlertsPageState extends State<TestAlertsPage> {
         'limit_value': 100.0,
         'percent': 150.0,
         'message':
-            '🔴 TEST: ${wasteType['name']} tại ${area['name']} đã vượt 150%',
+            '🔴 TEST: ${wasteType['name']} at ${area['name']} exceeded 150%',
       });
 
       setState(() {
-        _message = 'Đã tạo cảnh báo test thành công!';
+        _message = 'Test alert created successfully!';
         _loading = false;
       });
     } catch (e) {
       setState(() {
-        _message = 'Lỗi: $e';
+        _message = 'Error: $e';
         _loading = false;
       });
     }
@@ -255,17 +255,17 @@ class _TestAlertsPageState extends State<TestAlertsPage> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Xác nhận'),
-        content: const Text('Bạn có chắc muốn xóa tất cả cảnh báo?'),
+        title: const Text('Confirm'),
+        content: const Text('Are you sure you want to delete all alerts?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Hủy'),
+            child: const Text('Cancel'),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Xóa'),
+            child: const Text('Delete'),
           ),
         ],
       ),
@@ -279,15 +279,18 @@ class _TestAlertsPageState extends State<TestAlertsPage> {
     });
 
     try {
-      await supabase.from('alerts').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+      await supabase
+          .from('alerts')
+          .delete()
+          .neq('id', '00000000-0000-0000-0000-000000000000');
 
       setState(() {
-        _message = 'Đã xóa tất cả cảnh báo!';
+        _message = 'Deleted all alerts!';
         _loading = false;
       });
     } catch (e) {
       setState(() {
-        _message = 'Lỗi: $e';
+        _message = 'Error: $e';
         _loading = false;
       });
     }

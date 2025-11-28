@@ -20,7 +20,12 @@ class AreaBloc extends Bloc<AreaEvent, AreaState> {
   }
   Future<void> _createArea(CreateArea event, Emitter<AreaState> emit) async {
     emit(state.copyWith(status: Status.loading));
-    var res = await _areaRepository.CreateArea(area: AreaModel(name: state.name));
+    var res = await _areaRepository.CreateArea(
+        area: AreaModel(
+      id: '',
+      name: state.name,
+      createdAt: DateTime.now(),
+    ));
     emit(state.copyWith(message: res, status: Status.success));
   }
 

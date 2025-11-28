@@ -10,17 +10,18 @@ class CreateReminderBottomSheet extends StatefulWidget {
   const CreateReminderBottomSheet({super.key});
 
   @override
-  State<CreateReminderBottomSheet> createState() => _CreateReminderBottomSheetState();
+  State<CreateReminderBottomSheet> createState() =>
+      _CreateReminderBottomSheetState();
 }
 
 class _CreateReminderBottomSheetState extends State<CreateReminderBottomSheet> {
   final _formKey = GlobalKey<FormState>();
   final _messageController = TextEditingController();
-  
+
   DepartmentModel? _selectedDepartment;
   String _frequency = 'daily';
   TimeOfDay _selectedTime = const TimeOfDay(hour: 9, minute: 0);
-  
+
   List<DepartmentModel> _departments = [];
   bool _loading = true;
 
@@ -40,9 +41,9 @@ class _CreateReminderBottomSheetState extends State<CreateReminderBottomSheet> {
     } catch (e) {
       setState(() => _loading = false);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Lỗi tải dữ liệu: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error loading data: $e')));
       }
     }
   }
@@ -72,10 +73,13 @@ class _CreateReminderBottomSheetState extends State<CreateReminderBottomSheet> {
             padding: const EdgeInsets.all(16),
             child: Row(
               children: [
-                const Icon(Icons.notifications_active, color: AppTheme.primaryGreen),
+                const Icon(
+                  Icons.notifications_active,
+                  color: AppTheme.primaryGreen,
+                ),
                 const SizedBox(width: 12),
                 const Text(
-                  'Thêm Nhắc nhở mới',
+                  'Add New Reminder',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 const Spacer(),
@@ -101,19 +105,20 @@ class _CreateReminderBottomSheetState extends State<CreateReminderBottomSheet> {
                           DropdownButtonFormField<DepartmentModel>(
                             value: _selectedDepartment,
                             decoration: const InputDecoration(
-                              labelText: 'Phòng ban',
+                              labelText: 'Department',
                               prefixIcon: Icon(Icons.business),
                             ),
                             items: _departments.map((dept) {
                               return DropdownMenuItem(
                                 value: dept,
-                                child: Text(dept.name ?? 'Không có tên'),
+                                child: Text(dept.name ?? 'No name'),
                               );
                             }).toList(),
                             onChanged: (value) =>
                                 setState(() => _selectedDepartment = value),
-                            validator: (value) =>
-                                value == null ? 'Vui lòng chọn phòng ban' : null,
+                            validator: (value) => value == null
+                                ? 'Please select a department'
+                                : null,
                           ),
                           const SizedBox(height: 16),
                           InkWell(
@@ -128,7 +133,7 @@ class _CreateReminderBottomSheetState extends State<CreateReminderBottomSheet> {
                             },
                             child: InputDecorator(
                               decoration: const InputDecoration(
-                                labelText: 'Thời gian',
+                                labelText: 'Time',
                                 prefixIcon: Icon(Icons.access_time),
                               ),
                               child: Text(
@@ -141,12 +146,18 @@ class _CreateReminderBottomSheetState extends State<CreateReminderBottomSheet> {
                           DropdownButtonFormField<String>(
                             value: _frequency,
                             decoration: const InputDecoration(
-                              labelText: 'Tần suất',
+                              labelText: 'Frequency',
                               prefixIcon: Icon(Icons.repeat),
                             ),
                             items: const [
-                              DropdownMenuItem(value: 'daily', child: Text('Hàng ngày')),
-                              DropdownMenuItem(value: 'weekly', child: Text('Hàng tuần')),
+                              DropdownMenuItem(
+                                value: 'daily',
+                                child: Text('Daily'),
+                              ),
+                              DropdownMenuItem(
+                                value: 'weekly',
+                                child: Text('Weekly'),
+                              ),
                             ],
                             onChanged: (value) =>
                                 setState(() => _frequency = value ?? 'daily'),
@@ -155,7 +166,7 @@ class _CreateReminderBottomSheetState extends State<CreateReminderBottomSheet> {
                           TextFormField(
                             controller: _messageController,
                             decoration: const InputDecoration(
-                              labelText: 'Nội dung nhắc nhở (tùy chọn)',
+                              labelText: 'Reminder message (optional)',
                               prefixIcon: Icon(Icons.message),
                             ),
                             maxLines: 3,
@@ -166,7 +177,7 @@ class _CreateReminderBottomSheetState extends State<CreateReminderBottomSheet> {
                               Expanded(
                                 child: OutlinedButton(
                                   onPressed: () => Navigator.pop(context),
-                                  child: const Text('Hủy'),
+                                  child: const Text('Cancel'),
                                 ),
                               ),
                               const SizedBox(width: 12),
@@ -174,7 +185,7 @@ class _CreateReminderBottomSheetState extends State<CreateReminderBottomSheet> {
                                 flex: 2,
                                 child: ElevatedButton(
                                   onPressed: _loading ? null : _submit,
-                                  child: const Text('Thêm nhắc nhở'),
+                                  child: const Text('Add Reminder'),
                                 ),
                               ),
                             ],
@@ -199,16 +210,18 @@ class _CreateReminderBottomSheetState extends State<CreateReminderBottomSheet> {
         departmentId: _selectedDepartment!.id ?? '',
         timeOfDay: timeString,
         frequency: _frequency,
-        message: _messageController.text.isEmpty ? null : _messageController.text,
+        message: _messageController.text.isEmpty
+            ? null
+            : _messageController.text,
         enabled: true,
         createdAt: DateTime.now(),
       );
 
-      context.read<ReminderBloc>().add(CreateReminder(reminder));
+      context.read<ReminderBloc>().add(CreateReminderEvent(reminder));
       Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Đã thêm nhắc nhở mới')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('New reminder added')));
     }
   }
 

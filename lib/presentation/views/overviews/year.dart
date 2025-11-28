@@ -9,7 +9,7 @@ class OverviewYear extends StatelessWidget {
   Widget build(BuildContext context) {
     return const StatsOverviewTab(
       period: StatsPeriod.year,
-      emptyMessage: 'Chưa có dữ liệu chất thải cho năm này.',
+      emptyMessage: 'No waste data for this year.',
     );
   }
 }

@@ -6,7 +6,18 @@ class WasteTypeState extends Equatable {
   final Status? status;
   final WasteTypeModel? wasteTypeModel;
 
-  const WasteTypeState({this.message, this.items, this.status, this.wasteTypeModel = const WasteTypeModel()});
+  WasteTypeState({
+    this.message,
+    this.items,
+    this.status,
+    WasteTypeModel? wasteTypeModel,
+  }) : wasteTypeModel = wasteTypeModel ??
+            WasteTypeModel(
+              id: '',
+              name: '',
+              unit: '',
+              createdAt: DateTime.now(),
+            );
 
   WasteTypeState copyWith({
     final String? message,

@@ -58,7 +58,7 @@ class CreateDepartment extends StatelessWidget {
                 onPressed: () {
                   bloc.add(CreateDepartmentEvent());
                 },
-                child: Center(child: Text("Lưu")),
+                child: Center(child: Text("Save")),
               ),
               SizedBox(height: MediaQuery.of(context).viewInsets.bottom ?? 20),
             ],

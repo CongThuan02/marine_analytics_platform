@@ -5,10 +5,10 @@ class AreaRepository {
   Future<String> CreateArea({required AreaModel area}) async {
     try {
       await supabase.from('areas').insert({'name': area.name});
-      return "Thêm dữ liệu thành công";
+      return "Data added successfully";
     } catch (e) {
       print(e);
-      return "Thêm dữ liệu thất bại ${e}";
+      return "Failed to add data: $e";
     }
   }
 
@@ -16,7 +16,9 @@ class AreaRepository {
     try {
       final res = await supabase.from('areas').select();
 
-      final List<AreaModel> data = res.map((e) => AreaModel.fromMap(e)).toList();
+      final List<AreaModel> data = res
+          .map((e) => AreaModel.fromMap(e))
+          .toList();
       return data;
     } catch (e, st) {
       return [];
@@ -26,9 +28,9 @@ class AreaRepository {
   Future<String> deleteArea({required String id}) async {
     try {
       var a = await supabase.from('areas').delete().eq('id', id);
-      return "Xoá khu vực thành công";
+      return "Area deleted successfully";
     } catch (e) {
-      return "Xóa thất bại";
+      return "Delete failed";
     }
   }
 }

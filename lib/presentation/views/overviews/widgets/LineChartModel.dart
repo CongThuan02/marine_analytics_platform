@@ -6,7 +6,7 @@ class LineChartExample extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Dữ liệu nhiều hơn 10 điểm để scroll
+    // More than 10 data points for scrolling
     final List<Map<String, dynamic>> data = [
       {'day': 'Mon', 'value': 30},
       {'day': 'Tue', 'value': 40},
@@ -34,7 +34,10 @@ class LineChartExample extends StatelessWidget {
           enableSideBySideSeriesPlacement: true,
           title: ChartTitle(text: 'Weekly Values'),
           tooltipBehavior: TooltipBehavior(enable: true),
-          primaryXAxis: CategoryAxis(initialVisibleMaximum: 5, autoScrollingMode: AutoScrollingMode.start),
+          primaryXAxis: CategoryAxis(
+            initialVisibleMaximum: 5,
+            autoScrollingMode: AutoScrollingMode.start,
+          ),
           primaryYAxis: NumericAxis(),
           series: <LineSeries<Map<String, dynamic>, String>>[
             LineSeries<Map<String, dynamic>, String>(
@@ -46,8 +49,8 @@ class LineChartExample extends StatelessWidget {
             ),
           ],
           zoomPanBehavior: ZoomPanBehavior(
-            enablePanning: true, // Scroll ngang
-            zoomMode: ZoomMode.x, // Chỉ scroll trục X
+            enablePanning: true, // Horizontal scroll
+            zoomMode: ZoomMode.x, // Only scroll X axis
           ),
         ),
       ),

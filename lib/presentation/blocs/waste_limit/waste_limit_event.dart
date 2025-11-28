@@ -8,37 +8,22 @@ abstract class WasteLimitEvent extends Equatable {
 }
 
 class LoadWasteLimits extends WasteLimitEvent {
-  final String? areaId;
-
-  const LoadWasteLimits({this.areaId});
-
-  @override
-  List<Object?> get props => [areaId];
+  const LoadWasteLimits();
 }
 
-class CreateWasteLimit extends WasteLimitEvent {
-  final WasteLimitModel limit;
+class CreateWasteLimitEvent extends WasteLimitEvent {
+  final WasteLimit limit;
 
-  const CreateWasteLimit(this.limit);
+  const CreateWasteLimitEvent(this.limit);
 
   @override
   List<Object> get props => [limit];
 }
 
-class UpdateWasteLimit extends WasteLimitEvent {
-  final String id;
-  final WasteLimitModel limit;
-
-  const UpdateWasteLimit(this.id, this.limit);
-
-  @override
-  List<Object> get props => [id, limit];
-}
-
-class DeleteWasteLimit extends WasteLimitEvent {
+class DeleteWasteLimitEvent extends WasteLimitEvent {
   final String id;
 
-  const DeleteWasteLimit(this.id);
+  const DeleteWasteLimitEvent(this.id);
 
   @override
   List<Object> get props => [id];

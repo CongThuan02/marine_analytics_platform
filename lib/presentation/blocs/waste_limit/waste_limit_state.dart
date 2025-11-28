@@ -12,7 +12,7 @@ class WasteLimitInitial extends WasteLimitState {}
 class WasteLimitLoading extends WasteLimitState {}
 
 class WasteLimitLoaded extends WasteLimitState {
-  final List<WasteLimitModel> limits;
+  final List<WasteLimit> limits;
 
   const WasteLimitLoaded(this.limits);
 

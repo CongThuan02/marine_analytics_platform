@@ -9,7 +9,7 @@ class OverviewDay extends StatelessWidget {
   Widget build(BuildContext context) {
     return const StatsOverviewTab(
       period: StatsPeriod.day,
-      emptyMessage: 'Chưa có dữ liệu chất thải cho ngày này.',
+      emptyMessage: 'No waste data for this day.',
     );
   }
 }

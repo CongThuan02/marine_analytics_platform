@@ -10,12 +10,16 @@ class LoginFailure implements Exception {
 }
 
 class AuthRepository {
-  Future<String> signIn({required String email, required String password}) async {
+  Future<String> signIn({
+    required String email,
+    required String password,
+  }) async {
     final trimmedEmail = email.trim();
     final trimmedPassword = password.trim();
 
-    if (trimmedEmail.isEmpty) throw const LoginFailure('Vui lòng nhập email.');
-    if (trimmedPassword.isEmpty) throw const LoginFailure('Vui lòng nhập mật khẩu.');
+    if (trimmedEmail.isEmpty) throw const LoginFailure('Please enter email.');
+    if (trimmedPassword.isEmpty)
+      throw const LoginFailure('Please enter password.');
 
     try {
       final response = await supabase.auth.signInWithPassword(
@@ -24,14 +28,14 @@ class AuthRepository {
       );
 
       if (response.session == null) {
-        throw const LoginFailure('Không thể tạo phiên đăng nhập.');
+        throw const LoginFailure('Unable to create login session.');
       }
 
-      return 'Đăng nhập thành công.';
+      return 'Login successful.';
     } on AuthException catch (e) {
       throw LoginFailure(e.message);
     } catch (e) {
-      throw LoginFailure('Không thể đăng nhập: $e');
+      throw LoginFailure('Unable to login: $e');
     }
   }
 
@@ -39,4 +43,3 @@ class AuthRepository {
     await supabase.auth.signOut();
   }
 }
-

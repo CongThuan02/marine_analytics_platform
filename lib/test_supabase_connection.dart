@@ -1,22 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:marine_analytics_platform/global.dart';
 
-/// Trang test kết nối Supabase
+/// Test page for Supabase connection
 class TestSupabaseConnectionPage extends StatefulWidget {
   const TestSupabaseConnectionPage({super.key});
 
   @override
-  State<TestSupabaseConnectionPage> createState() => _TestSupabaseConnectionPageState();
+  State<TestSupabaseConnectionPage> createState() =>
+      _TestSupabaseConnectionPageState();
 }
 
-class _TestSupabaseConnectionPageState extends State<TestSupabaseConnectionPage> {
-  String _result = 'Chưa test';
+class _TestSupabaseConnectionPageState
+    extends State<TestSupabaseConnectionPage> {
+  String _result = 'Not tested yet';
   bool _isLoading = false;
 
   Future<void> _testConnection() async {
     setState(() {
       _isLoading = true;
-      _result = 'Đang test...';
+      _result = 'Testing...';
     });
 
     try {
@@ -30,11 +32,17 @@ class _TestSupabaseConnectionPageState extends State<TestSupabaseConnectionPage>
       print('🏢 Areas: ${areasResponse.length} records');
 
       // Test 3: Query waste_types
-      final wasteTypesResponse = await supabase.from('waste_types').select().limit(5);
+      final wasteTypesResponse = await supabase
+          .from('waste_types')
+          .select()
+          .limit(5);
       print('🗑️ Waste types: ${wasteTypesResponse.length} records');
 
       // Test 4: Query waste_limits
-      final limitsResponse = await supabase.from('waste_limits').select().limit(5);
+      final limitsResponse = await supabase
+          .from('waste_limits')
+          .select()
+          .limit(5);
       print('⚠️ Waste limits: ${limitsResponse.length} records');
 
       // Test 5: Query alerts
@@ -50,8 +58,9 @@ class _TestSupabaseConnectionPageState extends State<TestSupabaseConnectionPage>
       print('   Data: $alertsJoinResponse');
 
       setState(() {
-        _result = '''
-✅ Kết nối thành công!
+        _result =
+            '''
+✅ Connection successful!
 
 User: ${user?.email ?? 'Not logged in'}
 Areas: ${areasResponse.length}
@@ -60,14 +69,14 @@ Waste Limits: ${limitsResponse.length}
 Alerts: ${alertsResponse.length}
 Alerts (join): ${alertsJoinResponse.length}
 
-Chi tiết xem trong console logs.
+See details in console logs.
         ''';
       });
     } catch (e, stackTrace) {
       print('❌ Error: $e');
       print('   Stack: $stackTrace');
       setState(() {
-        _result = '❌ Lỗi:\n$e';
+        _result = '❌ Error:\n$e';
       });
     } finally {
       setState(() => _isLoading = false);
@@ -77,9 +86,7 @@ Chi tiết xem trong console logs.
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Test Supabase Connection'),
-      ),
+      appBar: AppBar(title: const Text('Test Supabase Connection')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(

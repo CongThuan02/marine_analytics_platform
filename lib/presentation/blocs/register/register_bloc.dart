@@ -23,7 +23,7 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
     } on RegisterException catch (e) {
       emit(state.copyWith(status: Status.fail, message: e.message));
     } catch (e) {
-      emit(state.copyWith(status: Status.fail, message: 'Đăng ký thất bại: $e'));
+      emit(state.copyWith(status: Status.fail, message: 'Registration failed: $e'));
     }
   }
 }

@@ -61,7 +61,7 @@ class CreateWasteType extends StatelessWidget {
                 onPressed: () {
                   bloc.add(CreateWasteTypeEvent());
                 },
-                child: Center(child: Text("Lưu")),
+                child: Center(child: Text("Save")),
               ),
               SizedBox(height: MediaQuery.of(context).viewInsets.bottom),
             ],

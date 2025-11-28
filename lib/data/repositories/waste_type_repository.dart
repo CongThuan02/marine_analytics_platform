@@ -4,10 +4,13 @@ import 'package:marine_analytics_platform/global.dart';
 class WasteTypeRepository {
   Future<String> createWasteType({required WasteTypeModel wasteType}) async {
     try {
-      await supabase.from('waste_types').insert({'name': wasteType.name, 'unit': wasteType.unit});
-      return "Thêm dữ liệu thành công";
+      await supabase.from('waste_types').insert({
+        'name': wasteType.name,
+        'unit': wasteType.unit,
+      });
+      return "Data added successfully";
     } catch (e) {
-      return "Thêm dữ liệu thất bại ${e}";
+      return "Failed to add data: $e";
     }
   }
 
@@ -15,7 +18,9 @@ class WasteTypeRepository {
     try {
       final res = await supabase.from('waste_types').select();
       if (res != []) {
-        List<WasteTypeModel> data = res.map((e) => WasteTypeModel.fromMap(e)).toList();
+        List<WasteTypeModel> data = res
+            .map((e) => WasteTypeModel.fromMap(e))
+            .toList();
         return data;
       }
     } catch (e) {
@@ -27,9 +32,9 @@ class WasteTypeRepository {
   Future<String> deleteWasteType({required String id}) async {
     try {
       await supabase.from('waste_types').delete().eq('id', id);
-      return "Xoá phòng ban thành công";
+      return "Waste type deleted successfully";
     } catch (e) {
-      return "Xóa thất bại";
+      return "Delete failed";
     }
   }
 }

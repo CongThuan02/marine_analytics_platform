@@ -23,7 +23,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     } on LoginFailure catch (e) {
       emit(state.copyWith(status: Status.fail, message: e.message));
     } catch (e) {
-      emit(state.copyWith(status: Status.fail, message: 'Đăng nhập thất bại: $e'));
+      emit(state.copyWith(status: Status.fail, message: 'Login failed: $e'));
     }
   }
 }

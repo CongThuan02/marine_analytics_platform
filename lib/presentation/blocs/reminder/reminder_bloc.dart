@@ -1,22 +1,31 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:marine_analytics_platform/data/models/reminder_model.dart';
-import 'package:marine_analytics_platform/data/repositories/reminder_repository.dart';
+import 'package:marine_analytics_platform/domain/entities/reminder.dart';
+import 'package:marine_analytics_platform/domain/usecases/reminder/create_reminder.dart';
+import 'package:marine_analytics_platform/domain/usecases/reminder/delete_reminder.dart';
+import 'package:marine_analytics_platform/domain/usecases/reminder/get_all_reminders.dart';
+import 'package:marine_analytics_platform/domain/usecases/reminder/toggle_reminder.dart';
+import 'package:marine_analytics_platform/domain/usecases/usecase.dart';
 
 part 'reminder_event.dart';
 part 'reminder_state.dart';
 
 class ReminderBloc extends Bloc<ReminderEvent, ReminderState> {
-  final ReminderRepository _repository;
+  final GetAllReminders getAllReminders;
+  final CreateReminder createReminder;
+  final DeleteReminder deleteReminder;
+  final ToggleReminder toggleReminder;
 
-  ReminderBloc({ReminderRepository? repository})
-      : _repository = repository ?? ReminderRepository(),
-        super(ReminderInitial()) {
+  ReminderBloc({
+    required this.getAllReminders,
+    required this.createReminder,
+    required this.deleteReminder,
+    required this.toggleReminder,
+  }) : super(ReminderInitial()) {
     on<LoadReminders>(_onLoadReminders);
-    on<CreateReminder>(_onCreateReminder);
-    on<UpdateReminder>(_onUpdateReminder);
-    on<ToggleReminder>(_onToggleReminder);
-    on<DeleteReminder>(_onDeleteReminder);
+    on<CreateReminderEvent>(_onCreateReminder);
+    on<ToggleReminderEvent>(_onToggleReminder);
+    on<DeleteReminderEvent>(_onDeleteReminder);
   }
 
   Future<void> _onLoadReminders(
@@ -24,61 +33,45 @@ class ReminderBloc extends Bloc<ReminderEvent, ReminderState> {
     Emitter<ReminderState> emit,
   ) async {
     emit(ReminderLoading());
-    try {
-      final reminders = event.departmentId != null
-          ? await _repository.fetchByDepartment(event.departmentId!)
-          : await _repository.fetchAll();
-      emit(ReminderLoaded(reminders));
-    } catch (e) {
-      emit(ReminderError(e.toString()));
-    }
+    final result = await getAllReminders(NoParams());
+    result.fold(
+      (failure) => emit(ReminderError(failure.message)),
+      (reminders) => emit(ReminderLoaded(reminders)),
+    );
   }
 
   Future<void> _onCreateReminder(
-    CreateReminder event,
+    CreateReminderEvent event,
     Emitter<ReminderState> emit,
   ) async {
-    try {
-      await _repository.create(event.reminder);
-      add(LoadReminders());
-    } catch (e) {
-      emit(ReminderError(e.toString()));
-    }
-  }
-
-  Future<void> _onUpdateReminder(
-    UpdateReminder event,
-    Emitter<ReminderState> emit,
-  ) async {
-    try {
-      await _repository.update(event.id, event.reminder);
-      add(LoadReminders());
-    } catch (e) {
-      emit(ReminderError(e.toString()));
-    }
+    final result = await createReminder(CreateReminderParams(event.reminder));
+    result.fold(
+      (failure) => emit(ReminderError(failure.message)),
+      (_) => add(LoadReminders()),
+    );
   }
 
   Future<void> _onToggleReminder(
-    ToggleReminder event,
+    ToggleReminderEvent event,
     Emitter<ReminderState> emit,
   ) async {
-    try {
-      await _repository.toggleEnabled(event.id, event.enabled);
-      add(LoadReminders());
-    } catch (e) {
-      emit(ReminderError(e.toString()));
-    }
+    final result = await toggleReminder(
+      ToggleReminderParams(event.id, event.enabled),
+    );
+    result.fold(
+      (failure) => emit(ReminderError(failure.message)),
+      (_) => add(LoadReminders()),
+    );
   }
 
   Future<void> _onDeleteReminder(
-    DeleteReminder event,
+    DeleteReminderEvent event,
     Emitter<ReminderState> emit,
   ) async {
-    try {
-      await _repository.delete(event.id);
-      add(LoadReminders());
-    } catch (e) {
-      emit(ReminderError(e.toString()));
-    }
+    final result = await deleteReminder(DeleteReminderParams(event.id));
+    result.fold(
+      (failure) => emit(ReminderError(failure.message)),
+      (_) => add(LoadReminders()),
+    );
   }
 }

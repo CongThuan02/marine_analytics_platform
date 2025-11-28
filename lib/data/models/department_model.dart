@@ -1,57 +1,41 @@
-import 'package:equatable/equatable.dart';
 import 'package:marine_analytics_platform/data/models/area_model.dart';
+import 'package:marine_analytics_platform/domain/entities/department.dart';
 
-class DepartmentModel extends Equatable {
-  final String? id;
-  final String? name;
-  final String? areaId;
-  final String? createdAt;
-  final AreaModel? areaModel;
+class DepartmentModel extends Department {
+  const DepartmentModel({
+    required super.id,
+    required super.name,
+    required super.areaId,
+    required super.createdAt,
+    super.area,
+  });
 
-  const DepartmentModel({this.id, this.name, this.areaId, this.createdAt, this.areaModel});
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is DepartmentModel &&
-          runtimeType == other.runtimeType &&
-          id == other.id &&
-          name == other.name &&
-          areaId == other.areaId &&
-          createdAt == other.createdAt);
-
-  @override
-  int get hashCode => id.hashCode ^ name.hashCode ^ areaId.hashCode ^ createdAt.hashCode;
-
-  @override
-  String toString() {
-    return 'DepartmentModel{' + ' id: $id,' + ' name: $name,' + ' areaId: $areaId,' + ' createdAt: $createdAt,' + '}';
-  }
-
-  DepartmentModel copyWith({String? id, String? name, String? areaId, String? createdAt, AreaModel? areaModel}) {
+  factory DepartmentModel.fromMap(Map<String, dynamic> map) {
     return DepartmentModel(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      areaId: areaId ?? this.areaId,
-      createdAt: createdAt ?? this.createdAt,
-      areaModel: areaModel ?? this.areaModel,
+      id: map['id'] as String? ?? '',
+      name: map['name'] as String? ?? '',
+      areaId: map['area_id'] as String? ?? '',
+      createdAt: map['created_at'] != null
+          ? DateTime.parse(map['created_at'] as String)
+          : DateTime.now(),
+      area: map['areas'] != null ? AreaModel.fromMap(map['areas']) : null,
     );
   }
 
   Map<String, dynamic> toMap() {
-    return {'id': id, 'name': name, 'area_id': areaId, 'created_at': createdAt};
+    return {
+      'name': name,
+      'area_id': areaId,
+    };
   }
 
-  factory DepartmentModel.fromMap(Map<String, dynamic> map) {
+  factory DepartmentModel.fromEntity(Department entity) {
     return DepartmentModel(
-      id: map['id'],
-      name: map['name'],
-      areaId: map['area_id'],
-      createdAt: map['created_at'],
-      areaModel: map['areas'] != null ? AreaModel.fromMap(map['areas']) : null,
+      id: entity.id,
+      name: entity.name,
+      areaId: entity.areaId,
+      createdAt: entity.createdAt,
+      area: entity.area,
     );
   }
-
-  @override
-  List<Object?> get props => [id, name, areaId, createdAt];
 }

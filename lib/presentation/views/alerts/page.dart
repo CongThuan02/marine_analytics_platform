@@ -2,17 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:marine_analytics_platform/core/constants/app_strings.dart';
+import 'package:marine_analytics_platform/core/di/injection_container.dart';
 import 'package:marine_analytics_platform/core/theme/app_theme.dart';
 import 'package:marine_analytics_platform/data/models/alert_model.dart';
 import 'package:marine_analytics_platform/presentation/blocs/alert/alert_bloc.dart';
 import 'package:marine_analytics_platform/presentation/views/alerts/widgets/alert_card.dart';
+
+import '../../../domain/entities/alert.dart';
 
 class AlertsPage extends StatelessWidget {
   const AlertsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(create: (context) => AlertBloc()..add(LoadAlerts()), child: const _AlertsView());
+    return BlocProvider(create: (context) => sl<AlertBloc>()..add(const LoadAlerts()), child: const _AlertsView());
   }
 }
 
@@ -117,7 +120,7 @@ class _AlertsView extends StatelessWidget {
                     child: ListView.separated(
                       padding: const EdgeInsets.all(16),
                       itemCount: state.alerts.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 12),
+                      separatorBuilder: (_, _) => const SizedBox(height: 12),
                       itemBuilder: (context, index) {
                         return AlertCard(alert: state.alerts[index]);
                       },
@@ -134,7 +137,7 @@ class _AlertsView extends StatelessWidget {
     );
   }
 
-  Widget _buildSummarySection(List<AlertModel> alerts) {
+  Widget _buildSummarySection(List<Alert> alerts) {
     final total = alerts.length;
     final critical = alerts.where((a) => a.level == AlertLevel.critical).length;
     final warning = alerts.where((a) => a.level == AlertLevel.warning).length;
@@ -213,9 +216,9 @@ class _AlertsView extends StatelessWidget {
           TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text(AppStrings.cancel)),
           ElevatedButton(
             onPressed: () {
-              context.read<AlertBloc>().add(DeleteOldAlerts());
+              // TODO: Implement DeleteOldAlerts use case
               Navigator.pop(dialogContext);
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Old alerts deleted')));
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Feature coming soon')));
             },
             child: const Text(AppStrings.delete),
           ),

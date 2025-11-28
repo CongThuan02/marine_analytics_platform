@@ -1,26 +1,15 @@
-import 'package:equatable/equatable.dart';
+import 'package:marine_analytics_platform/domain/entities/reminder.dart';
 
-class ReminderModel extends Equatable {
-  final String id;
-  final String departmentId;
-  final String timeOfDay; // HH:mm:ss
-  final String frequency; // 'daily' or 'weekly'
-  final String? message;
-  final bool enabled;
-  final DateTime createdAt;
-  
-  // Joined data
-  final String? departmentName;
-
+class ReminderModel extends Reminder {
   const ReminderModel({
-    required this.id,
-    required this.departmentId,
-    required this.timeOfDay,
-    required this.frequency,
-    this.message,
-    required this.enabled,
-    required this.createdAt,
-    this.departmentName,
+    required super.id,
+    required super.departmentId,
+    required super.timeOfDay,
+    required super.frequency,
+    super.message,
+    required super.enabled,
+    required super.createdAt,
+    super.departmentName,
   });
 
   factory ReminderModel.fromJson(Map<String, dynamic> json) {
@@ -46,37 +35,16 @@ class ReminderModel extends Equatable {
     };
   }
 
-  ReminderModel copyWith({
-    String? id,
-    String? departmentId,
-    String? timeOfDay,
-    String? frequency,
-    String? message,
-    bool? enabled,
-    DateTime? createdAt,
-    String? departmentName,
-  }) {
+  factory ReminderModel.fromEntity(Reminder entity) {
     return ReminderModel(
-      id: id ?? this.id,
-      departmentId: departmentId ?? this.departmentId,
-      timeOfDay: timeOfDay ?? this.timeOfDay,
-      frequency: frequency ?? this.frequency,
-      message: message ?? this.message,
-      enabled: enabled ?? this.enabled,
-      createdAt: createdAt ?? this.createdAt,
-      departmentName: departmentName ?? this.departmentName,
+      id: entity.id,
+      departmentId: entity.departmentId,
+      timeOfDay: entity.timeOfDay,
+      frequency: entity.frequency,
+      message: entity.message,
+      enabled: entity.enabled,
+      createdAt: entity.createdAt,
+      departmentName: entity.departmentName,
     );
   }
-
-  @override
-  List<Object?> get props => [
-        id,
-        departmentId,
-        timeOfDay,
-        frequency,
-        message,
-        enabled,
-        createdAt,
-        departmentName,
-      ];
 }
