@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:loader_overlay/loader_overlay.dart';
+import 'package:marine_analytics_platform/core/di/injection_container.dart'
+    as di;
 import 'package:marine_analytics_platform/core/services/fcm_service.dart';
 import 'package:marine_analytics_platform/core/theme/app_theme.dart';
 import 'package:marine_analytics_platform/routes/app_router.dart';
@@ -28,7 +30,8 @@ class DeepLinkService with WidgetsBindingObserver {
 
   Future<void> _getInitialLink() async {
     try {
-      final uriString = WidgetsBinding.instance.platformDispatcher.defaultRouteName;
+      final uriString =
+          WidgetsBinding.instance.platformDispatcher.defaultRouteName;
       if (uriString != "/") {
         final uri = Uri.parse(uriString);
         lastLink = uriString;
@@ -42,7 +45,8 @@ class DeepLinkService with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     try {
-      final uriString = WidgetsBinding.instance.platformDispatcher.defaultRouteName;
+      final uriString =
+          WidgetsBinding.instance.platformDispatcher.defaultRouteName;
       if (uriString != lastLink && uriString != "/") {
         final uri = Uri.parse(uriString);
         lastLink = uriString;
@@ -52,20 +56,20 @@ class DeepLinkService with WidgetsBindingObserver {
   }
 }
 
-/// Khởi tạo deep link và lắng nghe
+/// Initialize deep link and listen
 Future<void> initDeepLinks() async {
   final deepLinkService = DeepLinkService();
   await deepLinkService.init();
 
   deepLinkService.stream.listen((uri) async {
-    await _handleDeepLink(uri); // 💥 chạy async, tránh block main thread
+    await _handleDeepLink(uri); // 💥 run async, avoid blocking main thread
   });
 }
 
-/// Xử lý deep link
+/// Handle deep link
 Future<void> _handleDeepLink(Uri uri) async {
   if (uri.pathSegments.contains('ship')) {
-    // Delay 0 để không block main thread
+    // Delay 0 to avoid blocking main thread
     await Future.delayed(Duration.zero);
     appRouter.go('/intro');
   }
@@ -73,6 +77,9 @@ Future<void> _handleDeepLink(Uri uri) async {
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // 🔹 Init Dependency Injection
+  await di.init();
 
   // 🔹 Init Supabase
   await Supabase.initialize(
@@ -88,7 +95,7 @@ Future<void> main() async {
   await Firebase.initializeApp();
 
   // 🔹 Init FCM (Firebase Cloud Messaging)
-  // Chỉ init nếu user đã đăng nhập
+  // Only init if user is logged in
   if (supabase.auth.currentSession != null) {
     try {
       await FCMService().initialize();

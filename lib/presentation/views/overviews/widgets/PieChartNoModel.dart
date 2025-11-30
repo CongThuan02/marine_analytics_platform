@@ -6,7 +6,7 @@
 
 //   @override
 //   Widget build(BuildContext context) {
-//     // Dữ liệu trực tiếp dưới dạng List<Map>
+//     // Direct data as List<Map>
 //     final List<Map<String, dynamic>> data = [
 //       {'category': 'Food', 'value': 40},
 //       {'category': 'Transport', 'value': 25},
@@ -30,7 +30,7 @@
 //             xValueMapper: (datum, _) => datum['category'] as String,
 //             yValueMapper: (datum, _) => double.parse('${datum['value']}'),
 //             dataLabelSettings: const DataLabelSettings(isVisible: true,labelPosition: .outside),
-//             explode: true, // Tách miếng khi click
+//             explode: true, // Explode slice when clicked
 //             explodeIndex: 0,
 //           ),
 //         ],

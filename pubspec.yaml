@@ -51,6 +51,7 @@ dependencies:
   top_snackbar_flutter: ^3.3.0
   overlay_loader_with_app_icon: ^0.0.4
   loader_overlay: ^5.0.0
+  dartz: ^0.10.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -61,6 +62,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.13.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

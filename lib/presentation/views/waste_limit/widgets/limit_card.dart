@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:marine_analytics_platform/core/theme/app_theme.dart';
-import 'package:marine_analytics_platform/data/models/waste_limit_model.dart';
+import 'package:marine_analytics_platform/domain/entities/waste_limit.dart';
 import 'package:marine_analytics_platform/presentation/blocs/waste_limit/waste_limit_bloc.dart';
 
 class LimitCard extends StatelessWidget {
-  final WasteLimitModel limit;
+  final WasteLimit limit;
 
   const LimitCard({super.key, required this.limit});
 
@@ -38,7 +38,7 @@ class LimitCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        limit.areaName ?? 'Khu vực không xác định',
+                        limit.areaName ?? 'Area not specified',
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -46,7 +46,7 @@ class LimitCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        limit.wasteTypeName ?? 'Loại chất thải không xác định',
+                        limit.wasteTypeName ?? 'Waste type not specified',
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.grey.shade600,
@@ -67,7 +67,7 @@ class LimitCard extends StatelessWidget {
                 Expanded(
                   child: _InfoItem(
                     icon: Icons.trending_up,
-                    label: 'Hạn mức hàng ngày',
+                    label: 'Daily limit',
                     value: '${limit.dailyLimit} ${limit.wasteTypeUnit ?? 'kg'}',
                   ),
                 ),
@@ -83,22 +83,24 @@ class LimitCard extends StatelessWidget {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Xác nhận xóa'),
-        content: const Text('Bạn có chắc muốn xóa hạn mức này?'),
+        title: const Text('Confirm Delete'),
+        content: const Text('Are you sure you want to delete this limit?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Hủy'),
+            child: const Text('Cancel'),
           ),
           TextButton(
             onPressed: () {
-              context.read<WasteLimitBloc>().add(DeleteWasteLimit(limit.id));
-              Navigator.pop(dialogContext);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Đã xóa hạn mức')),
+              context.read<WasteLimitBloc>().add(
+                DeleteWasteLimitEvent(limit.id),
               );
+              Navigator.pop(dialogContext);
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(const SnackBar(content: Text('Limit deleted')));
             },
-            child: const Text('Xóa', style: TextStyle(color: Colors.red)),
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),

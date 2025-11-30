@@ -9,7 +9,7 @@ class OverviewMoth extends StatelessWidget {
   Widget build(BuildContext context) {
     return const StatsOverviewTab(
       period: StatsPeriod.month,
-      emptyMessage: 'Chưa có dữ liệu chất thải cho tháng này.',
+      emptyMessage: 'No waste data for this month.',
     );
   }
 }

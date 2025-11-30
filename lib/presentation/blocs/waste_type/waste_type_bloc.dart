@@ -4,8 +4,6 @@ import 'package:marine_analytics_platform/core/constants/enum_status.dart';
 import 'package:marine_analytics_platform/data/models/waste_type_model.dart';
 import 'package:marine_analytics_platform/data/repositories/waste_type_repository.dart';
 
-import '../../../data/models/waste_type_model.dart';
-
 part 'waste_type_event.dart';
 part 'waste_type_state.dart';
 
@@ -15,7 +13,15 @@ class WasteTypeBloc extends Bloc<WasteTypeEvent, WasteTypeState> {
     on<CreateWasteTypeEvent>((event, emit) async {
       emit(state.copyWith(status: Status.loading));
       var res = await _repository.createWasteType(wasteType: state.wasteTypeModel!);
-      emit(state.copyWith(status: Status.success, message: res, wasteTypeModel: WasteTypeModel()));
+      emit(state.copyWith(
+          status: Status.success,
+          message: res,
+          wasteTypeModel: WasteTypeModel(
+            id: '',
+            name: '',
+            unit: '',
+            createdAt: DateTime.now(),
+          )));
     });
     on<UpdateFieldWasteTypeEvent>((event, emit) {
       final data = state.wasteTypeModel?.toMap();

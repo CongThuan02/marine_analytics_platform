@@ -1,50 +1,37 @@
-import 'package:equatable/equatable.dart';
+import 'package:marine_analytics_platform/domain/entities/waste_type.dart';
 
-class WasteTypeModel extends Equatable {
-  final String? id;
-  final String? name;
-  final String? unit;
-  final String? createAt;
+class WasteTypeModel extends WasteType {
+  const WasteTypeModel({
+    required super.id,
+    required super.name,
+    required super.unit,
+    required super.createdAt,
+  });
 
-  //<editor-fold desc="Data Methods">
-  const WasteTypeModel({this.id = "", this.name = "", this.unit = "", this.createAt = ""});
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is WasteTypeModel &&
-          runtimeType == other.runtimeType &&
-          id == other.id &&
-          name == other.name &&
-          unit == other.unit &&
-          createAt == other.createAt);
-
-  @override
-  int get hashCode => id.hashCode ^ name.hashCode ^ unit.hashCode ^ createAt.hashCode;
-
-  @override
-  String toString() {
-    return 'WasteType{' + ' id: $id,' + ' name: $name,' + ' unit: $unit,' + ' createAt: $createAt,' + '}';
-  }
-
-  WasteTypeModel copyWith({String? id, String? name, String? unit, String? createAt}) {
+  factory WasteTypeModel.fromMap(Map<String, dynamic> map) {
     return WasteTypeModel(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      unit: unit ?? this.unit,
-      createAt: createAt ?? this.createAt,
+      id: map['id'] as String? ?? '',
+      name: map['name'] as String? ?? '',
+      unit: map['unit'] as String? ?? '',
+      createdAt: map['created_at'] != null 
+          ? DateTime.parse(map['created_at'] as String)
+          : DateTime.now(),
     );
   }
 
   Map<String, dynamic> toMap() {
-    return {'id': id, 'name': name, 'unit': unit, 'created_at': createAt};
+    return {
+      'name': name,
+      'unit': unit,
+    };
   }
 
-  factory WasteTypeModel.fromMap(Map<String, dynamic> map) {
-    return WasteTypeModel(id: map['id'], name: map['name'], unit: map['unit'], createAt: map['created_at']);
+  factory WasteTypeModel.fromEntity(WasteType entity) {
+    return WasteTypeModel(
+      id: entity.id,
+      name: entity.name,
+      unit: entity.unit,
+      createdAt: entity.createdAt,
+    );
   }
-
-  //</editor-fold>
-  @override
-  List<Object?> get props => [id, name, unit, createAt];
 }

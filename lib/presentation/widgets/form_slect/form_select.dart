@@ -32,22 +32,22 @@ class FormSelect extends StatelessWidget {
 
   List<Map<String, dynamic>> _buildItems(FormSelectState state) {
     return [
-      {valueKey: 'chon', lableKey: 'Chọn'},
+      {valueKey: 'select', lableKey: 'Select'},
       ...state.items,
       ...?iniItems,
     ];
   }
 
   String _resolveLabel(List<Map<String, dynamic>> items, String? selectedValue) {
-    if (selectedValue == null) return 'Chọn';
+    if (selectedValue == null) return 'Select';
     final match = items.firstWhere(
       (item) => item[valueKey]?.toString() == selectedValue,
-      orElse: () => {lableKey: 'Chọn'},
+      orElse: () => {lableKey: 'Select'},
     );
     if (itemLabelBuilder != null) {
       return itemLabelBuilder!(match);
     }
-    return match[lableKey]?.toString() ?? 'Chọn';
+    return match[lableKey]?.toString() ?? 'Select';
   }
 
   @override
@@ -108,7 +108,7 @@ class FormSelect extends StatelessWidget {
                 );
 
                 if (selected != null) {
-                  final value = selected[valueKey]?.toString() ?? 'chon';
+                  final value = selected[valueKey]?.toString() ?? 'select';
                   bloc.add(UpdateFiledFormEvent(value));
                   onChange?.call(value);
                   field.didChange(value);

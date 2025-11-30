@@ -23,32 +23,31 @@ class WasteEntryRepository {
           .order('date', ascending: false)
           .order('created_at', ascending: false);
 
-      return (response as List<dynamic>).map((item) => WasteEntryModel.fromMap(item as Map<String, dynamic>)).toList();
+      return (response as List<dynamic>)
+          .map((item) => WasteEntryModel.fromMap(item as Map<String, dynamic>))
+          .toList();
     } catch (e) {
-      throw Exception('Không thể tải lịch sử chất thải: $e');
+      throw Exception('Unable to load waste history: $e');
     }
   }
 
   Future<String> createWasteEntry({required WasteEntryModel entry}) async {
     final userId = supabase.auth.currentUser?.id;
     if (userId == null) {
-      throw Exception('Bạn chưa đăng nhập.');
+      throw Exception('You are not logged in.');
     }
 
-    if (entry.areaId == null || entry.areaId!.isEmpty) {
-      throw Exception('Vui lòng chọn khu vực.');
+    if (entry.areaId.isEmpty) {
+      throw Exception('Please select an area.');
     }
-    if (entry.departmentId == null || entry.departmentId!.isEmpty) {
-      throw Exception('Vui lòng chọn phòng ban.');
+    if (entry.departmentId.isEmpty) {
+      throw Exception('Please select a department.');
     }
-    if (entry.wasteTypeId == null || entry.wasteTypeId!.isEmpty) {
-      throw Exception('Vui lòng chọn loại chất thải.');
+    if (entry.wasteTypeId.isEmpty) {
+      throw Exception('Please select a waste type.');
     }
-    if (entry.quantity == null || entry.quantity! <= 0) {
-      throw Exception('Số lượng phải lớn hơn 0.');
-    }
-    if (entry.date == null) {
-      throw Exception('Vui lòng chọn ngày ghi nhận.');
+    if (entry.quantity <= 0) {
+      throw Exception('Quantity must be greater than 0.');
     }
 
     String formatDate(DateTime date) {
@@ -64,16 +63,16 @@ class WasteEntryRepository {
       'area_id': entry.areaId,
       'waste_type_id': entry.wasteTypeId,
       'quantity': entry.quantity,
-      'date': formatDate(entry.date!),
+      'date': formatDate(entry.date),
       'qr_code': (entry.qrCode?.isNotEmpty ?? false) ? entry.qrCode : null,
     };
 
     try {
       await supabase.from('waste_entries').insert(payload);
-      return 'Ghi nhận chất thải thành công.';
+      return 'Waste recorded successfully.';
     } catch (e) {
       print(e);
-      throw Exception('Không thể lưu dữ liệu: $e');
+      throw Exception('Unable to save data: $e');
     }
   }
 }

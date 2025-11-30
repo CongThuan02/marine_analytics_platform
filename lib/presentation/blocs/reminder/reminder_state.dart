@@ -12,7 +12,7 @@ class ReminderInitial extends ReminderState {}
 class ReminderLoading extends ReminderState {}
 
 class ReminderLoaded extends ReminderState {
-  final List<ReminderModel> reminders;
+  final List<Reminder> reminders;
 
   const ReminderLoaded(this.reminders);
 

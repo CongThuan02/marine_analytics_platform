@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:marine_analytics_platform/core/di/injection_container.dart';
 import 'package:marine_analytics_platform/core/theme/app_theme.dart';
 import 'package:marine_analytics_platform/presentation/blocs/waste_limit/waste_limit_bloc.dart';
 import 'package:marine_analytics_platform/presentation/views/waste_limit/widgets/create_limit_bottom_sheet.dart';
@@ -11,7 +12,7 @@ class WasteLimitPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => WasteLimitBloc()..add(const LoadWasteLimits()),
+      create: (context) => sl<WasteLimitBloc>()..add(const LoadWasteLimits()),
       child: const _WasteLimitView(),
     );
   }
@@ -24,7 +25,7 @@ class _WasteLimitView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Quản lý Hạn mức'),
+        title: const Text('Manage Limits'),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -45,19 +46,25 @@ class _WasteLimitView extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.error_outline, size: 64, color: Colors.red.shade300),
+                  Icon(
+                    Icons.error_outline,
+                    size: 64,
+                    color: Colors.red.shade300,
+                  ),
                   const SizedBox(height: 16),
                   Text(
-                    'Lỗi: ${state.message}',
+                    'Error: ${state.message}',
                     style: TextStyle(color: Colors.red.shade700),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () {
-                      context.read<WasteLimitBloc>().add(const LoadWasteLimits());
+                      context.read<WasteLimitBloc>().add(
+                        const LoadWasteLimits(),
+                      );
                     },
-                    child: const Text('Thử lại'),
+                    child: const Text('Retry'),
                   ),
                 ],
               ),
@@ -70,11 +77,24 @@ class _WasteLimitView extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.warning_amber_rounded, size: 80, color: AppTheme.primaryGreenLight),
+                    Icon(
+                      Icons.warning_amber_rounded,
+                      size: 80,
+                      color: AppTheme.primaryGreenLight,
+                    ),
                     const SizedBox(height: 16),
-                    const Text('Chưa có hạn mức nào', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
+                    const Text(
+                      'No limits yet',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                     const SizedBox(height: 8),
-                    Text('Nhấn nút + để thêm hạn mức mới', style: TextStyle(color: Colors.grey.shade600)),
+                    Text(
+                      'Press + button to add a new limit',
+                      style: TextStyle(color: Colors.grey.shade600),
+                    ),
                   ],
                 ),
               );
@@ -106,7 +126,9 @@ class _WasteLimitView extends StatelessWidget {
             builder: (bottomSheetContext) => BlocProvider.value(
               value: context.read<WasteLimitBloc>(),
               child: Padding(
-                padding: EdgeInsets.only(bottom: MediaQuery.of(bottomSheetContext).viewInsets.bottom),
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(bottomSheetContext).viewInsets.bottom,
+                ),
                 child: const CreateLimitBottomSheet(),
               ),
             ),

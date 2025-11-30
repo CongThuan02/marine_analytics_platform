@@ -6,12 +6,18 @@ class DepartmentState extends Equatable {
   final Status? status;
   final DepartmentModel departmentModel;
 
-  const DepartmentState({
+  DepartmentState({
     this.message,
     this.items,
     this.status,
-    this.departmentModel = const DepartmentModel(name: "", areaId: ""),
-  });
+    DepartmentModel? departmentModel,
+  }) : departmentModel = departmentModel ??
+            DepartmentModel(
+              id: '',
+              name: '',
+              areaId: '',
+              createdAt: DateTime.now(),
+            );
 
   DepartmentState copyWith({
     final String? message,

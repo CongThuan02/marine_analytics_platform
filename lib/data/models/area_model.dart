@@ -1,25 +1,33 @@
-import 'package:equatable/equatable.dart';
+import 'package:marine_analytics_platform/domain/entities/area.dart';
 
-class AreaModel extends Equatable {
-  final String? id;
-  final String? name;
-  final String? createAt;
+class AreaModel extends Area {
+  const AreaModel({
+    required super.id,
+    required super.name,
+    required super.createdAt,
+  });
 
-  const AreaModel({this.id, this.name, this.createAt});
-
-  AreaModel copyWith({String? id, String? name, String? createAt}) {
-    return AreaModel(id: id ?? this.id, name: name ?? this.name, createAt: createAt ?? this.createAt);
+  factory AreaModel.fromMap(Map<String, dynamic> map) {
+    return AreaModel(
+      id: map['id'] as String? ?? '',
+      name: map['name'] as String? ?? '',
+      createdAt: map['created_at'] != null
+          ? DateTime.parse(map['created_at'] as String)
+          : DateTime.now(),
+    );
   }
 
   Map<String, dynamic> toMap() {
-    return {'id': id, 'name': name, 'create_at': createAt};
+    return {
+      'name': name,
+    };
   }
 
-  factory AreaModel.fromMap(Map<String, dynamic> map) {
-    return AreaModel(id: map['id'], name: map['name'], createAt: map['created_at']);
+  factory AreaModel.fromEntity(Area entity) {
+    return AreaModel(
+      id: entity.id,
+      name: entity.name,
+      createdAt: entity.createdAt,
+    );
   }
-
-  @override
-  // TODO: implement props
-  List<Object?> get props => [id, name, createAt];
 }

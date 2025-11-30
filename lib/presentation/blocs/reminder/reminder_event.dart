@@ -8,47 +8,32 @@ abstract class ReminderEvent extends Equatable {
 }
 
 class LoadReminders extends ReminderEvent {
-  final String? departmentId;
-
-  const LoadReminders({this.departmentId});
-
-  @override
-  List<Object?> get props => [departmentId];
+  const LoadReminders();
 }
 
-class CreateReminder extends ReminderEvent {
-  final ReminderModel reminder;
+class CreateReminderEvent extends ReminderEvent {
+  final Reminder reminder;
 
-  const CreateReminder(this.reminder);
+  const CreateReminderEvent(this.reminder);
 
   @override
   List<Object> get props => [reminder];
 }
 
-class UpdateReminder extends ReminderEvent {
-  final String id;
-  final ReminderModel reminder;
-
-  const UpdateReminder(this.id, this.reminder);
-
-  @override
-  List<Object> get props => [id, reminder];
-}
-
-class ToggleReminder extends ReminderEvent {
+class ToggleReminderEvent extends ReminderEvent {
   final String id;
   final bool enabled;
 
-  const ToggleReminder(this.id, this.enabled);
+  const ToggleReminderEvent(this.id, this.enabled);
 
   @override
   List<Object> get props => [id, enabled];
 }
 
-class DeleteReminder extends ReminderEvent {
+class DeleteReminderEvent extends ReminderEvent {
   final String id;
 
-  const DeleteReminder(this.id);
+  const DeleteReminderEvent(this.id);
 
   @override
   List<Object> get props => [id];

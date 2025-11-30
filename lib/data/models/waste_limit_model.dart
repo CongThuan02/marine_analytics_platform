@@ -1,26 +1,15 @@
-import 'package:equatable/equatable.dart';
+import 'package:marine_analytics_platform/domain/entities/waste_limit.dart';
 
-class WasteLimitModel extends Equatable {
-  final String id;
-  final String areaId;
-  final String wasteTypeId;
-  final double dailyLimit;
-  final DateTime createdAt;
-  
-  // Joined data
-  final String? areaName;
-  final String? wasteTypeName;
-  final String? wasteTypeUnit;
-
+class WasteLimitModel extends WasteLimit {
   const WasteLimitModel({
-    required this.id,
-    required this.areaId,
-    required this.wasteTypeId,
-    required this.dailyLimit,
-    required this.createdAt,
-    this.areaName,
-    this.wasteTypeName,
-    this.wasteTypeUnit,
+    required super.id,
+    required super.areaId,
+    required super.wasteTypeId,
+    required super.dailyLimit,
+    required super.createdAt,
+    super.areaName,
+    super.wasteTypeName,
+    super.wasteTypeUnit,
   });
 
   factory WasteLimitModel.fromJson(Map<String, dynamic> json) {
@@ -44,15 +33,16 @@ class WasteLimitModel extends Equatable {
     };
   }
 
-  @override
-  List<Object?> get props => [
-        id,
-        areaId,
-        wasteTypeId,
-        dailyLimit,
-        createdAt,
-        areaName,
-        wasteTypeName,
-        wasteTypeUnit,
-      ];
+  factory WasteLimitModel.fromEntity(WasteLimit entity) {
+    return WasteLimitModel(
+      id: entity.id,
+      areaId: entity.areaId,
+      wasteTypeId: entity.wasteTypeId,
+      dailyLimit: entity.dailyLimit,
+      createdAt: entity.createdAt,
+      areaName: entity.areaName,
+      wasteTypeName: entity.wasteTypeName,
+      wasteTypeUnit: entity.wasteTypeUnit,
+    );
+  }
 }

@@ -7,19 +7,6 @@ abstract class AlertEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class LoadAlerts extends AlertEvent {}
-
-class LoadTodayAlerts extends AlertEvent {}
-
-class CheckAndCreateAlerts extends AlertEvent {}
-
-class DeleteAlert extends AlertEvent {
-  final String id;
-
-  const DeleteAlert(this.id);
-
-  @override
-  List<Object> get props => [id];
+class LoadAlerts extends AlertEvent {
+  const LoadAlerts();
 }
-
-class DeleteOldAlerts extends AlertEvent {}

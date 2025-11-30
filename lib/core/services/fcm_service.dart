@@ -2,7 +2,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:marine_analytics_platform/global.dart';
 
-/// Service quản lý Firebase Cloud Messaging
+/// Service to manage Firebase Cloud Messaging
 class FCMService {
   static final FCMService _instance = FCMService._internal();
   factory FCMService() => _instance;
@@ -15,7 +15,7 @@ class FCMService {
   String? _fcmToken;
   String? get fcmToken => _fcmToken;
 
-  /// Khởi tạo FCM
+  /// Initialize FCM
   Future<void> initialize() async {
     // Request permission
     final settings = await _messaging.requestPermission(
@@ -69,7 +69,9 @@ class FCMService {
   /// Setup local notifications
   Future<void> _setupLocalNotifications() async {
     try {
-      const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+      const androidSettings = AndroidInitializationSettings(
+        '@mipmap/ic_launcher',
+      );
       const iosSettings = DarwinInitializationSettings(
         requestAlertPermission: true,
         requestBadgePermission: true,
@@ -91,21 +93,22 @@ class FCMService {
       // Create notification channel for Android
       const androidChannel = AndroidNotificationChannel(
         'alerts_channel',
-        'Cảnh báo Hạn mức',
-        description: 'Thông báo khi vượt hạn mức chất thải',
+        'Limit Alerts',
+        description: 'Notifications when waste limit is exceeded',
         importance: Importance.high,
         playSound: true,
       );
 
       await _localNotifications
           .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin>()
+            AndroidFlutterLocalNotificationsPlugin
+          >()
           ?.createNotificationChannel(androidChannel);
-      
+
       print('✅ Local notifications initialized');
     } catch (e) {
       print('⚠️ Error initializing local notifications: $e');
-      // Không fail initialization nếu local notifications lỗi
+      // Don't fail initialization if local notifications error
     }
   }
 
@@ -115,9 +118,9 @@ class FCMService {
     print('   Body: ${message.notification?.body}');
     print('   Data: ${message.data}');
 
-    // Khi app ở foreground, FCM không tự động hiển thị notification
-    // Có thể hiển thị dialog, snackbar, hoặc local notification
-    // Tạm thời chỉ log, notification sẽ hiển thị khi app ở background
+    // When app is in foreground, FCM doesn't automatically show notification
+    // Can show dialog, snackbar, or local notification
+    // For now just log, notification will show when app is in background
   }
 
   /// Show local notification
@@ -129,15 +132,14 @@ class FCMService {
         return;
       }
 
-      // Đơn giản hóa - không dùng local notification, chỉ log
+      // Simplify - don't use local notification, just log
       print('📬 Notification received:');
       print('   Title: ${notification.title}');
       print('   Body: ${notification.body}');
       print('   Data: ${message.data}');
-      
-      // FCM sẽ tự động hiển thị notification khi app ở background
-      // Khi app ở foreground, có thể hiển thị dialog hoặc snackbar thay vì notification
-      
+
+      // FCM will automatically show notification when app is in background
+      // When app is in foreground, can show dialog or snackbar instead of notification
     } catch (e) {
       print('❌ Error handling notification: $e');
     }
@@ -156,14 +158,14 @@ class FCMService {
       final userId = supabase.auth.currentUser?.id;
       if (userId == null) return;
 
-      // Lưu token vào bảng user_fcm_tokens với upsert
+      // Save token to user_fcm_tokens table with upsert
       await supabase.from('user_fcm_tokens').upsert(
         {
           'user_id': userId,
           'token': token,
           'updated_at': DateTime.now().toIso8601String(),
         },
-        onConflict: 'user_id,token', // Chỉ định unique constraint
+        onConflict: 'user_id,token', // Specify unique constraint
       );
 
       print('✅ FCM token saved to database');

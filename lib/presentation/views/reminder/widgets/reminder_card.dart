@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:marine_analytics_platform/core/theme/app_theme.dart';
-import 'package:marine_analytics_platform/data/models/reminder_model.dart';
+import 'package:marine_analytics_platform/domain/entities/reminder.dart';
 import 'package:marine_analytics_platform/presentation/blocs/reminder/reminder_bloc.dart';
 
 class ReminderCard extends StatelessWidget {
-  final ReminderModel reminder;
+  final Reminder reminder;
 
   const ReminderCard({super.key, required this.reminder});
 
@@ -30,7 +30,9 @@ class ReminderCard extends StatelessWidget {
                   ),
                   child: Icon(
                     Icons.notifications_active,
-                    color: reminder.enabled ? AppTheme.primaryGreen : Colors.grey,
+                    color: reminder.enabled
+                        ? AppTheme.primaryGreen
+                        : Colors.grey,
                     size: 24,
                   ),
                 ),
@@ -40,7 +42,7 @@ class ReminderCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        reminder.departmentName ?? 'Phòng ban không xác định',
+                        reminder.departmentName ?? 'Department not specified',
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -48,7 +50,7 @@ class ReminderCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        reminder.frequency == 'daily' ? 'Hàng ngày' : 'Hàng tuần',
+                        reminder.frequency == 'daily' ? 'Daily' : 'Weekly',
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.grey.shade600,
@@ -60,11 +62,11 @@ class ReminderCard extends StatelessWidget {
                 Switch(
                   value: reminder.enabled,
                   onChanged: (value) {
-                    context
-                        .read<ReminderBloc>()
-                        .add(ToggleReminder(reminder.id, value));
+                    context.read<ReminderBloc>().add(
+                      ToggleReminderEvent(reminder.id, value),
+                    );
                   },
-                  activeColor: AppTheme.primaryGreen,
+                  activeThumbColor: AppTheme.primaryGreen,
                 ),
                 IconButton(
                   icon: const Icon(Icons.delete_outline, color: Colors.red),
@@ -75,10 +77,14 @@ class ReminderCard extends StatelessWidget {
             const Divider(height: 24),
             Row(
               children: [
-                const Icon(Icons.access_time, size: 20, color: AppTheme.primaryGreen),
+                const Icon(
+                  Icons.access_time,
+                  size: 20,
+                  color: AppTheme.primaryGreen,
+                ),
                 const SizedBox(width: 8),
                 Text(
-                  'Thời gian: ${_formatTime(reminder.timeOfDay)}',
+                  'Time: ${_formatTime(reminder.timeOfDay)}',
                   style: const TextStyle(fontSize: 14),
                 ),
               ],
@@ -88,7 +94,11 @@ class ReminderCard extends StatelessWidget {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(Icons.message, size: 20, color: AppTheme.primaryGreen),
+                  const Icon(
+                    Icons.message,
+                    size: 20,
+                    color: AppTheme.primaryGreen,
+                  ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -118,22 +128,24 @@ class ReminderCard extends StatelessWidget {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Xác nhận xóa'),
-        content: const Text('Bạn có chắc muốn xóa nhắc nhở này?'),
+        title: const Text('Confirm Delete'),
+        content: const Text('Are you sure you want to delete this reminder?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Hủy'),
+            child: const Text('Cancel'),
           ),
           TextButton(
             onPressed: () {
-              context.read<ReminderBloc>().add(DeleteReminder(reminder.id));
-              Navigator.pop(dialogContext);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Đã xóa nhắc nhở')),
+              context.read<ReminderBloc>().add(
+                DeleteReminderEvent(reminder.id),
               );
+              Navigator.pop(dialogContext);
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(const SnackBar(content: Text('Reminder deleted')));
             },
-            child: const Text('Xóa', style: TextStyle(color: Colors.red)),
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),

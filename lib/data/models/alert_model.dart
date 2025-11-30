@@ -1,32 +1,18 @@
-import 'package:equatable/equatable.dart';
+import 'package:marine_analytics_platform/domain/entities/alert.dart';
 
-class AlertModel extends Equatable {
-  final String id;
-  final String areaId;
-  final String wasteTypeId;
-  final double totalToday;
-  final double limitValue;
-  final double percent;
-  final String? message;
-  final DateTime createdAt;
-  
-  // Joined data
-  final String? areaName;
-  final String? wasteTypeName;
-  final String? wasteTypeUnit;
-
+class AlertModel extends Alert {
   const AlertModel({
-    required this.id,
-    required this.areaId,
-    required this.wasteTypeId,
-    required this.totalToday,
-    required this.limitValue,
-    required this.percent,
-    this.message,
-    required this.createdAt,
-    this.areaName,
-    this.wasteTypeName,
-    this.wasteTypeUnit,
+    required super.id,
+    required super.areaId,
+    required super.wasteTypeId,
+    required super.totalToday,
+    required super.limitValue,
+    required super.percent,
+    super.message,
+    required super.createdAt,
+    super.areaName,
+    super.wasteTypeName,
+    super.wasteTypeUnit,
   });
 
   factory AlertModel.fromJson(Map<String, dynamic> json) {
@@ -44,31 +30,4 @@ class AlertModel extends Equatable {
       wasteTypeUnit: json['waste_types']?['unit'] as String?,
     );
   }
-
-  AlertLevel get level {
-    if (percent >= 100) return AlertLevel.critical;
-    if (percent >= 80) return AlertLevel.warning;
-    return AlertLevel.info;
-  }
-
-  @override
-  List<Object?> get props => [
-        id,
-        areaId,
-        wasteTypeId,
-        totalToday,
-        limitValue,
-        percent,
-        message,
-        createdAt,
-        areaName,
-        wasteTypeName,
-        wasteTypeUnit,
-      ];
-}
-
-enum AlertLevel {
-  info,
-  warning,
-  critical,
 }

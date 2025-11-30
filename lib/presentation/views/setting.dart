@@ -9,7 +9,7 @@ class SettingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Cài đặt"), centerTitle: true),
+      appBar: AppBar(title: const Text("Settings"), centerTitle: true),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -18,63 +18,63 @@ class SettingsPage extends StatelessWidget {
           const SizedBox(height: 24),
 
           // Management section
-          _buildSectionTitle('Quản lý hệ thống'),
+          _buildSectionTitle('System Management'),
           const SizedBox(height: 12),
           _buildSettingCard(
             context,
             icon: Icons.location_on,
-            title: 'Quản lý khu vực',
-            subtitle: 'Thêm, sửa, xóa khu vực',
+            title: 'Manage Areas',
+            subtitle: 'Add, edit, delete areas',
             onTap: () => context.pushNamed('/create/area'),
           ),
           const SizedBox(height: 8),
           _buildSettingCard(
             context,
             icon: Icons.business,
-            title: 'Quản lý phòng ban',
-            subtitle: 'Thêm, sửa, xóa phòng ban',
+            title: 'Manage Departments',
+            subtitle: 'Add, edit, delete departments',
             onTap: () => context.pushNamed('/department'),
           ),
           const SizedBox(height: 8),
           _buildSettingCard(
             context,
             icon: Icons.delete_outline,
-            title: 'Quản lý loại chất thải',
-            subtitle: 'Thêm, sửa, xóa loại chất thải',
+            title: 'Manage Waste Types',
+            subtitle: 'Add, edit, delete waste types',
             onTap: () => context.pushNamed('/wasteType'),
           ),
           const SizedBox(height: 24),
 
           // Monitoring section
-          _buildSectionTitle('Giám sát & Cảnh báo'),
+          _buildSectionTitle('Monitoring & Alerts'),
           const SizedBox(height: 12),
           _buildSettingCard(
             context,
             icon: Icons.notification_important,
-            title: 'Cảnh báo hạn mức',
-            subtitle: 'Xem cảnh báo vượt ngưỡng',
+            title: 'Limit Alerts',
+            subtitle: 'View threshold alerts',
             onTap: () => context.pushNamed('/alerts'),
           ),
           const SizedBox(height: 8),
           _buildSettingCard(
             context,
             icon: Icons.speed,
-            title: 'Quản lý hạn mức',
-            subtitle: 'Đặt ngưỡng cảnh báo chất thải',
+            title: 'Manage Limits',
+            subtitle: 'Set waste alert thresholds',
             onTap: () => context.pushNamed('/wasteLimit'),
           ),
           const SizedBox(height: 8),
           _buildSettingCard(
             context,
             icon: Icons.notifications_active,
-            title: 'Quản lý nhắc nhở',
-            subtitle: 'Cấu hình nhắc nhở nhập liệu',
+            title: 'Manage Reminders',
+            subtitle: 'Configure data entry reminders',
             onTap: () => context.pushNamed('/reminder'),
           ),
           const SizedBox(height: 24),
 
           // Account section
-          _buildSectionTitle('Tài khoản'),
+          _buildSectionTitle('Account'),
           const SizedBox(height: 12),
           _buildLogoutButton(context),
         ],
@@ -89,18 +89,27 @@ class SettingsPage extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppTheme.primaryGreen.withOpacity(0.1), AppTheme.primaryGreenLight.withOpacity(0.05)],
+          colors: [
+            AppTheme.primaryGreen.withOpacity(0.1),
+            AppTheme.primaryGreenLight.withOpacity(0.05),
+          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppTheme.primaryGreen.withOpacity(0.3), width: 1),
+        border: Border.all(
+          color: AppTheme.primaryGreen.withOpacity(0.3),
+          width: 1,
+        ),
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(color: AppTheme.primaryGreen, borderRadius: BorderRadius.circular(12)),
+            decoration: BoxDecoration(
+              color: AppTheme.primaryGreen,
+              borderRadius: BorderRadius.circular(12),
+            ),
             child: const Icon(Icons.person, color: Colors.white, size: 32),
           ),
           const SizedBox(width: 16),
@@ -108,9 +117,18 @@ class SettingsPage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(user?.email ?? 'Người dùng', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                Text(
+                  user?.email ?? 'User',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 const SizedBox(height: 4),
-                Text('Đã đăng nhập', style: TextStyle(fontSize: 14, color: Colors.grey.shade600)),
+                Text(
+                  'Logged in',
+                  style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+                ),
               ],
             ),
           ),
@@ -122,7 +140,11 @@ class SettingsPage extends StatelessWidget {
   Widget _buildSectionTitle(String title) {
     return Text(
       title,
-      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.primaryGreen),
+      style: const TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.bold,
+        color: AppTheme.primaryGreen,
+      ),
     );
   }
 
@@ -159,9 +181,21 @@ class SettingsPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                     const SizedBox(height: 4),
-                    Text(subtitle, style: TextStyle(fontSize: 13, color: Colors.grey.shade600)),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -190,7 +224,10 @@ class SettingsPage extends StatelessWidget {
             children: [
               Container(
                 padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(color: Colors.red.shade100, borderRadius: BorderRadius.circular(10)),
+                decoration: BoxDecoration(
+                  color: Colors.red.shade100,
+                  borderRadius: BorderRadius.circular(10),
+                ),
                 child: Icon(Icons.logout, color: Colors.red.shade700, size: 24),
               ),
               const SizedBox(width: 16),
@@ -199,11 +236,21 @@ class SettingsPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Đăng xuất',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.red.shade700),
+                      'Logout',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.red.shade700,
+                      ),
                     ),
                     const SizedBox(height: 4),
-                    Text('Thoát khỏi tài khoản hiện tại', style: TextStyle(fontSize: 13, color: Colors.red.shade600)),
+                    Text(
+                      'Sign out from current account',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.red.shade600,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -223,19 +270,28 @@ class SettingsPage extends StatelessWidget {
           children: [
             Icon(Icons.logout, color: Colors.red),
             SizedBox(width: 12),
-            Text('Xác nhận đăng xuất'),
+            Text('Confirm Logout'),
           ],
         ),
-        content: const Text('Bạn có chắc chắn muốn đăng xuất khỏi tài khoản?', style: TextStyle(fontSize: 16)),
+        content: const Text(
+          'Are you sure you want to logout?',
+          style: TextStyle(fontSize: 16),
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Hủy')),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Cancel'),
+          ),
           ElevatedButton(
             onPressed: () async {
               Navigator.pop(dialogContext);
               await _logout(context);
             },
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
-            child: const Text('Đăng xuất'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Logout'),
           ),
         ],
       ),
@@ -266,9 +322,12 @@ class SettingsPage extends StatelessWidget {
 
       // Show success message
       if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Đã đăng xuất thành công'), backgroundColor: AppTheme.success));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Logged out successfully'),
+            backgroundColor: AppTheme.success,
+          ),
+        );
       }
     } catch (e) {
       // Close loading dialog
@@ -278,9 +337,12 @@ class SettingsPage extends StatelessWidget {
 
       // Show error
       if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Lỗi đăng xuất: $e'), backgroundColor: Colors.red));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Sign out error: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
       }
     }
   }

@@ -13,7 +13,7 @@ class FormSelectBloc extends Bloc<FormSelectEvent, FormSelectState> {
       emit(state.copyWith(status: Status.loading));
       final res = await _formSelectRepository.getAllItems(tableName: event.tableName);
 
-      emit(state.copyWith(status: Status.loaded, items: res, selected: state.selected ?? "chon"));
+      emit(state.copyWith(status: Status.loaded, items: res, selected: state.selected ?? "select"));
     });
     on<UpdateFiledFormEvent>((event, emit) {
       emit(state.copyWith(items: state.items, status: Status.loaded, selected: event.value!));
