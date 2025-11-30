@@ -13,6 +13,7 @@ import 'package:marine_analytics_platform/presentation/views/login/page.dart';
 import 'package:marine_analytics_platform/presentation/views/register/page.dart';
 import 'package:marine_analytics_platform/presentation/views/reminder/page.dart';
 import 'package:marine_analytics_platform/presentation/views/setting.dart';
+import 'package:marine_analytics_platform/presentation/views/splash_screen.dart';
 import 'package:marine_analytics_platform/presentation/views/waste_limit/page.dart';
 import 'package:marine_analytics_platform/presentation/views/waste_type/page.dart';
 
@@ -25,6 +26,11 @@ final appRouter = GoRouter(
     print('🔹 Path Parameters: ${state.pathParameters}');
     print('🔹 Query Parameters: ${state.uri.queryParameters}');
     print('---');
+
+    // Allow splash screen
+    if (state.matchedLocation == '/splash') {
+      return null;
+    }
 
     final currentSession = supabase.auth.currentSession;
     final isLoggingIn = state.matchedLocation == '/login';
@@ -43,8 +49,9 @@ final appRouter = GoRouter(
 
     return null;
   },
-  initialLocation: '/',
+  initialLocation: '/splash',
   routes: [
+    GoRoute(path: '/splash', builder: (context, state) => const SplashScreen()),
     GoRoute(path: '/intro', builder: (context, state) => IntroView()),
     GoRoute(
       path: '/department',
