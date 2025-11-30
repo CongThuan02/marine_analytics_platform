@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:marine_analytics_platform/core/constants/enum_status.dart';
+import 'package:marine_analytics_platform/core/services/excel_export_service.dart';
 import 'package:marine_analytics_platform/core/theme/app_theme.dart';
 import 'package:marine_analytics_platform/data/models/waste_entry_model.dart';
 import 'package:marine_analytics_platform/global.dart';
@@ -67,6 +68,10 @@ class _HistoryViewState extends State<_HistoryView> {
             IconButton(
               icon: const Icon(Icons.filter_list),
               onPressed: () => _showDateRangePicker(context),
+            ),
+            IconButton(
+              icon: const Icon(Icons.file_download),
+              onPressed: () => _showExportDialog(context),
             ),
           ],
         ),
@@ -259,6 +264,164 @@ class _HistoryViewState extends State<_HistoryView> {
         _selectedDateRange = picked;
       });
     }
+  }
+
+  void _showExportDialog(BuildContext context) {
+    final state = context.read<WasteEntryBloc>().state;
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Row(
+          children: [
+            Icon(Icons.file_download, color: AppTheme.primaryGreen),
+            SizedBox(width: 12),
+            Text('Export to Excel'),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Select export period:'),
+            const SizedBox(height: 16),
+            _ExportPeriodButton(
+              label: 'Today',
+              icon: Icons.today,
+              onTap: () {
+                Navigator.pop(dialogContext);
+                _exportData(context, 'daily', DateTime.now(), DateTime.now());
+              },
+            ),
+            _ExportPeriodButton(
+              label: 'This Week',
+              icon: Icons.date_range,
+              onTap: () {
+                Navigator.pop(dialogContext);
+                _exportData(context, 'weekly', _getWeekStart(), DateTime.now());
+              },
+            ),
+            _ExportPeriodButton(
+              label: 'This Month',
+              icon: Icons.calendar_month,
+              onTap: () {
+                Navigator.pop(dialogContext);
+                _exportData(
+                  context,
+                  'monthly',
+                  _getMonthStart(),
+                  DateTime.now(),
+                );
+              },
+            ),
+            _ExportPeriodButton(
+              label: 'This Year',
+              icon: Icons.calendar_today,
+              onTap: () {
+                Navigator.pop(dialogContext);
+                _exportData(context, 'yearly', _getYearStart(), DateTime.now());
+              },
+            ),
+            _ExportPeriodButton(
+              label: 'Custom Range',
+              icon: Icons.date_range_outlined,
+              onTap: () {
+                Navigator.pop(dialogContext);
+                _exportCustomRange(context);
+              },
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Cancel'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _exportData(
+    BuildContext context,
+    String period,
+    DateTime startDate,
+    DateTime endDate,
+  ) async {
+    try {
+      if (!context.mounted) return;
+      context.loaderOverlay.show();
+
+      final state = context.read<WasteEntryBloc>().state;
+      final entries = state.entries.where((entry) {
+        if (entry.date == null) return false;
+        return entry.date!.isAfter(
+              startDate.subtract(const Duration(days: 1)),
+            ) &&
+            entry.date!.isBefore(endDate.add(const Duration(days: 1)));
+      }).toList();
+
+      if (entries.isEmpty) {
+        throw Exception('No data found for selected period');
+      }
+
+      await ExcelExportService().exportToExcel(
+        entries: entries,
+        period: period,
+        startDate: startDate,
+        endDate: endDate,
+      );
+
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Excel file exported successfully'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error exporting: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (context.mounted) {
+        context.loaderOverlay.hide();
+      }
+    }
+  }
+
+  Future<void> _exportCustomRange(BuildContext context) async {
+    final DateTimeRange? picked = await showDateRangePicker(
+      context: context,
+      firstDate: DateTime(2020),
+      lastDate: DateTime.now(),
+      initialDateRange: _selectedDateRange,
+    );
+
+    if (picked != null && context.mounted) {
+      await _exportData(context, 'custom', picked.start, picked.end);
+    }
+  }
+
+  DateTime _getWeekStart() {
+    final now = DateTime.now();
+    return now.subtract(Duration(days: now.weekday - 1));
+  }
+
+  DateTime _getMonthStart() {
+    final now = DateTime.now();
+    return DateTime(now.year, now.month, 1);
+  }
+
+  DateTime _getYearStart() {
+    final now = DateTime.now();
+    return DateTime(now.year, 1, 1);
   }
 
   String _formatDateShort(DateTime date) {
@@ -459,6 +622,42 @@ class _InfoRow extends StatelessWidget {
             child: Text(value, style: Theme.of(context).textTheme.bodyMedium),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _ExportPeriodButton extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final VoidCallback onTap;
+
+  const _ExportPeriodButton({
+    required this.label,
+    required this.icon,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        margin: const EdgeInsets.only(bottom: 8),
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey.shade300),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: AppTheme.primaryGreen),
+            const SizedBox(width: 16),
+            Text(label, style: const TextStyle(fontSize: 16)),
+            const Spacer(),
+            const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+          ],
+        ),
       ),
     );
   }

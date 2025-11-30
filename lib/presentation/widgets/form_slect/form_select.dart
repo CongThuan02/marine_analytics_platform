@@ -33,11 +33,25 @@ class FormSelect extends StatelessWidget {
   });
 
   List<Map<String, dynamic>> _buildItems(FormSelectState state) {
-    return [
+    final allItems = [
       {valueKey: 'select', lableKey: 'Select'},
       ...state.items,
       ...?iniItems,
     ];
+
+    // Remove duplicates based on valueKey (id)
+    final seen = <String>{};
+    final uniqueItems = <Map<String, dynamic>>[];
+
+    for (final item in allItems) {
+      final id = item[valueKey]?.toString();
+      if (id != null && !seen.contains(id)) {
+        seen.add(id);
+        uniqueItems.add(item);
+      }
+    }
+
+    return uniqueItems;
   }
 
   String _resolveLabel(

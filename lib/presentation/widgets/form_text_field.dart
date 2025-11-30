@@ -55,33 +55,30 @@ class _FormTextFieldState extends State<FormTextField> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: TextField(
-                controller: controller,
-                obscureText: hidePassword,
-                autofocus: widget.autofocus,
-                onChanged: (value) {
-                  field.didChange(value);
-                  widget.onChanged?.call(value);
-                },
-                decoration: InputDecoration(
-                  border: InputBorder.none,
-                  hintText: widget.hintText,
-                  labelText: widget.label,
-                  suffixIcon: widget.isPassword
-                      ? IconButton(
-                          onPressed: () {
-                            setState(() => hidePassword = !hidePassword);
-                          },
-                          icon: Icon(
-                            hidePassword
-                                ? Icons.visibility_off
-                                : Icons.visibility,
-                          ),
-                        )
-                      : widget.suffixIcon,
-                ),
+            TextField(
+              controller: controller,
+              obscureText: hidePassword,
+              autofocus: widget.autofocus,
+              onChanged: (value) {
+                field.didChange(value);
+                widget.onChanged?.call(value);
+              },
+              decoration: InputDecoration(
+                border: InputBorder.none,
+                hintText: widget.hintText,
+                labelText: widget.label,
+                suffixIcon: widget.isPassword
+                    ? IconButton(
+                        onPressed: () {
+                          setState(() => hidePassword = !hidePassword);
+                        },
+                        icon: Icon(
+                          hidePassword
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                        ),
+                      )
+                    : widget.suffixIcon,
               ),
             ),
 

@@ -75,22 +75,31 @@ Future<void> _handleDeepLink(Uri uri) async {
   print('   Host: ${uri.host}');
   print('   Path: ${uri.path}');
 
+  // Wait for app to be ready (after splash screen)
+  await Future.delayed(const Duration(milliseconds: 500));
+
+  // Check if user is logged in
+  final session = supabase.auth.currentSession;
+  if (session == null) {
+    print('⚠️ User not logged in, cannot navigate via deep link');
+    return;
+  }
+
   // Handle different deep link routes
   if (uri.host == 'ships' || uri.pathSegments.contains('ships')) {
     // Navigate to history/ships page
-    await Future.delayed(Duration.zero);
     appRouter.go('/ships');
     print('✅ Navigated to /ships');
   } else if (uri.host == 'alerts' || uri.pathSegments.contains('alerts')) {
     // Navigate to alerts page
-    await Future.delayed(Duration.zero);
     appRouter.go('/alerts');
     print('✅ Navigated to /alerts');
   } else if (uri.host == 'home' || uri.path == '/') {
     // Navigate to home page
-    await Future.delayed(Duration.zero);
     appRouter.go('/');
     print('✅ Navigated to home');
+  } else {
+    print('⚠️ Unknown deep link route: ${uri.host}');
   }
 }
 

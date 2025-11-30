@@ -83,6 +83,14 @@ class _EditWasteEntrySheetState extends State<EditWasteEntrySheet> {
                 label: 'Area',
                 tableName: 'areas',
                 initialValue: widget.entry.areaId,
+                iniItems: widget.entry.areaName != null
+                    ? [
+                        {
+                          'id': widget.entry.areaId,
+                          'name': widget.entry.areaName,
+                        },
+                      ]
+                    : null,
                 validators: [
                   (value) {
                     if (value == null || value == 'select') {
@@ -97,6 +105,14 @@ class _EditWasteEntrySheetState extends State<EditWasteEntrySheet> {
                 label: 'Department',
                 tableName: 'departments',
                 initialValue: widget.entry.departmentId,
+                iniItems: widget.entry.departmentName != null
+                    ? [
+                        {
+                          'id': widget.entry.departmentId,
+                          'name': widget.entry.departmentName,
+                        },
+                      ]
+                    : null,
                 validators: [
                   (value) {
                     if (value == null || value == 'select') {
@@ -111,6 +127,15 @@ class _EditWasteEntrySheetState extends State<EditWasteEntrySheet> {
                 label: 'Waste Type',
                 tableName: 'waste_types',
                 initialValue: widget.entry.wasteTypeId,
+                iniItems: widget.entry.wasteTypeName != null
+                    ? [
+                        {
+                          'id': widget.entry.wasteTypeId,
+                          'name': widget.entry.wasteTypeName,
+                          'unit': widget.entry.wasteTypeUnit,
+                        },
+                      ]
+                    : null,
                 itemLabelBuilder: (item) {
                   final name = item['name']?.toString() ?? 'Select';
                   final unit = item['unit']?.toString();
