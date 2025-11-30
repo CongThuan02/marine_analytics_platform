@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:marine_analytics_platform/core/constants/enum_status.dart';
 import 'package:marine_analytics_platform/core/theme/app_theme.dart';
+import 'package:marine_analytics_platform/global.dart';
 import 'package:marine_analytics_platform/presentation/blocs/department/department_bloc.dart';
 import 'package:marine_analytics_platform/presentation/views/department/widget/create.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
@@ -21,7 +22,7 @@ class DepartmentPage extends StatelessWidget {
 }
 
 class _DepartmentPage extends StatelessWidget {
-  const _DepartmentPage({super.key});
+  const _DepartmentPage();
 
   @override
   Widget build(BuildContext context) {
@@ -34,8 +35,8 @@ class _DepartmentPage extends StatelessWidget {
             Overlay.of(context),
             CustomSnackBar.success(message: "Success"),
           );
+          // Reload list after any success action (create or delete)
           bloc.add(GetDepartmentEvent());
-          context.pop();
         }
       },
       child: Scaffold(
@@ -160,6 +161,19 @@ class _DepartmentPage extends StatelessWidget {
                             ),
                             IconButton(
                               icon: const Icon(
+                                Icons.edit_outlined,
+                                color: AppTheme.primaryGreen,
+                              ),
+                              onPressed: () => _showEditDialog(
+                                context,
+                                bloc,
+                                item.id ?? '',
+                                item.name ?? "",
+                                item.areaId ?? "",
+                              ),
+                            ),
+                            IconButton(
+                              icon: const Icon(
                                 Icons.delete_outline,
                                 color: Colors.red,
                               ),
@@ -195,6 +209,66 @@ class _DepartmentPage extends StatelessWidget {
           child: const Icon(Icons.add),
         ),
       ),
+    );
+  }
+
+  void _showEditDialog(
+    BuildContext context,
+    DepartmentBloc bloc,
+    String id,
+    String currentName,
+    String currentAreaId,
+  ) {
+    final TextEditingController controller = TextEditingController(
+      text: currentName,
+    );
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Row(
+            children: [
+              Icon(Icons.edit, color: AppTheme.primaryGreen),
+              SizedBox(width: 12),
+              Text('Edit Department'),
+            ],
+          ),
+          content: TextField(
+            controller: controller,
+            autofocus: true,
+            decoration: const InputDecoration(
+              labelText: 'Department Name',
+              border: OutlineInputBorder(),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                final newName = controller.text.trim();
+                if (newName.isEmpty) return;
+
+                await supabase
+                    .from('departments')
+                    .update({'name': newName})
+                    .eq('id', id);
+
+                bloc.add(GetDepartmentEvent());
+                Navigator.pop(dialogContext);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.primaryGreen,
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Update'),
+            ),
+          ],
+        );
+      },
     );
   }
 

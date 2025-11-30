@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:marine_analytics_platform/core/theme/app_theme.dart';
 import 'package:marine_analytics_platform/global.dart';
 
 /// Test page to create alerts manually

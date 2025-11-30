@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:marine_analytics_platform/core/constants/enum_status.dart';
 import 'package:marine_analytics_platform/core/theme/app_theme.dart';
+import 'package:marine_analytics_platform/global.dart';
 import 'package:marine_analytics_platform/presentation/blocs/waste_type/waste_type_bloc.dart';
 import 'package:marine_analytics_platform/presentation/views/waste_type/widgets/create.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
@@ -21,7 +22,7 @@ class WasteTypePage extends StatelessWidget {
 }
 
 class _WasteTypePage extends StatelessWidget {
-  const _WasteTypePage({super.key});
+  const _WasteTypePage();
 
   @override
   Widget build(BuildContext context) {
@@ -34,8 +35,8 @@ class _WasteTypePage extends StatelessWidget {
             Overlay.of(context),
             CustomSnackBar.success(message: "Success"),
           );
+          // Reload list after any success action (create or delete)
           bloc.add(GetWasteTypeEvent());
-          context.pop();
         }
       },
       child: Scaffold(
@@ -160,6 +161,19 @@ class _WasteTypePage extends StatelessWidget {
                             ),
                             IconButton(
                               icon: const Icon(
+                                Icons.edit_outlined,
+                                color: AppTheme.primaryGreen,
+                              ),
+                              onPressed: () => _showEditDialog(
+                                context,
+                                bloc,
+                                item.id ?? '',
+                                item.name ?? "",
+                                item.unit ?? "",
+                              ),
+                            ),
+                            IconButton(
+                              icon: const Icon(
                                 Icons.delete_outline,
                                 color: Colors.red,
                               ),
@@ -196,6 +210,83 @@ class _WasteTypePage extends StatelessWidget {
           child: const Icon(Icons.add),
         ),
       ),
+    );
+  }
+
+  void _showEditDialog(
+    BuildContext context,
+    WasteTypeBloc bloc,
+    String id,
+    String currentName,
+    String currentUnit,
+  ) {
+    final TextEditingController nameController = TextEditingController(
+      text: currentName,
+    );
+    final TextEditingController unitController = TextEditingController(
+      text: currentUnit,
+    );
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Row(
+            children: [
+              Icon(Icons.edit, color: AppTheme.primaryGreen),
+              SizedBox(width: 12),
+              Text('Edit Waste Type'),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: nameController,
+                autofocus: true,
+                decoration: const InputDecoration(
+                  labelText: 'Waste Type Name',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: unitController,
+                decoration: const InputDecoration(
+                  labelText: 'Unit (e.g., kg, ton)',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                final newName = nameController.text.trim();
+                final newUnit = unitController.text.trim();
+                if (newName.isEmpty || newUnit.isEmpty) return;
+
+                await supabase
+                    .from('waste_types')
+                    .update({'name': newName, 'unit': newUnit})
+                    .eq('id', id);
+
+                bloc.add(GetWasteTypeEvent());
+                Navigator.pop(dialogContext);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.primaryGreen,
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Update'),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -260,9 +351,72 @@ class _WasteTypePage extends StatelessWidget {
               child: const Text('Cancel'),
             ),
             ElevatedButton(
-              onPressed: () {
-                bloc.add(DeleteWasteTypeEvent(id));
+              onPressed: () async {
                 Navigator.pop(dialogContext);
+
+                // Check if waste type is being used
+                final alertsResponse = await supabase
+                    .from('alerts')
+                    .select()
+                    .eq('waste_type_id', id);
+                final alertsCount = (alertsResponse as List).length;
+
+                final entriesResponse = await supabase
+                    .from('waste_entries')
+                    .select()
+                    .eq('waste_type_id', id);
+                final entriesCount = (entriesResponse as List).length;
+
+                final limitsResponse = await supabase
+                    .from('waste_limits')
+                    .select()
+                    .eq('waste_type_id', id);
+                final limitsCount = (limitsResponse as List).length;
+
+                if (alertsCount > 0 || entriesCount > 0 || limitsCount > 0) {
+                  // Show error dialog
+                  showDialog(
+                    context: context,
+                    builder: (ctx) => AlertDialog(
+                      title: const Row(
+                        children: [
+                          Icon(Icons.error_outline, color: Colors.orange),
+                          SizedBox(width: 12),
+                          Text('Cannot Delete'),
+                        ],
+                      ),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'This waste type is currently being used and cannot be deleted:',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 12),
+                          if (alertsCount > 0) Text('• $alertsCount alert(s)'),
+                          if (entriesCount > 0)
+                            Text('• $entriesCount waste entry(ies)'),
+                          if (limitsCount > 0) Text('• $limitsCount limit(s)'),
+                          const SizedBox(height: 12),
+                          const Text(
+                            'Please remove these references first, or use Edit to modify the waste type instead.',
+                            style: TextStyle(fontSize: 13, color: Colors.grey),
+                          ),
+                        ],
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(ctx),
+                          child: const Text('OK'),
+                        ),
+                      ],
+                    ),
+                  );
+                } else {
+                  // Safe to delete
+                  bloc.add(DeleteWasteTypeEvent(id));
+                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,

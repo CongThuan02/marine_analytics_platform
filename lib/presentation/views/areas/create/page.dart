@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:marine_analytics_platform/core/constants/enum_status.dart';
 import 'package:marine_analytics_platform/core/theme/app_theme.dart';
+import 'package:marine_analytics_platform/data/repositories/area_repository.dart';
 import 'package:marine_analytics_platform/presentation/blocs/area/area_bloc.dart';
 import 'package:marine_analytics_platform/presentation/widgets/form_text_field.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
@@ -36,8 +37,16 @@ class _CreateAreaPage extends StatelessWidget {
             Overlay.of(context),
             CustomSnackBar.success(message: state.message),
           );
-          context.pop(true);
           context.loaderOverlay.hide();
+
+          // Only pop if it's a create action (not delete)
+          // Delete messages typically contain "Deleted" or "deleted"
+          if (!state.message.toLowerCase().contains('delete')) {
+            context.pop(true);
+          } else {
+            // Reload areas after delete
+            context.read<AreaBloc>().add(GetAreas());
+          }
         }
         if (state.status == Status.loaded) {
           context.loaderOverlay.hide();
@@ -115,12 +124,8 @@ class _CreateAreaPage extends StatelessWidget {
               side: BorderSide(color: Colors.grey.shade200),
             ),
             child: InkWell(
-              onLongPress: () => _showDeleteDialog(
-                context,
-                bloc,
-                area.id ?? '',
-                area.name ?? '',
-              ),
+              onLongPress: () =>
+                  _showDeleteDialog(context, bloc, area.id, area.name),
               borderRadius: BorderRadius.circular(12),
               child: Padding(
                 padding: const EdgeInsets.all(16),
@@ -141,7 +146,7 @@ class _CreateAreaPage extends StatelessWidget {
                     const SizedBox(width: 16),
                     Expanded(
                       child: Text(
-                        area.name ?? 'No name',
+                        area.name,
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -149,13 +154,17 @@ class _CreateAreaPage extends StatelessWidget {
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.delete_outline, color: Colors.red),
-                      onPressed: () => _showDeleteDialog(
-                        context,
-                        bloc,
-                        area.id ?? '',
-                        area.name ?? '',
+                      icon: const Icon(
+                        Icons.edit_outlined,
+                        color: AppTheme.primaryGreen,
                       ),
+                      onPressed: () =>
+                          _showEditDialog(context, bloc, area.id, area.name),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.delete_outline, color: Colors.red),
+                      onPressed: () =>
+                          _showDeleteDialog(context, bloc, area.id, area.name),
                     ),
                   ],
                 ),
@@ -267,6 +276,68 @@ class _CreateAreaPage extends StatelessWidget {
         ),
       ),
     ).then((_) => bloc.add(GetAreas()));
+  }
+
+  void _showEditDialog(
+    BuildContext context,
+    AreaBloc bloc,
+    String id,
+    String currentName,
+  ) {
+    final TextEditingController controller = TextEditingController(
+      text: currentName,
+    );
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: Row(
+            children: [
+              const Icon(Icons.edit, color: AppTheme.primaryGreen),
+              const SizedBox(width: 12),
+              const Text('Edit Area'),
+            ],
+          ),
+          content: TextField(
+            controller: controller,
+            autofocus: true,
+            decoration: const InputDecoration(
+              labelText: 'Area Name',
+              border: OutlineInputBorder(),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                final newName = controller.text.trim();
+                if (newName.isEmpty) {
+                  return;
+                }
+
+                // Update area in database
+                final repository = AreaRepository();
+                await repository.updateArea(id: id, name: newName);
+
+                // Reload areas
+                bloc.add(GetAreas());
+
+                Navigator.pop(dialogContext);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.primaryGreen,
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Update'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _showDeleteDialog(

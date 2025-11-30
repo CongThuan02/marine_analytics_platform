@@ -52,7 +52,7 @@ class WasteStatsRepository {
   }) async {
     final range = _calculateRange(period, reference);
 
-    String _formatDate(DateTime date) =>
+    String formatDate(DateTime date) =>
         '${date.year.toString().padLeft(4, '0')}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
 
     try {
@@ -60,8 +60,8 @@ class WasteStatsRepository {
       final response = await supabase.rpc(
         'get_waste_stats_all_users',
         params: {
-          'start_date': _formatDate(range.start),
-          'end_date': _formatDate(range.end),
+          'start_date': formatDate(range.start),
+          'end_date': formatDate(range.end),
         },
       );
 
@@ -81,8 +81,8 @@ class WasteStatsRepository {
         date,
         waste_types(name, unit)
       ''')
-          .gte('date', _formatDate(range.start))
-          .lte('date', _formatDate(range.end));
+          .gte('date', formatDate(range.start))
+          .lte('date', formatDate(range.end));
 
       final data = (response as List<dynamic>).cast<Map<String, dynamic>>();
       return _buildStats(data);
@@ -117,7 +117,7 @@ class WasteStatsRepository {
     for (final row in rows) {
       final qty = (row['quantity'] as num?)?.toDouble() ?? 0;
       final wasteType = (row['waste_types'] as Map<String, dynamic>?) ?? {};
-      final unit = wasteType['unit']?.toString()?.toLowerCase();
+      final unit = wasteType['unit']?.toString().toLowerCase();
 
       // Convert all to kg
       final qtyInKg = _convertToKg(qty, unit);
@@ -158,7 +158,7 @@ class WasteStatsRepository {
 
     for (final row in rows) {
       final qty = (row['quantity'] as num?)?.toDouble() ?? 0;
-      final unit = row['waste_type_unit']?.toString()?.toLowerCase();
+      final unit = row['waste_type_unit']?.toString().toLowerCase();
 
       // Convert all to kg
       final qtyInKg = _convertToKg(qty, unit);

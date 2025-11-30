@@ -103,7 +103,7 @@ class _CreateReminderBottomSheetState extends State<CreateReminderBottomSheet> {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           DropdownButtonFormField<DepartmentModel>(
-                            value: _selectedDepartment,
+                            initialValue: _selectedDepartment,
                             decoration: const InputDecoration(
                               labelText: 'Department',
                               prefixIcon: Icon(Icons.business),
@@ -144,7 +144,7 @@ class _CreateReminderBottomSheetState extends State<CreateReminderBottomSheet> {
                           ),
                           const SizedBox(height: 16),
                           DropdownButtonFormField<String>(
-                            value: _frequency,
+                            initialValue: _frequency,
                             decoration: const InputDecoration(
                               labelText: 'Frequency',
                               prefixIcon: Icon(Icons.repeat),

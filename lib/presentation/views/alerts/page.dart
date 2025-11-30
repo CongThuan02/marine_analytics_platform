@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:marine_analytics_platform/core/constants/app_strings.dart';
 import 'package:marine_analytics_platform/core/di/injection_container.dart';
 import 'package:marine_analytics_platform/core/theme/app_theme.dart';
-import 'package:marine_analytics_platform/data/models/alert_model.dart';
 import 'package:marine_analytics_platform/presentation/blocs/alert/alert_bloc.dart';
 import 'package:marine_analytics_platform/presentation/views/alerts/widgets/alert_card.dart';
 
@@ -15,7 +14,10 @@ class AlertsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(create: (context) => sl<AlertBloc>()..add(const LoadAlerts()), child: const _AlertsView());
+    return BlocProvider(
+      create: (context) => sl<AlertBloc>()..add(const LoadAlerts()),
+      child: const _AlertsView(),
+    );
   }
 }
 
@@ -56,7 +58,11 @@ class _AlertsView extends StatelessWidget {
               const PopupMenuItem(
                 value: 'delete_old',
                 child: Row(
-                  children: [Icon(Icons.delete_sweep, size: 20), SizedBox(width: 8), Text(AppStrings.deleteOldAlerts)],
+                  children: [
+                    Icon(Icons.delete_sweep, size: 20),
+                    SizedBox(width: 8),
+                    Text(AppStrings.deleteOldAlerts),
+                  ],
                 ),
               ),
             ],
@@ -74,7 +80,11 @@ class _AlertsView extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.error_outline, size: 64, color: Colors.red.shade300),
+                  Icon(
+                    Icons.error_outline,
+                    size: 64,
+                    color: Colors.red.shade300,
+                  ),
                   const SizedBox(height: 16),
                   Text(
                     '${AppStrings.error}: ${state.message}',
@@ -99,11 +109,24 @@ class _AlertsView extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.check_circle_outline, size: 80, color: AppTheme.success),
+                    Icon(
+                      Icons.check_circle_outline,
+                      size: 80,
+                      color: AppTheme.success,
+                    ),
                     const SizedBox(height: 16),
-                    const Text(AppStrings.noAlerts, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
+                    const Text(
+                      AppStrings.noAlerts,
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                     const SizedBox(height: 8),
-                    Text('All areas are within limits', style: TextStyle(color: Colors.grey.shade600)),
+                    Text(
+                      'All areas are within limits',
+                      style: TextStyle(color: Colors.grey.shade600),
+                    ),
                   ],
                 ),
               );
@@ -193,9 +216,16 @@ class _AlertsView extends StatelessWidget {
         const SizedBox(height: 4),
         Text(
           value,
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: color),
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: color,
+          ),
         ),
-        Text(label, style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+        Text(
+          label,
+          style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+        ),
       ],
     );
   }
@@ -211,14 +241,22 @@ class _AlertsView extends StatelessWidget {
             Text(AppStrings.deleteOldAlerts),
           ],
         ),
-        content: const Text('Delete all alerts before today?', style: TextStyle(fontSize: 16)),
+        content: const Text(
+          'Delete all alerts before today?',
+          style: TextStyle(fontSize: 16),
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text(AppStrings.cancel)),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text(AppStrings.cancel),
+          ),
           ElevatedButton(
             onPressed: () {
               // TODO: Implement DeleteOldAlerts use case
               Navigator.pop(dialogContext);
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Feature coming soon')));
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Feature coming soon')),
+              );
             },
             child: const Text(AppStrings.delete),
           ),

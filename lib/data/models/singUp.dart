@@ -7,7 +7,12 @@ class SingUp extends Equatable {
   final String? role;
 
   //<editor-fold desc="Data Methods">
-  const SingUp({this.email = "", this.password = "", this.departmentId = "", this.role = ""});
+  const SingUp({
+    this.email = "",
+    this.password = "",
+    this.departmentId = "",
+    this.role = "",
+  });
 
   @override
   bool operator ==(Object other) =>
@@ -20,19 +25,28 @@ class SingUp extends Equatable {
           role == other.role);
 
   @override
-  int get hashCode => email.hashCode ^ password.hashCode ^ departmentId.hashCode ^ role.hashCode;
+  int get hashCode =>
+      email.hashCode ^
+      password.hashCode ^
+      departmentId.hashCode ^
+      role.hashCode;
 
   @override
   String toString() {
-    return 'SingUp{' +
-        ' email: $email,' +
+    return 'SingUp{'
+            ' email: $email,' +
         ' password: $password,' +
         ' departmentId: $departmentId,' +
         ' role: $role,' +
         '}';
   }
 
-  SingUp copyWith({String? email, String? password, String? departmentId, String? role}) {
+  SingUp copyWith({
+    String? email,
+    String? password,
+    String? departmentId,
+    String? role,
+  }) {
     return SingUp(
       email: email ?? this.email,
       password: password ?? this.password,
@@ -42,7 +56,12 @@ class SingUp extends Equatable {
   }
 
   Map<String, dynamic> toMap() {
-    return {'email': email, 'password': password, 'department_id': departmentId, 'role': role};
+    return {
+      'email': email,
+      'password': password,
+      'department_id': departmentId,
+      'role': role,
+    };
   }
 
   factory SingUp.fromMap(Map<String, dynamic> map) {

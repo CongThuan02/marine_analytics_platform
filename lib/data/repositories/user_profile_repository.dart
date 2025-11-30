@@ -17,16 +17,18 @@ class UserProfileRepository {
     final departmentId = singUp.departmentId?.trim();
     final role = singUp.role?.trim();
 
-    if (email?.isEmpty ?? true)
+    if (email?.isEmpty ?? true) {
       throw const RegisterException('Please enter email.');
+    }
     if (password == null || password.length < 6) {
       throw const RegisterException('Password must be at least 6 characters.');
     }
     if (departmentId?.isEmpty ?? true) {
       throw const RegisterException('Please select a department.');
     }
-    if (role?.isEmpty ?? true)
+    if (role?.isEmpty ?? true) {
       throw const RegisterException('Please select a role.');
+    }
 
     try {
       final response = await supabase.auth.signUp(

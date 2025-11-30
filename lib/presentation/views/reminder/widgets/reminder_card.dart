@@ -66,7 +66,7 @@ class ReminderCard extends StatelessWidget {
                       ToggleReminderEvent(reminder.id, value),
                     );
                   },
-                  activeColor: AppTheme.primaryGreen,
+                  activeThumbColor: AppTheme.primaryGreen,
                 ),
                 IconButton(
                   icon: const Icon(Icons.delete_outline, color: Colors.red),

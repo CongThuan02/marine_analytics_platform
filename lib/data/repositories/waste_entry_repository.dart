@@ -37,20 +37,17 @@ class WasteEntryRepository {
       throw Exception('You are not logged in.');
     }
 
-    if (entry.areaId == null || entry.areaId!.isEmpty) {
+    if (entry.areaId.isEmpty) {
       throw Exception('Please select an area.');
     }
-    if (entry.departmentId == null || entry.departmentId!.isEmpty) {
+    if (entry.departmentId.isEmpty) {
       throw Exception('Please select a department.');
     }
-    if (entry.wasteTypeId == null || entry.wasteTypeId!.isEmpty) {
+    if (entry.wasteTypeId.isEmpty) {
       throw Exception('Please select a waste type.');
     }
-    if (entry.quantity == null || entry.quantity! <= 0) {
+    if (entry.quantity <= 0) {
       throw Exception('Quantity must be greater than 0.');
-    }
-    if (entry.date == null) {
-      throw Exception('Please select entry date.');
     }
 
     String formatDate(DateTime date) {
@@ -66,7 +63,7 @@ class WasteEntryRepository {
       'area_id': entry.areaId,
       'waste_type_id': entry.wasteTypeId,
       'quantity': entry.quantity,
-      'date': formatDate(entry.date!),
+      'date': formatDate(entry.date),
       'qr_code': (entry.qrCode?.isNotEmpty ?? false) ? entry.qrCode : null,
     };
 

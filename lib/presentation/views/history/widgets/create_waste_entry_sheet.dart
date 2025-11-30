@@ -89,8 +89,9 @@ class _CreateWasteEntrySheetState extends State<CreateWasteEntrySheet> {
                 itemLabelBuilder: (item) {
                   final name = item['name']?.toString() ?? 'Select';
                   final unit = item['unit']?.toString();
-                  if (unit == null || unit.isEmpty || unit == 'null')
+                  if (unit == null || unit.isEmpty || unit == 'null') {
                     return name;
+                  }
                   return '$name ($unit)';
                 },
                 validators: [

@@ -1,6 +1,5 @@
 import 'package:marine_analytics_platform/data/models/department_model.dart';
 import 'package:marine_analytics_platform/global.dart';
-import 'package:marine_analytics_platform/presentation/blocs/department/department_bloc.dart';
 
 class DepartmentRepository {
   Future<String> createDepartment({required DepartmentModel department}) async {

@@ -35,8 +35,9 @@ class _CreateTestAlertPageState extends State<CreateTestAlertPage> {
         _areas = List<Map<String, dynamic>>.from(areas);
         _wasteTypes = List<Map<String, dynamic>>.from(wasteTypes);
         if (_areas.isNotEmpty) _selectedAreaId = _areas.first['id'];
-        if (_wasteTypes.isNotEmpty)
+        if (_wasteTypes.isNotEmpty) {
           _selectedWasteTypeId = _wasteTypes.first['id'];
+        }
       });
     } catch (e) {
       setState(() => _message = 'Error: $e');
@@ -178,7 +179,7 @@ class _CreateTestAlertPageState extends State<CreateTestAlertPage> {
                     )
                   else ...[
                     DropdownButtonFormField<String>(
-                      value: _selectedAreaId,
+                      initialValue: _selectedAreaId,
                       decoration: const InputDecoration(
                         labelText: 'Area',
                         border: OutlineInputBorder(),
@@ -194,7 +195,7 @@ class _CreateTestAlertPageState extends State<CreateTestAlertPage> {
                     ),
                     const SizedBox(height: 16),
                     DropdownButtonFormField<String>(
-                      value: _selectedWasteTypeId,
+                      initialValue: _selectedWasteTypeId,
                       decoration: const InputDecoration(
                         labelText: 'Waste Type',
                         border: OutlineInputBorder(),

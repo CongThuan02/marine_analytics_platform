@@ -18,8 +18,9 @@ class AuthRepository {
     final trimmedPassword = password.trim();
 
     if (trimmedEmail.isEmpty) throw const LoginFailure('Please enter email.');
-    if (trimmedPassword.isEmpty)
+    if (trimmedPassword.isEmpty) {
       throw const LoginFailure('Please enter password.');
+    }
 
     try {
       final response = await supabase.auth.signInWithPassword(

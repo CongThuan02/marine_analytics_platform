@@ -20,7 +20,7 @@ class AreaRepository {
           .map((e) => AreaModel.fromMap(e))
           .toList();
       return data;
-    } catch (e, st) {
+    } catch (e) {
       return [];
     }
   }
@@ -31,6 +31,15 @@ class AreaRepository {
       return "Area deleted successfully";
     } catch (e) {
       return "Delete failed";
+    }
+  }
+
+  Future<String> updateArea({required String id, required String name}) async {
+    try {
+      await supabase.from('areas').update({'name': name}).eq('id', id);
+      return "Area updated successfully";
+    } catch (e) {
+      return "Update failed: $e";
     }
   }
 }

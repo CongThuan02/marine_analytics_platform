@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:marine_analytics_platform/core/constants/app_strings.dart';
 import 'package:marine_analytics_platform/core/theme/app_theme.dart';
 import 'package:marine_analytics_platform/domain/entities/alert.dart';
+import 'package:marine_analytics_platform/global.dart';
 import 'package:marine_analytics_platform/presentation/blocs/alert/alert_bloc.dart';
 
 class AlertCard extends StatelessWidget {
@@ -41,7 +42,10 @@ class AlertCard extends StatelessWidget {
                 children: [
                   Container(
                     padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(8)),
+                    decoration: BoxDecoration(
+                      color: color,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                     child: Icon(icon, color: Colors.white, size: 20),
                   ),
                   const SizedBox(width: 12),
@@ -51,22 +55,38 @@ class AlertCard extends StatelessWidget {
                       children: [
                         Text(
                           alert.areaName ?? 'Unknown Area',
-                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         const SizedBox(height: 2),
                         Text(
                           alert.wasteTypeName ?? 'Unknown Waste Type',
-                          style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey.shade600,
+                          ),
                         ),
                       ],
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(20)),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: color,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
                     child: Text(
                       '${alert.percent.toStringAsFixed(0)}%',
-                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
                     ),
                   ),
                 ],
@@ -92,7 +112,8 @@ class AlertCard extends StatelessWidget {
                     child: _buildStatItem(
                       icon: Icons.trending_up,
                       label: 'Today',
-                      value: '${_formatQuantity(alert.totalToday)} ${alert.wasteTypeUnit ?? 'kg'}',
+                      value:
+                          '${_formatQuantity(alert.totalToday)} ${alert.wasteTypeUnit ?? 'kg'}',
                       color: color,
                     ),
                   ),
@@ -101,7 +122,8 @@ class AlertCard extends StatelessWidget {
                     child: _buildStatItem(
                       icon: Icons.speed,
                       label: 'Limit',
-                      value: '${_formatQuantity(alert.limitValue)} ${alert.wasteTypeUnit ?? 'kg'}',
+                      value:
+                          '${_formatQuantity(alert.limitValue)} ${alert.wasteTypeUnit ?? 'kg'}',
                       color: AppTheme.primaryGreen,
                     ),
                   ),
@@ -123,7 +145,10 @@ class AlertCard extends StatelessWidget {
                       Icon(Icons.info_outline, size: 20, color: color),
                       const SizedBox(width: 8),
                       Expanded(
-                        child: Text(alert.message!, style: TextStyle(fontSize: 13, color: color)),
+                        child: Text(
+                          alert.message!,
+                          style: TextStyle(fontSize: 13, color: color),
+                        ),
                       ),
                     ],
                   ),
@@ -135,13 +160,18 @@ class AlertCard extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Text(_formatTime(alert.createdAt), style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+                  Text(
+                    _formatTime(alert.createdAt),
+                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                  ),
                   const Spacer(),
                   TextButton.icon(
                     onPressed: () => _confirmDelete(context),
                     icon: const Icon(Icons.close, size: 18),
                     label: const Text(AppStrings.close),
-                    style: TextButton.styleFrom(foregroundColor: Colors.grey.shade600),
+                    style: TextButton.styleFrom(
+                      foregroundColor: Colors.grey.shade600,
+                    ),
                   ),
                 ],
               ),
@@ -152,16 +182,28 @@ class AlertCard extends StatelessWidget {
     );
   }
 
-  Widget _buildStatItem({required IconData icon, required String label, required String value, required Color color}) {
+  Widget _buildStatItem({
+    required IconData icon,
+    required String label,
+    required String value,
+    required Color color,
+  }) {
     return Column(
       children: [
         Icon(icon, size: 20, color: color),
         const SizedBox(height: 4),
-        Text(label, style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+        Text(
+          label,
+          style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+        ),
         const SizedBox(height: 2),
         Text(
           value,
-          style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: color),
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+            color: color,
+          ),
         ),
       ],
     );
@@ -213,17 +255,53 @@ class AlertCard extends StatelessWidget {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text(AppStrings.deleteAlert),
+        title: const Row(
+          children: [
+            Icon(Icons.warning_amber_rounded, color: Colors.orange),
+            SizedBox(width: 12),
+            Text(AppStrings.deleteAlert),
+          ],
+        ),
         content: const Text(AppStrings.deleteAlertConfirm),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text(AppStrings.cancel)),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text(AppStrings.cancel),
+          ),
           ElevatedButton(
-            onPressed: () {
-              // TODO: Implement DeleteAlert use case
+            onPressed: () async {
               Navigator.pop(dialogContext);
-              ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Feature coming soon')));
+
+              try {
+                // Delete alert from database
+                await supabase.from('alerts').delete().eq('id', alert.id);
+
+                // Reload alerts
+                if (context.mounted) {
+                  context.read<AlertBloc>().add(LoadAlerts());
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Alert dismissed successfully'),
+                      backgroundColor: Colors.green,
+                    ),
+                  );
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Error: $e'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+              }
             },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
             child: const Text(AppStrings.close),
           ),
         ],

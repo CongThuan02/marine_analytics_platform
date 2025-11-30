@@ -106,7 +106,7 @@ class _CreateLimitBottomSheetState extends State<CreateLimitBottomSheet> {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           DropdownButtonFormField<AreaModel>(
-                            value: _selectedArea,
+                            initialValue: _selectedArea,
                             decoration: const InputDecoration(
                               labelText: 'Area',
                               prefixIcon: Icon(Icons.location_on),
@@ -124,7 +124,7 @@ class _CreateLimitBottomSheetState extends State<CreateLimitBottomSheet> {
                           ),
                           const SizedBox(height: 16),
                           DropdownButtonFormField<WasteTypeModel>(
-                            value: _selectedWasteType,
+                            initialValue: _selectedWasteType,
                             decoration: const InputDecoration(
                               labelText: 'Waste Type',
                               prefixIcon: Icon(Icons.delete_outline),
