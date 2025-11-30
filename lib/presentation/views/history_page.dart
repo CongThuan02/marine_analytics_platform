@@ -8,6 +8,7 @@ import 'package:marine_analytics_platform/global.dart';
 import 'package:marine_analytics_platform/presentation/blocs/waste_entry/waste_entry_bloc.dart';
 import 'package:marine_analytics_platform/presentation/views/history/widgets/create_multiple_waste_entries_sheet_v2.dart';
 import 'package:marine_analytics_platform/presentation/views/history/widgets/create_waste_entry_sheet.dart';
+import 'package:marine_analytics_platform/presentation/views/history/widgets/edit_waste_entry_sheet.dart';
 
 class HistoryPage extends StatelessWidget {
   const HistoryPage({super.key});
@@ -336,57 +337,14 @@ class _WasteEntryTile extends StatelessWidget {
     );
   }
 
-  void _showEditDialog(BuildContext context) {
-    final quantityController = TextEditingController(
-      text: entry.quantity.toString(),
-    );
-
-    showDialog(
+  void _showEditDialog(BuildContext context) async {
+    final bloc = context.read<WasteEntryBloc>();
+    await showModalBottomSheet(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Row(
-          children: [
-            Icon(Icons.edit, color: AppTheme.primaryGreen),
-            SizedBox(width: 12),
-            Text('Edit Waste Entry'),
-          ],
-        ),
-        content: TextField(
-          controller: quantityController,
-          keyboardType: TextInputType.number,
-          autofocus: true,
-          decoration: InputDecoration(
-            labelText: 'Quantity (${entry.wasteTypeUnit ?? "kg"})',
-            border: const OutlineInputBorder(),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              final newQuantity = double.tryParse(quantityController.text);
-              if (newQuantity == null || newQuantity <= 0) return;
-
-              await supabase
-                  .from('waste_entries')
-                  .update({'quantity': newQuantity})
-                  .eq('id', entry.id);
-
-              if (context.mounted) {
-                context.read<WasteEntryBloc>().add(const LoadWasteEntries());
-              }
-              Navigator.pop(dialogContext);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppTheme.primaryGreen,
-              foregroundColor: Colors.white,
-            ),
-            child: const Text('Update'),
-          ),
-        ],
+      isScrollControlled: true,
+      builder: (_) => BlocProvider.value(
+        value: bloc,
+        child: EditWasteEntrySheet(entry: entry),
       ),
     );
   }
@@ -412,12 +370,35 @@ class _WasteEntryTile extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () async {
-              await supabase.from('waste_entries').delete().eq('id', entry.id);
+              try {
+                print('🗑️ Deleting entry ${entry.id}');
+                await supabase
+                    .from('waste_entries')
+                    .delete()
+                    .eq('id', entry.id);
+                print('✅ Delete successful');
 
-              if (context.mounted) {
-                context.read<WasteEntryBloc>().add(const LoadWasteEntries());
+                if (context.mounted) {
+                  context.read<WasteEntryBloc>().add(const LoadWasteEntries());
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Waste entry deleted successfully'),
+                      backgroundColor: Colors.green,
+                    ),
+                  );
+                }
+                Navigator.pop(dialogContext);
+              } catch (e) {
+                print('❌ Delete error: $e');
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Error deleting entry: $e'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
               }
-              Navigator.pop(dialogContext);
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,

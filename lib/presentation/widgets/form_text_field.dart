@@ -46,14 +46,19 @@ class _FormTextFieldState extends State<FormTextField> {
       name: widget.name,
       validator: FormBuilderValidators.compose([...?widget.validators]),
       builder: (field) {
+        // Create controller with initial value
+        final controller = TextEditingController(text: field.value ?? '')
+          ..selection = TextSelection.collapsed(
+            offset: field.value?.length ?? 0,
+          );
+
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: TextField(
-                // controller: TextEditingController(text: field.value)
-                //   ..selection = TextSelection.collapsed(offset: field.value?.length ?? 0),
+                controller: controller,
                 obscureText: hidePassword,
                 autofocus: widget.autofocus,
                 onChanged: (value) {
@@ -69,7 +74,11 @@ class _FormTextFieldState extends State<FormTextField> {
                           onPressed: () {
                             setState(() => hidePassword = !hidePassword);
                           },
-                          icon: Icon(hidePassword ? Icons.visibility_off : Icons.visibility),
+                          icon: Icon(
+                            hidePassword
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                          ),
                         )
                       : widget.suffixIcon,
                 ),
@@ -79,7 +88,10 @@ class _FormTextFieldState extends State<FormTextField> {
             if (field.hasError)
               Padding(
                 padding: const EdgeInsets.only(left: 4, top: 4),
-                child: Text(field.errorText!, style: TextStyle(color: Colors.red, fontSize: 12)),
+                child: Text(
+                  field.errorText!,
+                  style: TextStyle(color: Colors.red, fontSize: 12),
+                ),
               ),
           ],
         );
