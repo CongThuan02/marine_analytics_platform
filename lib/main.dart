@@ -6,7 +6,9 @@ import 'package:loader_overlay/loader_overlay.dart';
 import 'package:marine_analytics_platform/core/di/injection_container.dart'
     as di;
 import 'package:marine_analytics_platform/core/services/fcm_service.dart';
+import 'package:marine_analytics_platform/core/services/local_notification_service.dart';
 import 'package:marine_analytics_platform/core/theme/app_theme.dart';
+import 'package:marine_analytics_platform/firebase_options.dart';
 import 'package:marine_analytics_platform/routes/app_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -71,7 +73,7 @@ Future<void> _handleDeepLink(Uri uri) async {
   if (uri.pathSegments.contains('ship')) {
     // Delay 0 to avoid blocking main thread
     await Future.delayed(Duration.zero);
-    appRouter.go('/intro');
+    appRouter.go('/ship');
   }
 }
 
@@ -91,17 +93,24 @@ Future<void> main() async {
   // 🔹 Init deep link (Flutter-native)
   await initDeepLinks();
 
-  // 🔹 Init Firebase
-  await Firebase.initializeApp();
+  // 🔹 Init Firebase with options
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   // 🔹 Init FCM (Firebase Cloud Messaging)
-  // Only init if user is logged in
-  if (supabase.auth.currentSession != null) {
-    try {
-      await FCMService().initialize();
-    } catch (e) {
-      print('⚠️ FCM init error: $e');
-    }
+  // Initialize FCM regardless of login status (needed for login/register screens)
+  try {
+    await FCMService().initialize();
+    print('✅ FCM initialized successfully');
+  } catch (e) {
+    print('⚠️ FCM init error: $e');
+  }
+
+  // 🔹 Init Local Notifications
+  try {
+    await LocalNotificationService().initialize();
+    print('✅ Local notifications initialized successfully');
+  } catch (e) {
+    print('⚠️ Local notification init error: $e');
   }
 
   runApp(const MyApp());
@@ -131,6 +140,9 @@ class _MyAppState extends State<MyApp> {
         builder: (context, child) {
           return child!;
         },
+        // Add navigator key for FCM navigation
+        // Note: This is a workaround since GoRouter doesn't directly support navigatorKey
+        // We'll use the router's navigator key instead
       ),
     );
   }

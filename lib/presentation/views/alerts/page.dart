@@ -29,6 +29,10 @@ class _AlertsView extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text(AppStrings.alertsTitle),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.pop(),
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),

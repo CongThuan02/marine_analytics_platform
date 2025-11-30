@@ -8,16 +8,14 @@ import 'package:marine_analytics_platform/core/constants/app_strings.dart';
 import 'package:marine_analytics_platform/core/constants/enum_status.dart';
 import 'package:marine_analytics_platform/presentation/blocs/login/login_bloc.dart';
 import 'package:marine_analytics_platform/presentation/widgets/form_text_field.dart';
+import 'package:marine_analytics_platform/presentation/widgets/clickable_logo.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => LoginBloc(),
-      child: const _LoginView(),
-    );
+    return BlocProvider(create: (_) => LoginBloc(), child: const _LoginView());
   }
 }
 
@@ -43,14 +41,20 @@ class _LoginViewState extends State<_LoginView> {
 
         if (state.status == Status.success && state.message != null) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message!), backgroundColor: Colors.green),
+            SnackBar(
+              content: Text(state.message!),
+              backgroundColor: Colors.green,
+            ),
           );
           context.go('/');
         }
 
         if (state.status == Status.fail && state.message != null) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message!), backgroundColor: Colors.red),
+            SnackBar(
+              content: Text(state.message!),
+              backgroundColor: Colors.red,
+            ),
           );
         }
       },
@@ -64,22 +68,39 @@ class _LoginViewState extends State<_LoginView> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  // Clickable Logo
+                  const Center(
+                    child: ClickableLogo(
+                      logoSize: 80,
+                      titleFontSize: 32,
+                      subtitleFontSize: 16,
+                    ),
+                  ),
+                  const SizedBox(height: 32),
                   Text(
                     "Welcome Back!",
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w600),
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     "Login to continue managing waste.",
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey.shade600),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Colors.grey.shade600,
+                    ),
                   ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 24),
                   FormTextField(
                     name: 'email',
                     label: AppStrings.email,
                     validators: [
-                      FormBuilderValidators.required(errorText: AppStrings.fieldRequired),
-                      FormBuilderValidators.email(errorText: AppStrings.invalidEmail),
+                      FormBuilderValidators.required(
+                        errorText: AppStrings.fieldRequired,
+                      ),
+                      FormBuilderValidators.email(
+                        errorText: AppStrings.invalidEmail,
+                      ),
                     ],
                   ),
                   const SizedBox(height: 16),
@@ -88,8 +109,13 @@ class _LoginViewState extends State<_LoginView> {
                     label: AppStrings.password,
                     isPassword: true,
                     validators: [
-                      FormBuilderValidators.required(errorText: AppStrings.fieldRequired),
-                      FormBuilderValidators.minLength(6, errorText: 'Minimum 6 characters'),
+                      FormBuilderValidators.required(
+                        errorText: AppStrings.fieldRequired,
+                      ),
+                      FormBuilderValidators.minLength(
+                        6,
+                        errorText: 'Minimum 6 characters',
+                      ),
                     ],
                   ),
                   const SizedBox(height: 24),
@@ -121,6 +147,8 @@ class _LoginViewState extends State<_LoginView> {
     final email = values['email'] as String? ?? '';
     final password = values['password'] as String? ?? '';
     FocusScope.of(context).unfocus();
-    context.read<LoginBloc>().add(LoginSubmitted(email: email, password: password));
+    context.read<LoginBloc>().add(
+      LoginSubmitted(email: email, password: password),
+    );
   }
 }

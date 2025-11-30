@@ -9,7 +9,7 @@ plugins {
 }
 
 android {
-    namespace = "marine.analytics.platform.marine_analytics_platform"
+    namespace = "vn.coquan.test"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -25,7 +25,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "marine.analytics.platform.marine_analytics_platform"
+        applicationId = "vn.coquan.test"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion

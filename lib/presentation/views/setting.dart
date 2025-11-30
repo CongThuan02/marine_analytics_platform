@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:marine_analytics_platform/core/services/local_notification_service.dart';
 import 'package:marine_analytics_platform/core/theme/app_theme.dart';
 import 'package:marine_analytics_platform/global.dart';
 
@@ -73,6 +75,27 @@ class SettingsPage extends StatelessWidget {
           ),
           const SizedBox(height: 24),
 
+          // Testing section
+          if (kDebugMode) ...{
+            _buildSectionTitle('Testing & Debug'),
+            const SizedBox(height: 12),
+            _buildSettingCard(
+              context,
+              icon: Icons.bug_report,
+              title: 'Test Local Notification',
+              subtitle: 'Test notification without FCM/Google',
+              onTap: () => _testLocalNotification(context),
+            ),
+            const SizedBox(height: 8),
+            _buildSettingCard(
+              context,
+              icon: Icons.warning_amber,
+              title: 'Test Waste Limit Alert',
+              subtitle: 'Test waste limit exceeded notification',
+              onTap: () => _testWasteLimitNotification(context),
+            ),
+            const SizedBox(height: 24),
+          },
           // Account section
           _buildSectionTitle('Account'),
           const SizedBox(height: 12),
@@ -296,6 +319,76 @@ class SettingsPage extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Future<void> _testLocalNotification(BuildContext context) async {
+    try {
+      print('🔔 Testing local notification...');
+
+      await LocalNotificationService().showNotification(
+        title: '✅ Test Success!',
+        body: 'Local notification is working! No FCM/Google needed.',
+        payload: 'test',
+      );
+
+      print('✅ Notification sent');
+
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('✅ Notification sent! Check your notification tray.'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 3),
+          ),
+        );
+      }
+    } catch (e) {
+      print('❌ Error: $e');
+
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('❌ Error: $e'), backgroundColor: Colors.red),
+        );
+      }
+    }
+  }
+
+  Future<void> _testWasteLimitNotification(BuildContext context) async {
+    try {
+      print('🔔 Testing waste limit notification...');
+
+      await LocalNotificationService().showWasteLimitExceededNotification(
+        areaName: 'Test Kitchen',
+        wasteTypeName: 'Plastic Waste',
+        totalQuantity: 125.5,
+        limitValue: 100.0,
+        exceededBy: 25.5,
+        percentage: '125.5',
+        period: 'monthly',
+      );
+
+      print('✅ Waste limit notification sent');
+
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              '⚠️ Waste limit alert sent! Check notification tray.',
+            ),
+            backgroundColor: Colors.orange,
+            duration: Duration(seconds: 3),
+          ),
+        );
+      }
+    } catch (e) {
+      print('❌ Error: $e');
+
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('❌ Error: $e'), backgroundColor: Colors.red),
+        );
+      }
+    }
   }
 
   Future<void> _logout(BuildContext context) async {

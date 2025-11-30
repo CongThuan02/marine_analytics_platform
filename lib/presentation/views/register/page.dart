@@ -10,6 +10,7 @@ import 'package:marine_analytics_platform/data/models/singUp.dart';
 import 'package:marine_analytics_platform/presentation/blocs/register/register_bloc.dart';
 import 'package:marine_analytics_platform/presentation/widgets/form_slect/form_select.dart';
 import 'package:marine_analytics_platform/presentation/widgets/form_text_field.dart';
+import 'package:marine_analytics_platform/presentation/widgets/clickable_logo.dart';
 
 class RegisterPage extends StatelessWidget {
   const RegisterPage({super.key});
@@ -90,10 +91,20 @@ class _RegisterViewState extends State<_RegisterView> {
               key: _formKey,
               child: Column(
                 children: [
+                  // Clickable Logo
+                  const ClickableLogo(
+                    logoSize: 70,
+                    titleFontSize: 28,
+                    subtitleFontSize: 14,
+                  ),
+                  const SizedBox(height: 32),
                   FormTextField(
                     name: "email",
                     label: AppStrings.email,
-                    validators: [FormBuilderValidators.required(), FormBuilderValidators.email()],
+                    validators: [
+                      FormBuilderValidators.required(),
+                      FormBuilderValidators.email(),
+                    ],
                   ),
                   const SizedBox(height: 16),
                   FormTextField(
@@ -102,7 +113,10 @@ class _RegisterViewState extends State<_RegisterView> {
                     label: AppStrings.password,
                     validators: [
                       FormBuilderValidators.required(),
-                      FormBuilderValidators.minLength(6, errorText: 'Minimum 6 characters'),
+                      FormBuilderValidators.minLength(
+                        6,
+                        errorText: 'Minimum 6 characters',
+                      ),
                     ],
                   ),
                   const SizedBox(height: 16),

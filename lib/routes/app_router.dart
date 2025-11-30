@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:marine_analytics_platform/global.dart';
 import 'package:marine_analytics_platform/presentation/views/alerts/page.dart';
 import 'package:marine_analytics_platform/presentation/views/alerts/create_test_alert_page.dart';
+import 'package:marine_analytics_platform/presentation/views/test_local_notification_page.dart';
 import 'package:marine_analytics_platform/presentation/views/areas/create/page.dart';
 import 'package:marine_analytics_platform/test_supabase_connection.dart';
 import 'package:marine_analytics_platform/presentation/views/department/page.dart';

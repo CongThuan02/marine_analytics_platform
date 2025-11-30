@@ -1,6 +1,7 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:marine_analytics_platform/global.dart';
+import 'package:marine_analytics_platform/routes/app_router.dart';
 
 /// Service to manage Firebase Cloud Messaging
 class FCMService {
@@ -123,40 +124,26 @@ class FCMService {
     // For now just log, notification will show when app is in background
   }
 
-  /// Show local notification
-  Future<void> _showLocalNotification(RemoteMessage message) async {
-    try {
-      final notification = message.notification;
-      if (notification == null) {
-        print('⚠️ Notification is null, skipping local notification');
-        return;
-      }
-
-      // Simplify - don't use local notification, just log
-      print('📬 Notification received:');
-      print('   Title: ${notification.title}');
-      print('   Body: ${notification.body}');
-      print('   Data: ${message.data}');
-
-      // FCM will automatically show notification when app is in background
-      // When app is in foreground, can show dialog or snackbar instead of notification
-    } catch (e) {
-      print('❌ Error handling notification: $e');
-    }
-  }
-
   /// Handle notification tap
   void _handleNotificationTap(RemoteMessage message) {
     print('🔔 Notification tapped: ${message.data}');
-    // Navigate to alerts page
-    // You can use navigation service here
+
+    // Navigate to alerts page using push instead of go
+    // Navigate to alerts page using push instead of go
+    // push() preserves the navigation stack and allows back navigation
+    // go() replaces the entire stack
+    appRouter.push('/alerts');
+    print('✅ Navigated to alerts page using push()');
   }
 
   /// Save FCM token to database
   Future<void> _saveFCMToken(String token) async {
     try {
       final userId = supabase.auth.currentUser?.id;
-      if (userId == null) return;
+      if (userId == null) {
+        print('ℹ️ User not logged in, FCM token not saved to database');
+        return;
+      }
 
       // Save token to user_fcm_tokens table with upsert
       await supabase.from('user_fcm_tokens').upsert(
@@ -171,6 +158,13 @@ class FCMService {
       print('✅ FCM token saved to database');
     } catch (e) {
       print('❌ Error saving FCM token: $e');
+    }
+  }
+
+  /// Save FCM token after login
+  Future<void> saveFCMTokenAfterLogin() async {
+    if (_fcmToken != null) {
+      await _saveFCMToken(_fcmToken!);
     }
   }
 
