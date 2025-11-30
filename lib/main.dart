@@ -70,10 +70,27 @@ Future<void> initDeepLinks() async {
 
 /// Handle deep link
 Future<void> _handleDeepLink(Uri uri) async {
-  if (uri.pathSegments.contains('ship')) {
-    // Delay 0 to avoid blocking main thread
+  print('🔗 Deep link received: $uri');
+  print('   Scheme: ${uri.scheme}');
+  print('   Host: ${uri.host}');
+  print('   Path: ${uri.path}');
+
+  // Handle different deep link routes
+  if (uri.host == 'ships' || uri.pathSegments.contains('ships')) {
+    // Navigate to history/ships page
     await Future.delayed(Duration.zero);
-    appRouter.go('/ship');
+    appRouter.go('/ships');
+    print('✅ Navigated to /ships');
+  } else if (uri.host == 'alerts' || uri.pathSegments.contains('alerts')) {
+    // Navigate to alerts page
+    await Future.delayed(Duration.zero);
+    appRouter.go('/alerts');
+    print('✅ Navigated to /alerts');
+  } else if (uri.host == 'home' || uri.path == '/') {
+    // Navigate to home page
+    await Future.delayed(Duration.zero);
+    appRouter.go('/');
+    print('✅ Navigated to home');
   }
 }
 

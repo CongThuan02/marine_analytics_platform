@@ -31,8 +31,13 @@
 	<key>CFBundleURLTypes</key>
     <array>
       <dict>
+        <key>CFBundleTypeRole</key>
+        <string>Editor</string>
+        <key>CFBundleURLName</key>
+        <string>com.example.marineanalyticsplatform</string>
         <key>CFBundleURLSchemes</key>
         <array>
+          <string>marineanalytics</string>
           <string>marineanalyticsplatform</string>
         </array>
       </dict>
