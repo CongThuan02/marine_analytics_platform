@@ -48,9 +48,7 @@ class _FormTextFieldState extends State<FormTextField> {
       builder: (field) {
         // Create controller with initial value
         final controller = TextEditingController(text: field.value ?? '')
-          ..selection = TextSelection.collapsed(
-            offset: field.value?.length ?? 0,
-          );
+          ..selection = TextSelection.collapsed(offset: field.value?.length ?? 0);
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -72,11 +70,7 @@ class _FormTextFieldState extends State<FormTextField> {
                         onPressed: () {
                           setState(() => hidePassword = !hidePassword);
                         },
-                        icon: Icon(
-                          hidePassword
-                              ? Icons.visibility_off
-                              : Icons.visibility,
-                        ),
+                        icon: Icon(hidePassword ? Icons.visibility_off : Icons.visibility),
                       )
                     : widget.suffixIcon,
               ),
@@ -85,10 +79,7 @@ class _FormTextFieldState extends State<FormTextField> {
             if (field.hasError)
               Padding(
                 padding: const EdgeInsets.only(left: 4, top: 4),
-                child: Text(
-                  field.errorText!,
-                  style: TextStyle(color: Colors.red, fontSize: 12),
-                ),
+                child: Text(field.errorText!, style: TextStyle(color: Colors.red, fontSize: 12)),
               ),
           ],
         );

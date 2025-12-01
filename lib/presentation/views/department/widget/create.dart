@@ -44,6 +44,14 @@ class CreateDepartment extends StatelessWidget {
                               value: name,
                               name: 'name',
                               label: "Tên",
+                              validators: [
+                                (value) {
+                                  if (value == null || value.trim().isEmpty) {
+                                    return 'Vui lòng nhập tên phòng ban';
+                                  }
+                                  return null;
+                                },
+                              ],
                               onChanged: (value) {
                                 bloc.add(
                                   UpdateFieldDepartmentEvent(
@@ -60,12 +68,19 @@ class CreateDepartment extends StatelessWidget {
                           name: 'area_id',
                           valueKey: 'id',
                           lableKey: 'name',
-                          label: 'Khu vực',
+                          label: 'Khu vực (tùy chọn)',
+                          iniItems: const [
+                            {'id': 'null', 'name': '(Không thuộc khu vực nào)'},
+                          ],
                           onChange: (value) {
+                            // Convert 'null' string to actual null for database
+                            final areaId = value == 'null' || value == 'select'
+                                ? null
+                                : value;
                             bloc.add(
                               UpdateFieldDepartmentEvent(
                                 key: 'area_id',
-                                value: value,
+                                value: areaId,
                               ),
                             );
                           },
@@ -77,11 +92,48 @@ class CreateDepartment extends StatelessWidget {
                     ),
                   ),
                 ),
-                ElevatedButton(
-                  onPressed: () {
-                    bloc.add(CreateDepartmentEvent());
+                BlocBuilder<DepartmentBloc, DepartmentState>(
+                  builder: (context, state) {
+                    return ElevatedButton(
+                      onPressed: state.status == Status.loading
+                          ? null
+                          : () {
+                              // Validate name is not empty
+                              final name = bloc.state.departmentModel.name
+                                  .trim();
+                              if (name.isEmpty) {
+                                // Show dialog instead of snackbar for better visibility
+                                showDialog(
+                                  context: context,
+                                  builder: (ctx) => AlertDialog(
+                                    title: const Text('Thiếu thông tin'),
+                                    content: const Text(
+                                      'Vui lòng nhập tên phòng ban',
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () => Navigator.pop(ctx),
+                                        child: const Text('Đồng ý'),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                                return;
+                              }
+                              bloc.add(CreateDepartmentEvent());
+                            },
+                      child: state.status == Status.loading
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                          : const Center(child: Text("Lưu")),
+                    );
                   },
-                  child: Center(child: Text("Lưu")),
                 ),
                 SizedBox(height: MediaQuery.of(context).viewInsets.bottom),
               ],

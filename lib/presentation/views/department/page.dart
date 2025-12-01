@@ -6,6 +6,7 @@ import 'package:marine_analytics_platform/core/theme/app_theme.dart';
 import 'package:marine_analytics_platform/global.dart';
 import 'package:marine_analytics_platform/presentation/blocs/department/department_bloc.dart';
 import 'package:marine_analytics_platform/presentation/views/department/widget/create.dart';
+import 'package:marine_analytics_platform/presentation/widgets/form_slect/form_select.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
@@ -28,7 +29,7 @@ class _DepartmentPage extends StatelessWidget {
     return BlocListener<DepartmentBloc, DepartmentState>(
       listener: (context, state) {
         if (state.status == Status.success) {
-          showTopSnackBar(Overlay.of(context), CustomSnackBar.success(message: "Success"));
+          showTopSnackBar(Overlay.of(context), CustomSnackBar.success(message: "${state.message}"));
           // Reload list after any success action (create or delete)
           bloc.add(GetDepartmentEvent());
         }
@@ -106,7 +107,7 @@ class _DepartmentPage extends StatelessWidget {
                                       Icon(Icons.location_on, size: 16, color: Colors.grey.shade600),
                                       const SizedBox(width: 4),
                                       Text(
-                                        item.area?.name ?? 'No area yet',
+                                        item.area?.name ?? 'Không xác định',
                                         style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
                                       ),
                                     ],
@@ -117,7 +118,7 @@ class _DepartmentPage extends StatelessWidget {
                             IconButton(
                               icon: const Icon(Icons.edit_outlined, color: AppTheme.primaryGreen),
                               onPressed: () =>
-                                  _showEditDialog(context, bloc, item.id ?? '', item.name ?? "", item.areaId ?? ""),
+                                  _showEditDialog(context, bloc, item.id ?? '', item.name ?? "", item.areaId),
                             ),
                             IconButton(
                               icon: const Icon(Icons.delete_outline, color: Colors.red),
@@ -150,41 +151,24 @@ class _DepartmentPage extends StatelessWidget {
     );
   }
 
-  void _showEditDialog(BuildContext context, DepartmentBloc bloc, String id, String currentName, String currentAreaId) {
-    final TextEditingController controller = TextEditingController(text: currentName);
-
+  void _showEditDialog(
+    BuildContext context,
+    DepartmentBloc bloc,
+    String id,
+    String currentName,
+    String? currentAreaId,
+  ) {
     showDialog(
       context: context,
       builder: (dialogContext) {
-        return AlertDialog(
-          title: const Row(
-            children: [
-              Icon(Icons.edit, color: AppTheme.primaryGreen),
-              SizedBox(width: 12),
-              Text('Chỉnh sửa phòng ban'),
-            ],
-          ),
-          content: TextField(
-            controller: controller,
-            autofocus: true,
-            decoration: const InputDecoration(labelText: 'Tên phòng ban', border: OutlineInputBorder()),
-          ),
-          actions: [
-            TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Hủy')),
-            ElevatedButton(
-              onPressed: () async {
-                final newName = controller.text.trim();
-                if (newName.isEmpty) return;
-
-                await supabase.from('departments').update({'name': newName}).eq('id', id);
-
-                bloc.add(GetDepartmentEvent());
-                Navigator.pop(dialogContext);
-              },
-              style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryGreen, foregroundColor: Colors.white),
-              child: const Text('Cập nhật'),
-            ),
-          ],
+        return _EditDepartmentDialog(
+          id: id,
+          currentName: currentName,
+          currentAreaId: currentAreaId,
+          onSave: () {
+            bloc.add(GetDepartmentEvent());
+            Navigator.pop(dialogContext);
+          },
         );
       },
     );
@@ -243,6 +227,121 @@ class _DepartmentPage extends StatelessWidget {
           ],
         );
       },
+    );
+  }
+}
+
+class _EditDepartmentDialog extends StatefulWidget {
+  final String id;
+  final String currentName;
+  final String? currentAreaId;
+  final VoidCallback onSave;
+
+  const _EditDepartmentDialog({
+    required this.id,
+    required this.currentName,
+    required this.currentAreaId,
+    required this.onSave,
+  });
+
+  @override
+  State<_EditDepartmentDialog> createState() => _EditDepartmentDialogState();
+}
+
+class _EditDepartmentDialogState extends State<_EditDepartmentDialog> {
+  late TextEditingController _nameController;
+  String? _selectedAreaId;
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController(text: widget.currentName);
+    _selectedAreaId = widget.currentAreaId;
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _handleSave() async {
+    final newName = _nameController.text.trim();
+    if (newName.isEmpty) return;
+
+    setState(() => _isLoading = true);
+
+    try {
+      // Convert 'null' string to actual null, and 'select' to null
+      final areaIdValue = _selectedAreaId == 'null' || _selectedAreaId == 'select' ? null : _selectedAreaId;
+
+      await supabase.from('departments').update({'name': newName, 'area_id': areaIdValue}).eq('id', widget.id);
+
+      widget.onSave();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Lỗi: $e'), backgroundColor: Colors.red));
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Row(
+        children: [
+          Icon(Icons.edit, color: AppTheme.primaryGreen),
+          SizedBox(width: 12),
+          Text('Chỉnh sửa phòng ban'),
+        ],
+      ),
+      content: SizedBox(
+        width: double.maxFinite,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: _nameController,
+              autofocus: true,
+              decoration: const InputDecoration(labelText: 'Tên phòng ban', border: OutlineInputBorder()),
+            ),
+            const SizedBox(height: 16),
+            FormSelect(
+              name: 'area_id',
+              label: 'Khu vực (tùy chọn)',
+              tableName: 'areas',
+              initialValue: _selectedAreaId == null ? 'null' : _selectedAreaId,
+              iniItems: const [
+                {'id': 'null', 'name': '(Không thuộc khu vực nào)'},
+              ],
+              onChange: (value) {
+                setState(() {
+                  _selectedAreaId = value;
+                });
+              },
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(onPressed: _isLoading ? null : () => Navigator.pop(context), child: const Text('Hủy')),
+        ElevatedButton(
+          onPressed: _isLoading ? null : _handleSave,
+          style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryGreen, foregroundColor: Colors.white),
+          child: _isLoading
+              ? const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                )
+              : const Text('Cập nhật'),
+        ),
+      ],
     );
   }
 }

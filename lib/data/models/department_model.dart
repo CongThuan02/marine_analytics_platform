@@ -5,7 +5,7 @@ class DepartmentModel extends Department {
   const DepartmentModel({
     required super.id,
     required super.name,
-    required super.areaId,
+    super.areaId, // Optional
     required super.createdAt,
     super.area,
   });
@@ -14,7 +14,7 @@ class DepartmentModel extends Department {
     return DepartmentModel(
       id: map['id'] as String? ?? '',
       name: map['name'] as String? ?? '',
-      areaId: map['area_id'] as String? ?? '',
+      areaId: map['area_id'] as String?, // Can be null
       createdAt: map['created_at'] != null
           ? DateTime.parse(map['created_at'] as String)
           : DateTime.now(),
@@ -25,7 +25,7 @@ class DepartmentModel extends Department {
   Map<String, dynamic> toMap() {
     return {
       'name': name,
-      'area_id': areaId,
+      'area_id': areaId, // Will be null if not set
     };
   }
 

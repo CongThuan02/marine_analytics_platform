@@ -18,7 +18,7 @@ class DepartmentRepository {
     try {
       final res = await supabase
           .from('departments')
-          .select('id, name, areas(id, name)');
+          .select('id, name, area_id, areas(id, name)'); // Include area_id
       // print(res);
       if (res != []) {
         List<DepartmentModel> data = res
