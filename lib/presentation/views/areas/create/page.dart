@@ -15,10 +15,7 @@ class CreateAreaPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => AreaBloc()..add(GetAreas()),
-      child: const _CreateAreaPage(),
-    );
+    return BlocProvider(create: (context) => AreaBloc()..add(GetAreas()), child: const _CreateAreaPage());
   }
 }
 
@@ -33,10 +30,7 @@ class _CreateAreaPage extends StatelessWidget {
           context.loaderOverlay.show();
         }
         if (state.status == Status.success) {
-          showTopSnackBar(
-            Overlay.of(context),
-            CustomSnackBar.success(message: state.message),
-          );
+          showTopSnackBar(Overlay.of(context), CustomSnackBar.success(message: state.message));
           context.loaderOverlay.hide();
 
           // Only pop if it's a create action (not delete)
@@ -57,13 +51,8 @@ class _CreateAreaPage extends StatelessWidget {
 
         return Scaffold(
           appBar: AppBar(
-            title: const Text("Manage Areas"),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.refresh),
-                onPressed: () => bloc.add(GetAreas()),
-              ),
-            ],
+            title: const Text("Quản lý khu vực"),
+            actions: [IconButton(icon: const Icon(Icons.refresh), onPressed: () => bloc.add(GetAreas()))],
           ),
           body: _buildBody(context, state, bloc),
           floatingActionButton: FloatingActionButton(
@@ -76,8 +65,7 @@ class _CreateAreaPage extends StatelessWidget {
   }
 
   Widget _buildBody(BuildContext context, AreaState state, AreaBloc bloc) {
-    if (state.status == Status.loading &&
-        (state.areas == null || state.areas!.isEmpty)) {
+    if (state.status == Status.loading && (state.areas == null || state.areas!.isEmpty)) {
       return const Center(child: CircularProgressIndicator());
     }
 
@@ -88,21 +76,11 @@ class _CreateAreaPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.location_on_outlined,
-              size: 80,
-              color: AppTheme.primaryGreenLight,
-            ),
+            Icon(Icons.location_on_outlined, size: 80, color: AppTheme.primaryGreenLight),
             const SizedBox(height: 16),
-            const Text(
-              'No areas yet',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-            ),
+            const Text('Không có dữ liệu', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
             const SizedBox(height: 8),
-            Text(
-              'Press + button to add a new area',
-              style: TextStyle(color: Colors.grey.shade600),
-            ),
+            Text('Nhấn nút + để thêm khu vực mới', style: TextStyle(color: Colors.grey.shade600)),
           ],
         ),
       );
@@ -124,8 +102,7 @@ class _CreateAreaPage extends StatelessWidget {
               side: BorderSide(color: Colors.grey.shade200),
             ),
             child: InkWell(
-              onLongPress: () =>
-                  _showDeleteDialog(context, bloc, area.id, area.name),
+              onLongPress: () => _showDeleteDialog(context, bloc, area.id, area.name),
               borderRadius: BorderRadius.circular(12),
               child: Padding(
                 padding: const EdgeInsets.all(16),
@@ -137,34 +114,19 @@ class _CreateAreaPage extends StatelessWidget {
                         color: AppTheme.accentBlue.withOpacity(0.2),
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: const Icon(
-                        Icons.location_city,
-                        color: AppTheme.accentBlue,
-                        size: 24,
-                      ),
+                      child: const Icon(Icons.location_city, color: AppTheme.accentBlue, size: 24),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
-                      child: Text(
-                        area.name,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                      child: Text(area.name, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                     ),
                     IconButton(
-                      icon: const Icon(
-                        Icons.edit_outlined,
-                        color: AppTheme.primaryGreen,
-                      ),
-                      onPressed: () =>
-                          _showEditDialog(context, bloc, area.id, area.name),
+                      icon: const Icon(Icons.edit_outlined, color: AppTheme.primaryGreen),
+                      onPressed: () => _showEditDialog(context, bloc, area.id, area.name),
                     ),
                     IconButton(
                       icon: const Icon(Icons.delete_outline, color: Colors.red),
-                      onPressed: () =>
-                          _showDeleteDialog(context, bloc, area.id, area.name),
+                      onPressed: () => _showDeleteDialog(context, bloc, area.id, area.name),
                     ),
                   ],
                 ),
@@ -184,9 +146,7 @@ class _CreateAreaPage extends StatelessWidget {
       builder: (bottomSheetContext) => BlocProvider.value(
         value: bloc,
         child: Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(bottomSheetContext).viewInsets.bottom,
-          ),
+          padding: EdgeInsets.only(bottom: MediaQuery.of(bottomSheetContext).viewInsets.bottom),
           child: Container(
             decoration: const BoxDecoration(
               color: Colors.white,
@@ -200,33 +160,18 @@ class _CreateAreaPage extends StatelessWidget {
                   margin: const EdgeInsets.only(top: 12, bottom: 8),
                   width: 40,
                   height: 4,
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
+                  decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2)),
                 ),
                 // Title
                 Padding(
                   padding: const EdgeInsets.all(16),
                   child: Row(
                     children: [
-                      const Icon(
-                        Icons.add_location,
-                        color: AppTheme.primaryGreen,
-                      ),
+                      const Icon(Icons.add_location, color: AppTheme.primaryGreen),
                       const SizedBox(width: 12),
-                      const Text(
-                        'Add New Area',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                      const Text('Thêm mưới khu vực', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                       const Spacer(),
-                      IconButton(
-                        icon: const Icon(Icons.close),
-                        onPressed: () => Navigator.pop(bottomSheetContext),
-                      ),
+                      IconButton(icon: const Icon(Icons.close), onPressed: () => Navigator.pop(bottomSheetContext)),
                     ],
                   ),
                 ),
@@ -240,7 +185,7 @@ class _CreateAreaPage extends StatelessWidget {
                       FormTextField(
                         autofocus: true,
                         name: 'area',
-                        label: 'Area name',
+                        label: 'Tên khu vực',
                         onChanged: (value) {
                           bloc.add(UpdateFieldName(name: value ?? ''));
                         },
@@ -250,9 +195,8 @@ class _CreateAreaPage extends StatelessWidget {
                         children: [
                           Expanded(
                             child: OutlinedButton(
-                              onPressed: () =>
-                                  Navigator.pop(bottomSheetContext),
-                              child: const Text('Cancel'),
+                              onPressed: () => Navigator.pop(bottomSheetContext),
+                              child: const Text('Hủy'),
                             ),
                           ),
                           const SizedBox(width: 12),
@@ -262,7 +206,7 @@ class _CreateAreaPage extends StatelessWidget {
                               onPressed: () {
                                 bloc.add(CreateArea());
                               },
-                              child: const Text('Add Area'),
+                              child: const Text('Thêm khu vực'),
                             ),
                           ),
                         ],
@@ -278,15 +222,8 @@ class _CreateAreaPage extends StatelessWidget {
     ).then((_) => bloc.add(GetAreas()));
   }
 
-  void _showEditDialog(
-    BuildContext context,
-    AreaBloc bloc,
-    String id,
-    String currentName,
-  ) {
-    final TextEditingController controller = TextEditingController(
-      text: currentName,
-    );
+  void _showEditDialog(BuildContext context, AreaBloc bloc, String id, String currentName) {
+    final TextEditingController controller = TextEditingController(text: currentName);
 
     showDialog(
       context: context,
@@ -296,22 +233,16 @@ class _CreateAreaPage extends StatelessWidget {
             children: [
               const Icon(Icons.edit, color: AppTheme.primaryGreen),
               const SizedBox(width: 12),
-              const Text('Edit Area'),
+              const Text('Chỉnh sửa khu vực'),
             ],
           ),
           content: TextField(
             controller: controller,
             autofocus: true,
-            decoration: const InputDecoration(
-              labelText: 'Area Name',
-              border: OutlineInputBorder(),
-            ),
+            decoration: const InputDecoration(labelText: 'Tên khu vực', border: OutlineInputBorder()),
           ),
           actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext),
-              child: const Text('Cancel'),
-            ),
+            TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Hủy')),
             ElevatedButton(
               onPressed: () async {
                 final newName = controller.text.trim();
@@ -328,11 +259,8 @@ class _CreateAreaPage extends StatelessWidget {
 
                 Navigator.pop(dialogContext);
               },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.primaryGreen,
-                foregroundColor: Colors.white,
-              ),
-              child: const Text('Update'),
+              style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryGreen, foregroundColor: Colors.white),
+              child: const Text('Cập nhật'),
             ),
           ],
         );
@@ -340,12 +268,7 @@ class _CreateAreaPage extends StatelessWidget {
     );
   }
 
-  void _showDeleteDialog(
-    BuildContext context,
-    AreaBloc bloc,
-    String id,
-    String name,
-  ) {
+  void _showDeleteDialog(BuildContext context, AreaBloc bloc, String id, String name) {
     showDialog(
       context: context,
       builder: (dialogContext) {
@@ -354,17 +277,14 @@ class _CreateAreaPage extends StatelessWidget {
             children: [
               const Icon(Icons.warning_amber_rounded, color: Colors.red),
               const SizedBox(width: 12),
-              const Expanded(child: Text('Confirm Delete')),
+              const Expanded(child: Text('Xác nhận xóa')),
             ],
           ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Are you sure you want to delete area "$name"?',
-                style: const TextStyle(fontSize: 16),
-              ),
+              Text('Bạn có chắc muốn xoá "$name"?', style: const TextStyle(fontSize: 16)),
               const SizedBox(height: 12),
               Container(
                 padding: const EdgeInsets.all(12),
@@ -375,19 +295,12 @@ class _CreateAreaPage extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    Icon(
-                      Icons.info_outline,
-                      size: 20,
-                      color: Colors.red.shade700,
-                    ),
+                    Icon(Icons.info_outline, size: 20, color: Colors.red.shade700),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        'Data cannot be recovered after deletion',
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.red.shade700,
-                        ),
+                        'Không thể khôi phục dữ liệu sau khi xoá',
+                        style: TextStyle(fontSize: 13, color: Colors.red.shade700),
                       ),
                     ),
                   ],
@@ -396,20 +309,14 @@ class _CreateAreaPage extends StatelessWidget {
             ],
           ),
           actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext),
-              child: const Text('Cancel'),
-            ),
+            TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Hủy')),
             ElevatedButton(
               onPressed: () {
                 bloc.add(DeleteArea(id: id));
                 Navigator.pop(dialogContext);
               },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                foregroundColor: Colors.white,
-              ),
-              child: const Text('Delete'),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
+              child: const Text('Xóa'),
             ),
           ],
         );

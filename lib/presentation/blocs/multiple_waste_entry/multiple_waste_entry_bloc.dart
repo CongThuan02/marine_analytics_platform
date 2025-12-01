@@ -12,8 +12,8 @@ class MultipleWasteEntryBloc
   final WasteEntryRepository _repository;
 
   MultipleWasteEntryBloc({WasteEntryRepository? repository})
-      : _repository = repository ?? WasteEntryRepository(),
-        super(const MultipleWasteEntryState()) {
+    : _repository = repository ?? WasteEntryRepository(),
+      super(const MultipleWasteEntryState()) {
     on<AddWasteItemEvent>(_onAddWasteItem);
     on<RemoveWasteItemEvent>(_onRemoveWasteItem);
     on<UpdateWasteTypeEvent>(_onUpdateWasteType);
@@ -70,18 +70,22 @@ class MultipleWasteEntryBloc
         if (item.wasteTypeId == null ||
             item.wasteTypeId!.isEmpty ||
             item.wasteTypeId == 'select') {
-          emit(state.copyWith(
-            status: MultipleWasteEntryStatus.error,
-            errorMessage: 'Please select waste type for item ${i + 1}',
-          ));
+          emit(
+            state.copyWith(
+              status: MultipleWasteEntryStatus.error,
+              errorMessage: 'Vui lòng chọn loại chất thải cho mục ${i + 1}',
+            ),
+          );
           return;
         }
 
         if (quantity == null || quantity <= 0) {
-          emit(state.copyWith(
-            status: MultipleWasteEntryStatus.error,
-            errorMessage: 'Invalid quantity for item ${i + 1}',
-          ));
+          emit(
+            state.copyWith(
+              status: MultipleWasteEntryStatus.error,
+              errorMessage: 'Invalid quantity for item ${i + 1}',
+            ),
+          );
           return;
         }
 
@@ -101,15 +105,19 @@ class MultipleWasteEntryBloc
         successCount++;
       }
 
-      emit(state.copyWith(
-        status: MultipleWasteEntryStatus.success,
-        entriesCreated: successCount,
-      ));
+      emit(
+        state.copyWith(
+          status: MultipleWasteEntryStatus.success,
+          entriesCreated: successCount,
+        ),
+      );
     } catch (e) {
-      emit(state.copyWith(
-        status: MultipleWasteEntryStatus.error,
-        errorMessage: e.toString(),
-      ));
+      emit(
+        state.copyWith(
+          status: MultipleWasteEntryStatus.error,
+          errorMessage: e.toString(),
+        ),
+      );
     }
   }
 

@@ -25,7 +25,7 @@ class _WasteLimitView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Manage Limits'),
+        title: const Text('Quản lý hạn mức'),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -53,7 +53,7 @@ class _WasteLimitView extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Error: ${state.message}',
+                    'Lỗi: ${state.message}',
                     style: TextStyle(color: Colors.red.shade700),
                     textAlign: TextAlign.center,
                   ),
@@ -64,7 +64,7 @@ class _WasteLimitView extends StatelessWidget {
                         const LoadWasteLimits(),
                       );
                     },
-                    child: const Text('Retry'),
+                    child: const Text('Thử lại'),
                   ),
                 ],
               ),
@@ -92,7 +92,7 @@ class _WasteLimitView extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Press + button to add a new limit',
+                      'Nhấn nút + để thêm hạn mức mới',
                       style: TextStyle(color: Colors.grey.shade600),
                     ),
                   ],

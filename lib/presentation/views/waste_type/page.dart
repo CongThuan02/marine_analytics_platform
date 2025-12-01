@@ -14,10 +14,7 @@ class WasteTypePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => WasteTypeBloc()..add(GetWasteTypeEvent()),
-      child: const _WasteTypePage(),
-    );
+    return BlocProvider(create: (_) => WasteTypeBloc()..add(GetWasteTypeEvent()), child: const _WasteTypePage());
   }
 }
 
@@ -31,23 +28,15 @@ class _WasteTypePage extends StatelessWidget {
     return BlocListener<WasteTypeBloc, WasteTypeState>(
       listener: (context, state) {
         if (state.status == Status.success) {
-          showTopSnackBar(
-            Overlay.of(context),
-            CustomSnackBar.success(message: "Success"),
-          );
+          showTopSnackBar(Overlay.of(context), CustomSnackBar.success(message: "Thêm mới thành công"));
           // Reload list after any success action (create or delete)
           bloc.add(GetWasteTypeEvent());
         }
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("Manage Waste Types"),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.refresh),
-              onPressed: () => bloc.add(GetWasteTypeEvent()),
-            ),
-          ],
+          title: const Text("Quản lý loại chất thải"),
+          actions: [IconButton(icon: const Icon(Icons.refresh), onPressed: () => bloc.add(GetWasteTypeEvent()))],
         ),
         body: BlocBuilder<WasteTypeBloc, WasteTypeState>(
           builder: (context, state) {
@@ -62,24 +51,11 @@ class _WasteTypePage extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      Icons.delete_outline,
-                      size: 80,
-                      color: AppTheme.primaryGreenLight,
-                    ),
+                    Icon(Icons.delete_outline, size: 80, color: AppTheme.primaryGreenLight),
                     const SizedBox(height: 16),
-                    const Text(
-                      'No waste types yet',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
+                    const Text('Không có dữ liệu', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
                     const SizedBox(height: 8),
-                    Text(
-                      'Press + button to add a new waste type',
-                      style: TextStyle(color: Colors.grey.shade600),
-                    ),
+                    Text('Nhấn nút + để thêm loại chất thải mới', style: TextStyle(color: Colors.grey.shade600)),
                   ],
                 ),
               );
@@ -101,12 +77,7 @@ class _WasteTypePage extends StatelessWidget {
                       side: BorderSide(color: Colors.grey.shade200),
                     ),
                     child: InkWell(
-                      onLongPress: () => _showDeleteDialog(
-                        context,
-                        bloc,
-                        item.id ?? '',
-                        item.name ?? "",
-                      ),
+                      onLongPress: () => _showDeleteDialog(context, bloc, item.id ?? '', item.name ?? ""),
                       borderRadius: BorderRadius.circular(12),
                       child: Padding(
                         padding: const EdgeInsets.all(16),
@@ -115,16 +86,10 @@ class _WasteTypePage extends StatelessWidget {
                             Container(
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
-                                color: AppTheme.secondaryTealLight.withOpacity(
-                                  0.2,
-                                ),
+                                color: AppTheme.secondaryTealLight.withOpacity(0.2),
                                 borderRadius: BorderRadius.circular(10),
                               ),
-                              child: const Icon(
-                                Icons.recycling,
-                                color: AppTheme.secondaryTeal,
-                                size: 24,
-                              ),
+                              child: const Icon(Icons.recycling, color: AppTheme.secondaryTeal, size: 24),
                             ),
                             const SizedBox(width: 16),
                             Expanded(
@@ -133,26 +98,16 @@ class _WasteTypePage extends StatelessWidget {
                                 children: [
                                   Text(
                                     item.name ?? 'No name',
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                                   ),
                                   const SizedBox(height: 4),
                                   Row(
                                     children: [
-                                      Icon(
-                                        Icons.straighten,
-                                        size: 16,
-                                        color: Colors.grey.shade600,
-                                      ),
+                                      Icon(Icons.straighten, size: 16, color: Colors.grey.shade600),
                                       const SizedBox(width: 4),
                                       Text(
-                                        'Unit: ${item.unit ?? 'Not yet'}',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          color: Colors.grey.shade600,
-                                        ),
+                                        'Đơn vị tính: ${item.unit ?? 'Not yet'}',
+                                        style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
                                       ),
                                     ],
                                   ),
@@ -160,29 +115,13 @@ class _WasteTypePage extends StatelessWidget {
                               ),
                             ),
                             IconButton(
-                              icon: const Icon(
-                                Icons.edit_outlined,
-                                color: AppTheme.primaryGreen,
-                              ),
-                              onPressed: () => _showEditDialog(
-                                context,
-                                bloc,
-                                item.id ?? '',
-                                item.name ?? "",
-                                item.unit ?? "",
-                              ),
+                              icon: const Icon(Icons.edit_outlined, color: AppTheme.primaryGreen),
+                              onPressed: () =>
+                                  _showEditDialog(context, bloc, item.id ?? '', item.name ?? "", item.unit ?? ""),
                             ),
                             IconButton(
-                              icon: const Icon(
-                                Icons.delete_outline,
-                                color: Colors.red,
-                              ),
-                              onPressed: () => _showDeleteDialog(
-                                context,
-                                bloc,
-                                item.id ?? '',
-                                item.name ?? "",
-                              ),
+                              icon: const Icon(Icons.delete_outline, color: Colors.red),
+                              onPressed: () => _showDeleteDialog(context, bloc, item.id ?? '', item.name ?? ""),
                             ),
                           ],
                         ),
@@ -201,8 +140,7 @@ class _WasteTypePage extends StatelessWidget {
               context: context,
               isScrollControlled: true,
               useSafeArea: true,
-              builder: (context) =>
-                  BlocProvider.value(value: bloc, child: CreateWasteType()),
+              builder: (context) => BlocProvider.value(value: bloc, child: CreateWasteType()),
             );
 
             bloc.add(GetWasteTypeEvent());
@@ -213,19 +151,9 @@ class _WasteTypePage extends StatelessWidget {
     );
   }
 
-  void _showEditDialog(
-    BuildContext context,
-    WasteTypeBloc bloc,
-    String id,
-    String currentName,
-    String currentUnit,
-  ) {
-    final TextEditingController nameController = TextEditingController(
-      text: currentName,
-    );
-    final TextEditingController unitController = TextEditingController(
-      text: currentUnit,
-    );
+  void _showEditDialog(BuildContext context, WasteTypeBloc bloc, String id, String currentName, String currentUnit) {
+    final TextEditingController nameController = TextEditingController(text: currentName);
+    final TextEditingController unitController = TextEditingController(text: currentUnit);
 
     showDialog(
       context: context,
@@ -235,7 +163,7 @@ class _WasteTypePage extends StatelessWidget {
             children: [
               Icon(Icons.edit, color: AppTheme.primaryGreen),
               SizedBox(width: 12),
-              Text('Edit Waste Type'),
+              Text('Chỉnh sửa loại chất thải'),
             ],
           ),
           content: Column(
@@ -244,45 +172,30 @@ class _WasteTypePage extends StatelessWidget {
               TextField(
                 controller: nameController,
                 autofocus: true,
-                decoration: const InputDecoration(
-                  labelText: 'Waste Type Name',
-                  border: OutlineInputBorder(),
-                ),
+                decoration: const InputDecoration(labelText: 'Tên loại chất thải', border: OutlineInputBorder()),
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: unitController,
-                decoration: const InputDecoration(
-                  labelText: 'Unit (e.g., kg, ton)',
-                  border: OutlineInputBorder(),
-                ),
+                decoration: const InputDecoration(labelText: 'Đơn vị (ví dụ: kg, tấn)', border: OutlineInputBorder()),
               ),
             ],
           ),
           actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext),
-              child: const Text('Cancel'),
-            ),
+            TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Hủy')),
             ElevatedButton(
               onPressed: () async {
                 final newName = nameController.text.trim();
                 final newUnit = unitController.text.trim();
                 if (newName.isEmpty || newUnit.isEmpty) return;
 
-                await supabase
-                    .from('waste_types')
-                    .update({'name': newName, 'unit': newUnit})
-                    .eq('id', id);
+                await supabase.from('waste_types').update({'name': newName, 'Đơn vị tính': newUnit}).eq('id', id);
 
                 bloc.add(GetWasteTypeEvent());
                 Navigator.pop(dialogContext);
               },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.primaryGreen,
-                foregroundColor: Colors.white,
-              ),
-              child: const Text('Update'),
+              style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryGreen, foregroundColor: Colors.white),
+              child: const Text('Cập nhật'),
             ),
           ],
         );
@@ -290,12 +203,7 @@ class _WasteTypePage extends StatelessWidget {
     );
   }
 
-  void _showDeleteDialog(
-    BuildContext context,
-    WasteTypeBloc bloc,
-    String id,
-    String name,
-  ) {
+  void _showDeleteDialog(BuildContext context, WasteTypeBloc bloc, String id, String name) {
     showDialog(
       context: context,
       builder: (dialogContext) {
@@ -304,17 +212,14 @@ class _WasteTypePage extends StatelessWidget {
             children: [
               const Icon(Icons.warning_amber_rounded, color: Colors.red),
               const SizedBox(width: 12),
-              const Expanded(child: Text('Confirm Delete')),
+              const Expanded(child: Text('Xác nhận xóa')),
             ],
           ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Are you sure you want to delete waste type "$name"?',
-                style: const TextStyle(fontSize: 16),
-              ),
+              Text('Bạn có muốn xoá "$name"?', style: const TextStyle(fontSize: 16)),
               const SizedBox(height: 12),
               Container(
                 padding: const EdgeInsets.all(12),
@@ -325,19 +230,12 @@ class _WasteTypePage extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    Icon(
-                      Icons.info_outline,
-                      size: 20,
-                      color: Colors.red.shade700,
-                    ),
+                    Icon(Icons.info_outline, size: 20, color: Colors.red.shade700),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        'Data cannot be recovered after deletion',
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.red.shade700,
-                        ),
+                        'Dữ liệu không thể khôi phục sau khi xóa',
+                        style: TextStyle(fontSize: 13, color: Colors.red.shade700),
                       ),
                     ),
                   ],
@@ -346,31 +244,19 @@ class _WasteTypePage extends StatelessWidget {
             ],
           ),
           actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext),
-              child: const Text('Cancel'),
-            ),
+            TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Hủy')),
             ElevatedButton(
               onPressed: () async {
                 Navigator.pop(dialogContext);
 
                 // Check if waste type is being used
-                final alertsResponse = await supabase
-                    .from('alerts')
-                    .select()
-                    .eq('waste_type_id', id);
+                final alertsResponse = await supabase.from('alerts').select().eq('waste_type_id', id);
                 final alertsCount = (alertsResponse as List).length;
 
-                final entriesResponse = await supabase
-                    .from('waste_entries')
-                    .select()
-                    .eq('waste_type_id', id);
+                final entriesResponse = await supabase.from('waste_entries').select().eq('waste_type_id', id);
                 final entriesCount = (entriesResponse as List).length;
 
-                final limitsResponse = await supabase
-                    .from('waste_limits')
-                    .select()
-                    .eq('waste_type_id', id);
+                final limitsResponse = await supabase.from('waste_limits').select().eq('waste_type_id', id);
                 final limitsCount = (limitsResponse as List).length;
 
                 if (alertsCount > 0 || entriesCount > 0 || limitsCount > 0) {
@@ -382,7 +268,7 @@ class _WasteTypePage extends StatelessWidget {
                         children: [
                           Icon(Icons.error_outline, color: Colors.orange),
                           SizedBox(width: 12),
-                          Text('Cannot Delete'),
+                          Text('Không thể xóa'),
                         ],
                       ),
                       content: Column(
@@ -390,27 +276,21 @@ class _WasteTypePage extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
-                            'This waste type is currently being used and cannot be deleted:',
+                            'Loại chất thải này đang được sử dụng và không thể xóa:',
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                           const SizedBox(height: 12),
-                          if (alertsCount > 0) Text('• $alertsCount alert(s)'),
-                          if (entriesCount > 0)
-                            Text('• $entriesCount waste entry(ies)'),
-                          if (limitsCount > 0) Text('• $limitsCount limit(s)'),
+                          if (alertsCount > 0) Text('• $alertsCount cảnh báo'),
+                          if (entriesCount > 0) Text('• $entriesCount bản ghi'),
+                          if (limitsCount > 0) Text('• $limitsCount giới hạn'),
                           const SizedBox(height: 12),
                           const Text(
-                            'Please remove these references first, or use Edit to modify the waste type instead.',
+                            'Vui lòng xóa các tham chiếu này trước, hoặc sử dụng Chỉnh sửa để thay đổi loại chất thải.',
                             style: TextStyle(fontSize: 13, color: Colors.grey),
                           ),
                         ],
                       ),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(ctx),
-                          child: const Text('OK'),
-                        ),
-                      ],
+                      actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Đồng ý'))],
                     ),
                   );
                 } else {
@@ -418,11 +298,8 @@ class _WasteTypePage extends StatelessWidget {
                   bloc.add(DeleteWasteTypeEvent(id));
                 }
               },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                foregroundColor: Colors.white,
-              ),
-              child: const Text('Delete'),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
+              child: const Text('Xóa'),
             ),
           ],
         );

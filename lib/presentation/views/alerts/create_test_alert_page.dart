@@ -40,7 +40,7 @@ class _CreateTestAlertPageState extends State<CreateTestAlertPage> {
         }
       });
     } catch (e) {
-      setState(() => _message = 'Error: $e');
+      setState(() => _message = 'Lỗi: $e');
     } finally {
       setState(() => _isLoading = false);
     }
@@ -48,7 +48,7 @@ class _CreateTestAlertPageState extends State<CreateTestAlertPage> {
 
   Future<void> _createTestAlert() async {
     if (_selectedAreaId == null || _selectedWasteTypeId == null) {
-      setState(() => _message = 'Please select area and waste type');
+      setState(() => _message = 'Vui lòng chọn khu vực và loại chất thải');
       return;
     }
 
@@ -68,9 +68,9 @@ class _CreateTestAlertPageState extends State<CreateTestAlertPage> {
         'message': '⚠️ TEST ALERT: Already reached 85% of limit',
       });
 
-      setState(() => _message = '✅ Test alert created successfully!');
+      setState(() => _message = '✅ Đã tạo cảnh báo test thành công!');
     } catch (e) {
-      setState(() => _message = '❌ Error: $e');
+      setState(() => _message = '❌ Lỗi: $e');
     } finally {
       setState(() => _isLoading = false);
     }
@@ -107,10 +107,10 @@ class _CreateTestAlertPageState extends State<CreateTestAlertPage> {
         'daily_limit': 100.0,
       });
 
-      setState(() => _message = '✅ Test data created successfully!');
+      setState(() => _message = '✅ Đã tạo dữ liệu test thành công!');
       await _loadData();
     } catch (e) {
-      setState(() => _message = '❌ Error: $e');
+      setState(() => _message = '❌ Lỗi: $e');
     } finally {
       setState(() => _isLoading = false);
     }
@@ -127,9 +127,9 @@ class _CreateTestAlertPageState extends State<CreateTestAlertPage> {
           .from('alerts')
           .delete()
           .neq('id', '00000000-0000-0000-0000-000000000000');
-      setState(() => _message = '✅ Deleted all alerts!');
+      setState(() => _message = '✅ Đã xóa tất cả cảnh báo!');
     } catch (e) {
-      setState(() => _message = '❌ Error: $e');
+      setState(() => _message = '❌ Lỗi: $e');
     } finally {
       setState(() => _isLoading = false);
     }
@@ -138,7 +138,7 @@ class _CreateTestAlertPageState extends State<CreateTestAlertPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Test Create Alert')),
+      appBar: AppBar(title: const Text('Test tạo cảnh báo')),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
@@ -147,7 +147,7 @@ class _CreateTestAlertPageState extends State<CreateTestAlertPage> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const Text(
-                    'Create Test Alert',
+                    'Tạo cảnh báo test',
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 16),
@@ -171,7 +171,7 @@ class _CreateTestAlertPageState extends State<CreateTestAlertPage> {
                             ElevatedButton.icon(
                               onPressed: _createTestData,
                               icon: const Icon(Icons.add),
-                              label: const Text('Create Test Data'),
+                              label: const Text('Tạo dữ liệu test'),
                             ),
                           ],
                         ),
@@ -181,7 +181,7 @@ class _CreateTestAlertPageState extends State<CreateTestAlertPage> {
                     DropdownButtonFormField<String>(
                       initialValue: _selectedAreaId,
                       decoration: const InputDecoration(
-                        labelText: 'Area',
+                        labelText: 'Khu vực',
                         border: OutlineInputBorder(),
                       ),
                       items: _areas.map((area) {
@@ -197,7 +197,7 @@ class _CreateTestAlertPageState extends State<CreateTestAlertPage> {
                     DropdownButtonFormField<String>(
                       initialValue: _selectedWasteTypeId,
                       decoration: const InputDecoration(
-                        labelText: 'Waste Type',
+                        labelText: 'Loại chất thải',
                         border: OutlineInputBorder(),
                       ),
                       items: _wasteTypes.map((type) {
@@ -213,7 +213,7 @@ class _CreateTestAlertPageState extends State<CreateTestAlertPage> {
                     ElevatedButton.icon(
                       onPressed: _createTestAlert,
                       icon: const Icon(Icons.warning),
-                      label: const Text('Create Test Alert (85%)'),
+                      label: const Text('Tạo cảnh báo test (85%)'),
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.all(16),
                         backgroundColor: Colors.orange,
@@ -229,7 +229,7 @@ class _CreateTestAlertPageState extends State<CreateTestAlertPage> {
                   ElevatedButton.icon(
                     onPressed: _deleteAllAlerts,
                     icon: const Icon(Icons.delete_sweep),
-                    label: const Text('Delete All Alerts'),
+                    label: const Text('Xóa tất cả cảnh báo'),
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.all(16),
                       backgroundColor: Colors.red,
@@ -267,11 +267,11 @@ class _CreateTestAlertPageState extends State<CreateTestAlertPage> {
                           ),
                           const SizedBox(height: 8),
                           const Text(
-                            '1. If no data yet, click "Create Test Data"',
+                            '1. Nếu chưa có dữ liệu, nhấn "Tạo dữ liệu test"',
                           ),
-                          const Text('2. Select area and waste type'),
+                          const Text('2. Chọn khu vực và loại chất thải'),
                           const Text(
-                            '3. Click "Create Test Alert" to create alert',
+                            '3. Nhấn "Tạo cảnh báo test" để tạo cảnh báo',
                           ),
                           const Text(
                             '4. Go back to Alerts page to see results',

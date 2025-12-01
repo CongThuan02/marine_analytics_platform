@@ -43,7 +43,7 @@ class CreateDepartment extends StatelessWidget {
                               autofocus: true,
                               value: name,
                               name: 'name',
-                              label: "Name",
+                              label: "Tên",
                               onChanged: (value) {
                                 bloc.add(
                                   UpdateFieldDepartmentEvent(
@@ -60,7 +60,7 @@ class CreateDepartment extends StatelessWidget {
                           name: 'area_id',
                           valueKey: 'id',
                           lableKey: 'name',
-                          label: 'Area',
+                          label: 'Khu vực',
                           onChange: (value) {
                             bloc.add(
                               UpdateFieldDepartmentEvent(
@@ -81,7 +81,7 @@ class CreateDepartment extends StatelessWidget {
                   onPressed: () {
                     bloc.add(CreateDepartmentEvent());
                   },
-                  child: Center(child: Text("Save")),
+                  child: Center(child: Text("Lưu")),
                 ),
                 SizedBox(height: MediaQuery.of(context).viewInsets.bottom),
               ],

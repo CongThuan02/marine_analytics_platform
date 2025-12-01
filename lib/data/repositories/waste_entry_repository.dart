@@ -28,27 +28,27 @@ class WasteEntryRepository {
           .map((item) => WasteEntryModel.fromMap(item as Map<String, dynamic>))
           .toList();
     } catch (e) {
-      throw Exception('Unable to load waste history: $e');
+      throw Exception('Không thể tải lịch sử rác thải: $e');
     }
   }
 
   Future<String> createWasteEntry({required WasteEntryModel entry}) async {
     final userId = supabase.auth.currentUser?.id;
     if (userId == null) {
-      throw Exception('You are not logged in.');
+      throw Exception('Bạn chưa đăng nhập.');
     }
 
     if (entry.areaId.isEmpty) {
-      throw Exception('Please select an area.');
+      throw Exception('Vui lòng chọn khu vực.');
     }
     if (entry.departmentId.isEmpty) {
-      throw Exception('Please select a department.');
+      throw Exception('Vui lòng chọn phòng ban.');
     }
     if (entry.wasteTypeId.isEmpty) {
-      throw Exception('Please select a waste type.');
+      throw Exception('Vui lòng chọn loại chất thải.');
     }
     if (entry.quantity <= 0) {
-      throw Exception('Quantity must be greater than 0.');
+      throw Exception('Số lượng phải lớn hơn 0.');
     }
 
     String formatDate(DateTime date) {
@@ -78,10 +78,10 @@ class WasteEntryRepository {
       await _checkWasteLimitAndNotify(entry);
       print('✅ [SAVE] Waste limit check completed');
 
-      return 'Waste recorded successfully.';
+      return 'Đã ghi nhận rác thải thành công.';
     } catch (e) {
-      print('❌ [SAVE] Error: $e');
-      throw Exception('Unable to save data: $e');
+      print('❌ [SAVE] Lỗi: $e');
+      throw Exception('Không thể lưu dữ liệu: $e');
     }
   }
 
@@ -91,20 +91,20 @@ class WasteEntryRepository {
   }) async {
     final userId = supabase.auth.currentUser?.id;
     if (userId == null) {
-      throw Exception('You are not logged in.');
+      throw Exception('Bạn chưa đăng nhập.');
     }
 
     if (entry.areaId.isEmpty) {
-      throw Exception('Please select an area.');
+      throw Exception('Vui lòng chọn khu vực.');
     }
     if (entry.departmentId.isEmpty) {
-      throw Exception('Please select a department.');
+      throw Exception('Vui lòng chọn phòng ban.');
     }
     if (entry.wasteTypeId.isEmpty) {
-      throw Exception('Please select a waste type.');
+      throw Exception('Vui lòng chọn loại chất thải.');
     }
     if (entry.quantity <= 0) {
-      throw Exception('Quantity must be greater than 0.');
+      throw Exception('Số lượng phải lớn hơn 0.');
     }
 
     String formatDate(DateTime date) {
@@ -133,10 +133,10 @@ class WasteEntryRepository {
       await _checkWasteLimitAndNotify(entry);
       print('✅ [UPDATE] Waste limit check completed');
 
-      return 'Waste updated successfully.';
+      return 'Đã cập nhật rác thải thành công.';
     } catch (e) {
-      print('❌ [UPDATE] Error: $e');
-      throw Exception('Unable to update data: $e');
+      print('❌ [UPDATE] Lỗi: $e');
+      throw Exception('Không thể cập nhật dữ liệu: $e');
     }
   }
 

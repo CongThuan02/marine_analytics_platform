@@ -44,7 +44,7 @@ class _CreateMultipleWasteEntriesSheetState
           Navigator.of(context).maybePop();
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Added ${_wasteItems.length} waste types'),
+              content: Text('Đã thêm ${_wasteItems.length} loại chất thải'),
               backgroundColor: AppTheme.primaryGreen,
             ),
           );
@@ -84,7 +84,7 @@ class _CreateMultipleWasteEntriesSheetState
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          'Add Multiple Waste Types',
+                          'Thêm nhiều loại chất thải',
                           style: Theme.of(context).textTheme.titleLarge
                               ?.copyWith(fontWeight: FontWeight.bold),
                         ),
@@ -99,7 +99,7 @@ class _CreateMultipleWasteEntriesSheetState
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
-                          '${_wasteItems.length} types',
+                          '${_wasteItems.length} loại',
                           style: const TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
@@ -136,14 +136,14 @@ class _CreateMultipleWasteEntriesSheetState
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'Waste List',
+                            'Danh sách chất thải',
                             style: Theme.of(context).textTheme.titleMedium
                                 ?.copyWith(fontWeight: FontWeight.bold),
                           ),
                           TextButton.icon(
                             onPressed: _addWasteItem,
                             icon: const Icon(Icons.add),
-                            label: const Text('Add Type'),
+                            label: const Text('Thêm loại'),
                             style: TextButton.styleFrom(
                               foregroundColor: AppTheme.primaryGreen,
                             ),
@@ -163,7 +163,9 @@ class _CreateMultipleWasteEntriesSheetState
                         child: ElevatedButton.icon(
                           onPressed: _handleSubmit,
                           icon: const Icon(Icons.save),
-                          label: Text('Save ${_wasteItems.length} waste types'),
+                          label: Text(
+                            'Lưu ${_wasteItems.length} loại chất thải',
+                          ),
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             backgroundColor: AppTheme.primaryGreen,
@@ -187,7 +189,7 @@ class _CreateMultipleWasteEntriesSheetState
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Common Information',
+          'Thông tin chung',
           style: Theme.of(
             context,
           ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
@@ -195,12 +197,12 @@ class _CreateMultipleWasteEntriesSheetState
         const SizedBox(height: 12),
         FormSelect(
           name: 'area_id',
-          label: 'Area',
+          label: 'Khu vực',
           tableName: 'areas',
           validators: [
             (value) {
               if (value == null || value == 'select') {
-                return 'Please select an area';
+                return 'Vui lòng chọn khu vực';
               }
               return null;
             },
@@ -209,12 +211,12 @@ class _CreateMultipleWasteEntriesSheetState
         const SizedBox(height: 12),
         FormSelect(
           name: 'department_id',
-          label: 'Department',
+          label: 'Phòng ban',
           tableName: 'departments',
           validators: [
             (value) {
               if (value == null || value == 'select') {
-                return 'Please select a department';
+                return 'Vui lòng chọn phòng ban';
               }
               return null;
             },
@@ -268,7 +270,7 @@ class _CreateMultipleWasteEntriesSheetState
     // Validate common fields
     final formState = _formKey.currentState;
     if (!(formState?.saveAndValidate() ?? false)) {
-      _showSnackBar('Please fill in all common information', isError: true);
+      _showSnackBar('Vui lòng điền đầy đủ thông tin chung', isError: true);
       return;
     }
 
@@ -281,7 +283,10 @@ class _CreateMultipleWasteEntriesSheetState
     }
 
     if (!allValid) {
-      _showSnackBar('Please fill in all waste type information', isError: true);
+      _showSnackBar(
+        'Vui lòng điền đầy đủ thông tin loại chất thải',
+        isError: true,
+      );
       return;
     }
 
@@ -299,7 +304,7 @@ class _CreateMultipleWasteEntriesSheetState
 
       if (quantity == null || quantity <= 0) {
         _showSnackBar(
-          'Invalid quantity for waste type ${i + 1}',
+          'Số lượng không hợp lệ cho loại chất thải ${i + 1}',
           isError: true,
         );
         return;
@@ -386,7 +391,7 @@ class _WasteItemCard extends StatelessWidget {
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      wasteItem.wasteTypeName ?? 'Waste Type ${index + 1}',
+                      wasteItem.wasteTypeName ?? 'Loại chất thải ${index + 1}',
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
@@ -405,7 +410,7 @@ class _WasteItemCard extends StatelessWidget {
               const SizedBox(height: 12),
               FormSelect(
                 name: 'waste_type_id_$index',
-                label: 'Waste Type',
+                label: 'Loại chất thải',
                 tableName: 'waste_types',
                 itemLabelBuilder: (item) {
                   final name = item['name']?.toString() ?? 'Select';
@@ -424,7 +429,7 @@ class _WasteItemCard extends StatelessWidget {
                 validators: [
                   (value) {
                     if (value == null || value == 'select') {
-                      return 'Please select a waste type';
+                      return 'Vui lòng chọn loại chất thải';
                     }
                     return null;
                   },
@@ -435,8 +440,8 @@ class _WasteItemCard extends StatelessWidget {
                 name: 'quantity_$index',
                 decoration: InputDecoration(
                   labelText:
-                      'Quantity${wasteItem.unit != null ? ' (${wasteItem.unit})' : ''}',
-                  hintText: 'Example: 12.5',
+                      'Số lượng${wasteItem.unit != null ? ' (${wasteItem.unit})' : ''}',
+                  hintText: 'Ví dụ: 12.5',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -447,10 +452,10 @@ class _WasteItemCard extends StatelessWidget {
                 ),
                 validator: FormBuilderValidators.compose([
                   FormBuilderValidators.required(
-                    errorText: 'Please enter quantity',
+                    errorText: 'Vui lòng nhập số lượng',
                   ),
                   FormBuilderValidators.numeric(
-                    errorText: 'Quantity must be a number',
+                    errorText: 'Số lượng phải là số',
                   ),
                 ]),
               ),
@@ -489,7 +494,7 @@ class _DateField extends StatelessWidget {
       name: 'date',
       initialValue: DateTime.now(),
       validator: (value) {
-        if (value == null) return 'Please select entry date';
+        if (value == null) return 'Vui lòng chọn ngày nhập';
         return null;
       },
       builder: (field) {
@@ -510,7 +515,7 @@ class _DateField extends StatelessWidget {
           onTap: pickDate,
           child: InputDecorator(
             decoration: InputDecoration(
-              labelText: 'Entry Date',
+              labelText: 'Ngày nhập',
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -525,7 +530,7 @@ class _DateField extends StatelessWidget {
   }
 
   String _formatDate(DateTime? date) {
-    if (date == null) return 'Select Date';
+    if (date == null) return 'Chọn ngày';
 
     final day = date.day.toString().padLeft(2, '0');
     final month = date.month.toString().padLeft(2, '0');

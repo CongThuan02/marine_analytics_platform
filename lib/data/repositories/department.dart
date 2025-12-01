@@ -8,9 +8,9 @@ class DepartmentRepository {
         'name': department.name,
         'area_id': department.areaId,
       });
-      return "Data added successfully";
+      return "Đã thêm dữ liệu thành công";
     } catch (e) {
-      return "Failed to add data: $e";
+      return "Thêm dữ liệu thất bại: $e";
     }
   }
 
@@ -35,9 +35,9 @@ class DepartmentRepository {
   Future<String> deleteDepartment({required String id}) async {
     try {
       await supabase.from('departments').delete().eq('id', id);
-      return "Department deleted successfully";
+      return "Đã xóa phòng ban thành công";
     } catch (e) {
-      return "Delete failed";
+      return "Xóa thất bại";
     }
   }
 }

@@ -16,7 +16,7 @@ class _TestAlertsPageState extends State<TestAlertsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Test Create Alert')),
+      appBar: AppBar(title: const Text('Test tạo cảnh báo')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -71,7 +71,7 @@ class _TestAlertsPageState extends State<TestAlertsPage> {
             ElevatedButton.icon(
               onPressed: _loading ? null : _createTestAlert,
               icon: const Icon(Icons.add_alert),
-              label: const Text('Create Test Alert'),
+              label: const Text('Tạo cảnh báo test'),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.all(16),
                 backgroundColor: Colors.orange,
@@ -81,7 +81,7 @@ class _TestAlertsPageState extends State<TestAlertsPage> {
             ElevatedButton.icon(
               onPressed: _loading ? null : _deleteAllAlerts,
               icon: const Icon(Icons.delete_sweep),
-              label: const Text('Delete All Alerts'),
+              label: const Text('Xóa tất cả cảnh báo'),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.all(16),
                 backgroundColor: Colors.red,
@@ -195,7 +195,7 @@ class _TestAlertsPageState extends State<TestAlertsPage> {
       });
     } catch (e) {
       setState(() {
-        _message = 'Error: $e';
+        _message = 'Lỗi: $e';
         _loading = false;
       });
     }
@@ -239,12 +239,12 @@ class _TestAlertsPageState extends State<TestAlertsPage> {
       });
 
       setState(() {
-        _message = 'Test alert created successfully!';
+        _message = 'Đã tạo cảnh báo test thành công!';
         _loading = false;
       });
     } catch (e) {
       setState(() {
-        _message = 'Error: $e';
+        _message = 'Lỗi: $e';
         _loading = false;
       });
     }
@@ -254,17 +254,17 @@ class _TestAlertsPageState extends State<TestAlertsPage> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Confirm'),
-        content: const Text('Are you sure you want to delete all alerts?'),
+        title: const Text('Xác nhận'),
+        content: const Text('Bạn có chắc chắn muốn xóa tất cả cảnh báo?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: const Text('Hủy'),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Delete'),
+            child: const Text('Xóa'),
           ),
         ],
       ),
@@ -284,7 +284,7 @@ class _TestAlertsPageState extends State<TestAlertsPage> {
           .neq('id', '00000000-0000-0000-0000-000000000000');
 
       setState(() {
-        _message = 'Deleted all alerts!';
+        _message = 'Đã xóa tất cả cảnh báo!';
         _loading = false;
       });
     } catch (e) {

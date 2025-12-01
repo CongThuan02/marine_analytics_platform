@@ -142,15 +142,15 @@ final appRouter = GoRouter(
             items: const [
               BottomNavigationBarItem(
                 icon: Icon(Icons.home),
-                label: "Overview",
+                label: "Tổng quan",
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.directions_boat),
-                label: "history",
+                label: "Lịch sử",
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.settings),
-                label: "Settings",
+                label: "Cài đặt",
               ),
             ],
           ),

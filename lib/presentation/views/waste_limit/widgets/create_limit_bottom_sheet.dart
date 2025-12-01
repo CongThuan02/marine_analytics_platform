@@ -44,9 +44,7 @@ class _CreateLimitBottomSheetState extends State<CreateLimitBottomSheet> {
     } catch (e) {
       setState(() => _loading = false);
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error loading data: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Lỗi tải dữ liệu: $e')));
       }
     }
   }
@@ -66,30 +64,18 @@ class _CreateLimitBottomSheetState extends State<CreateLimitBottomSheet> {
             margin: const EdgeInsets.only(top: 12, bottom: 8),
             width: 40,
             height: 4,
-            decoration: BoxDecoration(
-              color: Colors.grey.shade300,
-              borderRadius: BorderRadius.circular(2),
-            ),
+            decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2)),
           ),
           // Title
           Padding(
             padding: const EdgeInsets.all(16),
             child: Row(
               children: [
-                const Icon(
-                  Icons.add_circle_outline,
-                  color: AppTheme.primaryGreen,
-                ),
+                const Icon(Icons.add_circle_outline, color: AppTheme.primaryGreen),
                 const SizedBox(width: 12),
-                const Text(
-                  'Add New Limit',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
+                const Text('Thêm mới hạn mức', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                 const Spacer(),
-                IconButton(
-                  icon: const Icon(Icons.close),
-                  onPressed: () => Navigator.pop(context),
-                ),
+                IconButton(icon: const Icon(Icons.close), onPressed: () => Navigator.pop(context)),
               ],
             ),
           ),
@@ -108,44 +94,33 @@ class _CreateLimitBottomSheetState extends State<CreateLimitBottomSheet> {
                           DropdownButtonFormField<AreaModel>(
                             initialValue: _selectedArea,
                             decoration: const InputDecoration(
-                              labelText: 'Area',
+                              labelText: 'Khu vực',
                               prefixIcon: Icon(Icons.location_on),
                             ),
                             items: _areas.map((area) {
-                              return DropdownMenuItem(
-                                value: area,
-                                child: Text(area.name ?? 'No name'),
-                              );
+                              return DropdownMenuItem(value: area, child: Text(area.name ?? 'No name'));
                             }).toList(),
-                            onChanged: (value) =>
-                                setState(() => _selectedArea = value),
-                            validator: (value) =>
-                                value == null ? 'Please select an area' : null,
+                            onChanged: (value) => setState(() => _selectedArea = value),
+                            validator: (value) => value == null ? 'Vui lòng chọn khu vực' : null,
                           ),
                           const SizedBox(height: 16),
                           DropdownButtonFormField<WasteTypeModel>(
                             initialValue: _selectedWasteType,
                             decoration: const InputDecoration(
-                              labelText: 'Waste Type',
+                              labelText: 'Loại chất thải',
                               prefixIcon: Icon(Icons.delete_outline),
                             ),
                             items: _wasteTypes.map((type) {
-                              return DropdownMenuItem(
-                                value: type,
-                                child: Text('${type.name} (${type.unit})'),
-                              );
+                              return DropdownMenuItem(value: type, child: Text('${type.name} (${type.unit})'));
                             }).toList(),
-                            onChanged: (value) =>
-                                setState(() => _selectedWasteType = value),
-                            validator: (value) => value == null
-                                ? 'Please select a waste type'
-                                : null,
+                            onChanged: (value) => setState(() => _selectedWasteType = value),
+                            validator: (value) => value == null ? 'Vui lòng chọn loại chất thải' : null,
                           ),
                           const SizedBox(height: 16),
                           TextFormField(
                             controller: _limitController,
                             decoration: InputDecoration(
-                              labelText: 'Daily limit',
+                              labelText: 'Giới hạn hàng ngày',
                               prefixIcon: const Icon(Icons.speed),
                               suffixText: _selectedWasteType?.unit ?? 'kg',
                             ),
@@ -169,7 +144,7 @@ class _CreateLimitBottomSheetState extends State<CreateLimitBottomSheet> {
                               Expanded(
                                 child: OutlinedButton(
                                   onPressed: () => Navigator.pop(context),
-                                  child: const Text('Cancel'),
+                                  child: const Text('Hủy'),
                                 ),
                               ),
                               const SizedBox(width: 12),
@@ -177,7 +152,7 @@ class _CreateLimitBottomSheetState extends State<CreateLimitBottomSheet> {
                                 flex: 2,
                                 child: ElevatedButton(
                                   onPressed: _loading ? null : _submit,
-                                  child: const Text('Add Limit'),
+                                  child: const Text('Thêm hạn mức'),
                                 ),
                               ),
                             ],
@@ -204,9 +179,7 @@ class _CreateLimitBottomSheetState extends State<CreateLimitBottomSheet> {
 
       context.read<WasteLimitBloc>().add(CreateWasteLimitEvent(limit));
       Navigator.pop(context);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Added new limit')));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Đã thêm hạn mức mới')));
     }
   }
 

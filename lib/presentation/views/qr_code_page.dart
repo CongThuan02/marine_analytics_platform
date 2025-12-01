@@ -11,7 +11,7 @@ class QRCodePage extends StatelessWidget {
     const deepLinkUrl = 'marineanalytics://ships';
 
     return Scaffold(
-      appBar: AppBar(title: const Text('QR Code - Open History')),
+      appBar: AppBar(title: const Text('Mã QR - Mở lịch sử')),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

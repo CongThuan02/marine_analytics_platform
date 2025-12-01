@@ -69,7 +69,7 @@ class _ClickableLogoState extends State<ClickableLogo>
     if (token == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('FCM Token not available yet. Please wait...'),
+          content: Text('FCM Token chưa sẵn sàng. Vui lòng đợi...'),
           backgroundColor: Colors.orange,
         ),
       );
@@ -92,7 +92,7 @@ class _ClickableLogoState extends State<ClickableLogo>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Your Firebase Cloud Messaging token:',
+              'Firebase Cloud Messaging token của bạn:',
               style: TextStyle(fontWeight: FontWeight.w500),
             ),
             const SizedBox(height: 12),
@@ -113,7 +113,7 @@ class _ClickableLogoState extends State<ClickableLogo>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+            child: const Text('Đóng'),
           ),
           ElevatedButton.icon(
             onPressed: () {
@@ -121,14 +121,14 @@ class _ClickableLogoState extends State<ClickableLogo>
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('✅ FCM Token copied to clipboard!'),
+                  content: Text('✅ Đã sao chép FCM Token!'),
                   backgroundColor: Colors.green,
                   duration: Duration(seconds: 2),
                 ),
               );
             },
             icon: const Icon(Icons.copy, size: 18),
-            label: const Text('Copy'),
+            label: const Text('Sao chép'),
           ),
         ],
       ),

@@ -2,9 +2,11 @@ import 'dart:async';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:marine_analytics_platform/core/di/injection_container.dart'
     as di;
+import 'package:marine_analytics_platform/core/localization/app_localizations.dart';
 import 'package:marine_analytics_platform/core/services/fcm_service.dart';
 import 'package:marine_analytics_platform/core/services/local_notification_service.dart';
 import 'package:marine_analytics_platform/core/theme/app_theme.dart';
@@ -160,15 +162,24 @@ class _MyAppState extends State<MyApp> {
         return const Center(child: CircularProgressIndicator());
       },
       child: MaterialApp.router(
-        title: 'Marine Analytics Platform',
+        title: 'Nền tảng Phân tích Hàng hải',
         theme: AppTheme.lightTheme,
         routerConfig: appRouter,
+        // Localization - Vietnamese as default
+        locale: const Locale('vi', 'VN'),
+        supportedLocales: const [
+          Locale('vi', 'VN'), // Vietnamese
+          Locale('en', 'US'), // English (for future)
+        ],
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
         builder: (context, child) {
           return child!;
         },
-        // Add navigator key for FCM navigation
-        // Note: This is a workaround since GoRouter doesn't directly support navigatorKey
-        // We'll use the router's navigator key instead
       ),
     );
   }

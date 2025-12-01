@@ -23,16 +23,12 @@ class ReminderCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: reminder.enabled
-                        ? AppTheme.primaryGreenLight.withOpacity(0.2)
-                        : Colors.grey.shade200,
+                    color: reminder.enabled ? AppTheme.primaryGreenLight.withOpacity(0.2) : Colors.grey.shade200,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
                     Icons.notifications_active,
-                    color: reminder.enabled
-                        ? AppTheme.primaryGreen
-                        : Colors.grey,
+                    color: reminder.enabled ? AppTheme.primaryGreen : Colors.grey,
                     size: 24,
                   ),
                 ),
@@ -42,19 +38,13 @@ class ReminderCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        reminder.departmentName ?? 'Department not specified',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        reminder.departmentName ?? 'Bộ phận không được chỉ định',
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        reminder.frequency == 'daily' ? 'Daily' : 'Weekly',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey.shade600,
-                        ),
+                        reminder.frequency == 'daily' ? 'Hàng ngày' : 'Hàng tuần',
+                        style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
                       ),
                     ],
                   ),
@@ -62,9 +52,7 @@ class ReminderCard extends StatelessWidget {
                 Switch(
                   value: reminder.enabled,
                   onChanged: (value) {
-                    context.read<ReminderBloc>().add(
-                      ToggleReminderEvent(reminder.id, value),
-                    );
+                    context.read<ReminderBloc>().add(ToggleReminderEvent(reminder.id, value));
                   },
                   activeThumbColor: AppTheme.primaryGreen,
                 ),
@@ -77,16 +65,9 @@ class ReminderCard extends StatelessWidget {
             const Divider(height: 24),
             Row(
               children: [
-                const Icon(
-                  Icons.access_time,
-                  size: 20,
-                  color: AppTheme.primaryGreen,
-                ),
+                const Icon(Icons.access_time, size: 20, color: AppTheme.primaryGreen),
                 const SizedBox(width: 8),
-                Text(
-                  'Time: ${_formatTime(reminder.timeOfDay)}',
-                  style: const TextStyle(fontSize: 14),
-                ),
+                Text('Thời gian: ${_formatTime(reminder.timeOfDay)}', style: const TextStyle(fontSize: 14)),
               ],
             ),
             if (reminder.message != null && reminder.message!.isNotEmpty) ...[
@@ -94,18 +75,9 @@ class ReminderCard extends StatelessWidget {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(
-                    Icons.message,
-                    size: 20,
-                    color: AppTheme.primaryGreen,
-                  ),
+                  const Icon(Icons.message, size: 20, color: AppTheme.primaryGreen),
                   const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      reminder.message!,
-                      style: const TextStyle(fontSize: 14),
-                    ),
-                  ),
+                  Expanded(child: Text(reminder.message!, style: const TextStyle(fontSize: 14))),
                 ],
               ),
             ],
@@ -128,24 +100,17 @@ class ReminderCard extends StatelessWidget {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Confirm Delete'),
-        content: const Text('Are you sure you want to delete this reminder?'),
+        title: const Text('Xác nhận xóa'),
+        content: const Text('Bạn có chắc chắn muốn xóa nhắc nhở này?'),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cancel'),
-          ),
+          TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Hủy')),
           TextButton(
             onPressed: () {
-              context.read<ReminderBloc>().add(
-                DeleteReminderEvent(reminder.id),
-              );
+              context.read<ReminderBloc>().add(DeleteReminderEvent(reminder.id));
               Navigator.pop(dialogContext);
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(const SnackBar(content: Text('Reminder deleted')));
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Đã xóa nhắc nhở')));
             },
-            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+            child: const Text('Xóa', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),

@@ -11,12 +11,28 @@ class FormSelectBloc extends Bloc<FormSelectEvent, FormSelectState> {
   FormSelectBloc() : super(FormSelectState(items: [])) {
     on<GetItemsFormEvent>((event, emit) async {
       emit(state.copyWith(status: Status.loading));
-      final res = await _formSelectRepository.getAllItems(tableName: event.tableName);
+      final res = await _formSelectRepository.getAllItems(
+        tableName: event.tableName,
+        filterColumn: event.filterColumn,
+        filterValue: event.filterValue,
+      );
 
-      emit(state.copyWith(status: Status.loaded, items: res, selected: state.selected ?? "select"));
+      emit(
+        state.copyWith(
+          status: Status.loaded,
+          items: res,
+          selected: state.selected ?? "select",
+        ),
+      );
     });
     on<UpdateFiledFormEvent>((event, emit) {
-      emit(state.copyWith(items: state.items, status: Status.loaded, selected: event.value!));
+      emit(
+        state.copyWith(
+          items: state.items,
+          status: Status.loaded,
+          selected: event.value!,
+        ),
+      );
     });
   }
 }

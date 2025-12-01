@@ -59,7 +59,7 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
             const SizedBox(height: 8),
             const Text(
-              'Marine Waste Analytics',
+              'Phân tích Chất thải Hàng hải',
               style: TextStyle(fontSize: 14, color: Colors.grey),
             ),
             const SizedBox(height: 48),

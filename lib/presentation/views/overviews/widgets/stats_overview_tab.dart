@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
-import 'package:marine_analytics_platform/core/constants/app_strings.dart';
 import 'package:marine_analytics_platform/core/constants/enum_status.dart';
 import 'package:marine_analytics_platform/core/theme/app_theme.dart';
 import 'package:marine_analytics_platform/data/models/waste_stats.dart';
@@ -12,7 +10,11 @@ class StatsOverviewTab extends StatelessWidget {
   final StatsPeriod period;
   final String emptyMessage;
 
-  const StatsOverviewTab({super.key, required this.period, required this.emptyMessage});
+  const StatsOverviewTab({
+    super.key,
+    required this.period,
+    required this.emptyMessage,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -34,9 +36,12 @@ class _StatsOverviewView extends StatelessWidget {
     return BlocConsumer<WasteStatsCubit, WasteStatsState>(
       listener: (context, state) {
         if (state.status == Status.fail && state.message != null) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(state.message!), backgroundColor: Colors.red));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.message!),
+              backgroundColor: Colors.red,
+            ),
+          );
         }
       },
       builder: (context, state) {
@@ -57,21 +62,23 @@ class _StatsOverviewView extends StatelessWidget {
                 date: state.referenceDate,
                 onChanged: (newDate) {
                   if (newDate != null) {
-                    context.read<WasteStatsCubit>().load(referenceDate: newDate);
+                    context.read<WasteStatsCubit>().load(
+                      referenceDate: newDate,
+                    );
                   }
                 },
               ),
               const SizedBox(height: 16),
               _SummaryCard(
                 icon: Icons.scale,
-                label: AppStrings.totalQuantity,
+                label: 'Tổng khối lượng',
                 value: '${_formatQuantity(stats.totalQuantity)} kg',
                 color: AppTheme.primaryGreen,
               ),
               const SizedBox(height: 12),
               _SummaryCard(
                 icon: Icons.description_outlined,
-                label: AppStrings.entryCount,
+                label: 'Số lượng bản ghi',
                 value: stats.entryCount.toString(),
                 color: AppTheme.secondaryTeal,
               ),
@@ -82,15 +89,19 @@ class _StatsOverviewView extends StatelessWidget {
                     padding: const EdgeInsets.all(32),
                     child: Text(
                       emptyMessage,
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.grey),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodyLarge?.copyWith(color: Colors.grey),
                       textAlign: TextAlign.center,
                     ),
                   ),
                 )
               else ...[
                 Text(
-                  AppStrings.wasteDistribution,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                  'Phân bố chất thải',
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16),
                 _PieChartWidget(breakdowns: stats.breakdowns),
@@ -102,17 +113,21 @@ class _StatsOverviewView extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          AppStrings.detailsByWasteType,
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                          'Chi tiết theo loại chất thải',
+                          style: Theme.of(context).textTheme.titleLarge
+                              ?.copyWith(fontWeight: FontWeight.bold),
                         ),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
                           decoration: BoxDecoration(
                             color: AppTheme.primaryGreen.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
-                            'Total: ${_formatQuantity(stats.totalQuantity)} kg',
+                            'Tổng: ${_formatQuantity(stats.totalQuantity)} kg',
                             style: const TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.bold,
@@ -126,20 +141,33 @@ class _StatsOverviewView extends StatelessWidget {
                     // Debug info - display breakdown totals
                     Builder(
                       builder: (context) {
-                        final breakdownTotal = stats.breakdowns.fold<double>(0, (sum, item) => sum + item.quantity);
+                        final breakdownTotal = stats.breakdowns.fold<double>(
+                          0,
+                          (sum, item) => sum + item.quantity,
+                        );
                         final percentageTotal = stats.breakdowns.fold<double>(
                           0,
                           (sum, item) =>
-                              sum + (stats.totalQuantity > 0 ? (item.quantity / stats.totalQuantity * 100) : 0),
+                              sum +
+                              (stats.totalQuantity > 0
+                                  ? (item.quantity / stats.totalQuantity * 100)
+                                  : 0),
                         );
-                        final isMatching = (breakdownTotal - stats.totalQuantity).abs() < 0.01;
+                        final isMatching =
+                            (breakdownTotal - stats.totalQuantity).abs() < 0.01;
 
                         return Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: isMatching ? Colors.green.shade50 : Colors.orange.shade50,
+                            color: isMatching
+                                ? Colors.green.shade50
+                                : Colors.orange.shade50,
                             borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: isMatching ? Colors.green.shade200 : Colors.orange.shade200),
+                            border: Border.all(
+                              color: isMatching
+                                  ? Colors.green.shade200
+                                  : Colors.orange.shade200,
+                            ),
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -147,18 +175,24 @@ class _StatsOverviewView extends StatelessWidget {
                               Row(
                                 children: [
                                   Icon(
-                                    isMatching ? Icons.check_circle_outline : Icons.warning_amber_rounded,
+                                    isMatching
+                                        ? Icons.check_circle_outline
+                                        : Icons.warning_amber_rounded,
                                     size: 16,
-                                    color: isMatching ? Colors.green.shade700 : Colors.orange.shade700,
+                                    color: isMatching
+                                        ? Colors.green.shade700
+                                        : Colors.orange.shade700,
                                   ),
                                   const SizedBox(width: 8),
                                   Expanded(
                                     child: Text(
-                                      'Check data',
+                                      'Kiểm tra dữ liệu',
                                       style: TextStyle(
                                         fontSize: 11,
                                         fontWeight: FontWeight.bold,
-                                        color: isMatching ? Colors.green.shade700 : Colors.orange.shade700,
+                                        color: isMatching
+                                            ? Colors.green.shade700
+                                            : Colors.orange.shade700,
                                       ),
                                     ),
                                   ),
@@ -166,13 +200,15 @@ class _StatsOverviewView extends StatelessWidget {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                'Breakdown total: ${_formatQuantity(breakdownTotal)} kg\n'
-                                'Stats total: ${_formatQuantity(stats.totalQuantity)} kg\n'
-                                'Total %: ${percentageTotal.toStringAsFixed(1)}%\n'
-                                'Types: ${stats.breakdowns.length} | Entries: ${stats.entryCount}',
+                                'Tổng phân tích: ${_formatQuantity(breakdownTotal)} kg\n'
+                                'Tổng thống kê: ${_formatQuantity(stats.totalQuantity)} kg\n'
+                                'Tổng %: ${percentageTotal.toStringAsFixed(1)}%\n'
+                                'Loại: ${stats.breakdowns.length} | Bản ghi: ${stats.entryCount}',
                                 style: TextStyle(
                                   fontSize: 10,
-                                  color: isMatching ? Colors.green.shade700 : Colors.orange.shade700,
+                                  color: isMatching
+                                      ? Colors.green.shade700
+                                      : Colors.orange.shade700,
                                 ),
                               ),
                             ],
@@ -191,8 +227,14 @@ class _StatsOverviewView extends StatelessWidget {
                   itemBuilder: (context, index) {
                     final item = stats.breakdowns[index];
                     // Avoid division by zero
-                    final percentage = stats.totalQuantity > 0 ? (item.quantity / stats.totalQuantity * 100) : 0.0;
-                    return _BreakdownTile(item: item, percentage: percentage, totalQuantity: stats.totalQuantity);
+                    final percentage = stats.totalQuantity > 0
+                        ? (item.quantity / stats.totalQuantity * 100)
+                        : 0.0;
+                    return _BreakdownTile(
+                      item: item,
+                      percentage: percentage,
+                      totalQuantity: stats.totalQuantity,
+                    );
                   },
                 ),
               ],
@@ -209,7 +251,11 @@ class _PeriodSelector extends StatelessWidget {
   final DateTime date;
   final ValueChanged<DateTime?> onChanged;
 
-  const _PeriodSelector({required this.period, required this.date, required this.onChanged});
+  const _PeriodSelector({
+    required this.period,
+    required this.date,
+    required this.onChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -220,7 +266,9 @@ class _PeriodSelector extends StatelessWidget {
         Expanded(
           child: Text(
             _formatDate(period, date),
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
           ),
         ),
         TextButton(
@@ -228,13 +276,17 @@ class _PeriodSelector extends StatelessWidget {
             final picked = await _pickDate(context, period, date);
             onChanged(picked);
           },
-          child: const Text('Change'),
+          child: const Text('Thay đổi'),
         ),
       ],
     );
   }
 
-  Future<DateTime?> _pickDate(BuildContext context, StatsPeriod period, DateTime date) async {
+  Future<DateTime?> _pickDate(
+    BuildContext context,
+    StatsPeriod period,
+    DateTime date,
+  ) async {
     switch (period) {
       case StatsPeriod.day:
         final picked = await showDatePicker(
@@ -243,7 +295,9 @@ class _PeriodSelector extends StatelessWidget {
           firstDate: DateTime(date.year - 5),
           lastDate: DateTime(date.year + 5),
         );
-        return picked != null ? DateTime(picked.year, picked.month, picked.day) : null;
+        return picked != null
+            ? DateTime(picked.year, picked.month, picked.day)
+            : null;
 
       case StatsPeriod.month:
         return await _showMonthYearPicker(context, date);
@@ -253,7 +307,10 @@ class _PeriodSelector extends StatelessWidget {
     }
   }
 
-  Future<DateTime?> _showMonthYearPicker(BuildContext context, DateTime initialDate) async {
+  Future<DateTime?> _showMonthYearPicker(
+    BuildContext context,
+    DateTime initialDate,
+  ) async {
     final result = await showDialog<DateTime>(
       context: context,
       builder: (BuildContext context) {
@@ -263,7 +320,7 @@ class _PeriodSelector extends StatelessWidget {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              title: const Text('Select month and year'),
+              title: const Text('Chọn tháng và năm'),
               content: SizedBox(
                 width: 300,
                 height: 300,
@@ -279,7 +336,13 @@ class _PeriodSelector extends StatelessWidget {
                             setState(() => selectedYear--);
                           },
                         ),
-                        Text('$selectedYear', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                        Text(
+                          '$selectedYear',
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                         IconButton(
                           icon: const Icon(Icons.chevron_right),
                           onPressed: () {
@@ -292,12 +355,13 @@ class _PeriodSelector extends StatelessWidget {
                     // Month grid
                     Expanded(
                       child: GridView.builder(
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 3,
-                          childAspectRatio: 2,
-                          crossAxisSpacing: 8,
-                          mainAxisSpacing: 8,
-                        ),
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 3,
+                              childAspectRatio: 2,
+                              crossAxisSpacing: 8,
+                              mainAxisSpacing: 8,
+                            ),
                         itemCount: 12,
                         itemBuilder: (context, index) {
                           final month = index + 1;
@@ -308,15 +372,21 @@ class _PeriodSelector extends StatelessWidget {
                             },
                             child: Container(
                               decoration: BoxDecoration(
-                                color: isSelected ? AppTheme.primaryGreen : Colors.grey.shade200,
+                                color: isSelected
+                                    ? AppTheme.primaryGreen
+                                    : Colors.grey.shade200,
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Center(
                                 child: Text(
                                   'Th $month',
                                   style: TextStyle(
-                                    color: isSelected ? Colors.white : Colors.black87,
-                                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                                    color: isSelected
+                                        ? Colors.white
+                                        : Colors.black87,
+                                    fontWeight: isSelected
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
                                   ),
                                 ),
                               ),
@@ -329,12 +399,17 @@ class _PeriodSelector extends StatelessWidget {
                 ),
               ),
               actions: [
-                TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Cancel')),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Hủy'),
+                ),
                 TextButton(
                   onPressed: () {
-                    Navigator.of(context).pop(DateTime(selectedYear, selectedMonth));
+                    Navigator.of(
+                      context,
+                    ).pop(DateTime(selectedYear, selectedMonth));
                   },
-                  child: const Text('Select'),
+                  child: const Text('Chọn'),
                 ),
               ],
             );
@@ -346,7 +421,10 @@ class _PeriodSelector extends StatelessWidget {
     return result;
   }
 
-  Future<DateTime?> _showYearPicker(BuildContext context, DateTime initialDate) async {
+  Future<DateTime?> _showYearPicker(
+    BuildContext context,
+    DateTime initialDate,
+  ) async {
     final result = await showDialog<DateTime>(
       context: context,
       builder: (BuildContext context) {
@@ -358,7 +436,7 @@ class _PeriodSelector extends StatelessWidget {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              title: const Text('Select year'),
+              title: const Text('Chọn năm'),
               content: SizedBox(
                 width: 300,
                 height: 400,
@@ -382,12 +460,13 @@ class _PeriodSelector extends StatelessWidget {
                     // Year grid
                     Expanded(
                       child: GridView.builder(
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 3,
-                          childAspectRatio: 1.5,
-                          crossAxisSpacing: 8,
-                          mainAxisSpacing: 8,
-                        ),
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 3,
+                              childAspectRatio: 1.5,
+                              crossAxisSpacing: 8,
+                              mainAxisSpacing: 8,
+                            ),
                         itemCount: endYear - startYear + 1,
                         itemBuilder: (context, index) {
                           final year = startYear + index;
@@ -403,19 +482,28 @@ class _PeriodSelector extends StatelessWidget {
                                 color: isSelected
                                     ? AppTheme.primaryGreen
                                     : isCurrentYear
-                                    ? AppTheme.primaryGreenLight.withOpacity(0.2)
+                                    ? AppTheme.primaryGreenLight.withOpacity(
+                                        0.2,
+                                      )
                                     : Colors.grey.shade200,
                                 borderRadius: BorderRadius.circular(8),
                                 border: isCurrentYear && !isSelected
-                                    ? Border.all(color: AppTheme.primaryGreen, width: 2)
+                                    ? Border.all(
+                                        color: AppTheme.primaryGreen,
+                                        width: 2,
+                                      )
                                     : null,
                               ),
                               child: Center(
                                 child: Text(
                                   '$year',
                                   style: TextStyle(
-                                    color: isSelected ? Colors.white : Colors.black87,
-                                    fontWeight: isSelected || isCurrentYear ? FontWeight.bold : FontWeight.normal,
+                                    color: isSelected
+                                        ? Colors.white
+                                        : Colors.black87,
+                                    fontWeight: isSelected || isCurrentYear
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
                                   ),
                                 ),
                               ),
@@ -428,12 +516,15 @@ class _PeriodSelector extends StatelessWidget {
                 ),
               ),
               actions: [
-                TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Cancel')),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Hủy'),
+                ),
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop(DateTime(selectedYear));
                   },
-                  child: const Text('Select'),
+                  child: const Text('Chọn'),
                 ),
               ],
             );
@@ -452,7 +543,12 @@ class _SummaryCard extends StatelessWidget {
   final String value;
   final Color color;
 
-  const _SummaryCard({required this.icon, required this.label, required this.value, required this.color});
+  const _SummaryCard({
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -471,7 +567,10 @@ class _SummaryCard extends StatelessWidget {
         children: [
           Container(
             padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(12)),
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: BorderRadius.circular(12),
+            ),
             child: Icon(icon, color: Colors.white, size: 28),
           ),
           const SizedBox(width: 16),
@@ -481,14 +580,18 @@ class _SummaryCard extends StatelessWidget {
               children: [
                 Text(
                   label,
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodyMedium?.copyWith(color: Colors.grey.shade700, fontWeight: FontWeight.w500),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Colors.grey.shade700,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   value,
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold, color: color),
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: color,
+                  ),
                 ),
               ],
             ),
@@ -504,11 +607,17 @@ class _BreakdownTile extends StatelessWidget {
   final double percentage;
   final double totalQuantity;
 
-  const _BreakdownTile({required this.item, required this.percentage, required this.totalQuantity});
+  const _BreakdownTile({
+    required this.item,
+    required this.percentage,
+    required this.totalQuantity,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final validPercentage = percentage.isFinite && !percentage.isNaN ? percentage.clamp(0.0, 100.0) : 0.0;
+    final validPercentage = percentage.isFinite && !percentage.isNaN
+        ? percentage.clamp(0.0, 100.0)
+        : 0.0;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -516,7 +625,13 @@ class _BreakdownTile extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.grey.shade300),
-        boxShadow: [BoxShadow(color: Colors.grey.shade200, blurRadius: 4, offset: const Offset(0, 2))],
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.shade200,
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -526,18 +641,27 @@ class _BreakdownTile extends StatelessWidget {
               Expanded(
                 child: Text(
                   item.name,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: AppTheme.primaryGreenLight.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
                   '${validPercentage.toStringAsFixed(2)}%',
-                  style: const TextStyle(color: AppTheme.primaryGreen, fontWeight: FontWeight.bold, fontSize: 14),
+                  style: const TextStyle(
+                    color: AppTheme.primaryGreen,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
                 ),
               ),
             ],
@@ -553,15 +677,19 @@ class _BreakdownTile extends StatelessWidget {
                   children: [
                     Text(
                       '${_formatQuantity(item.quantity)} kg',
-                      style: Theme.of(
-                        context,
-                      ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: AppTheme.primaryGreen),
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: AppTheme.primaryGreen,
+                      ),
                     ),
                     if (totalQuantity > 0) ...[
                       const SizedBox(height: 4),
                       Text(
-                        'Total: ${_formatQuantity(totalQuantity)} kg',
-                        style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                        'Tổng: ${_formatQuantity(totalQuantity)} kg',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey.shade600,
+                        ),
                       ),
                     ],
                   ],
@@ -576,7 +704,9 @@ class _BreakdownTile extends StatelessWidget {
               value: validPercentage / 100,
               minHeight: 8,
               backgroundColor: Colors.grey.shade200,
-              valueColor: const AlwaysStoppedAnimation<Color>(AppTheme.primaryGreenLight),
+              valueColor: const AlwaysStoppedAnimation<Color>(
+                AppTheme.primaryGreenLight,
+              ),
             ),
           ),
         ],
@@ -598,7 +728,13 @@ class _PieChartWidget extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: Colors.grey.shade200, blurRadius: 8, offset: const Offset(0, 4))],
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.shade200,
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: SfCircularChart(
         // title: ChartTitle(
@@ -612,7 +748,10 @@ class _PieChartWidget extends StatelessWidget {
           textStyle: const TextStyle(fontSize: 11),
           toggleSeriesVisibility: true,
         ),
-        tooltipBehavior: TooltipBehavior(enable: true, format: 'point.x\npoint.y kg (%)'),
+        tooltipBehavior: TooltipBehavior(
+          enable: true,
+          format: 'point.x\npoint.y kg (%)',
+        ),
         series: <PieSeries<WasteBreakdown, String>>[
           PieSeries<WasteBreakdown, String>(
             dataSource: breakdowns,
@@ -620,7 +759,10 @@ class _PieChartWidget extends StatelessWidget {
             yValueMapper: (data, _) => data.quantity,
             dataLabelMapper: (data, index) {
               // Only show label for parts larger than 5%
-              final total = breakdowns.fold<double>(0, (sum, item) => sum + item.quantity);
+              final total = breakdowns.fold<double>(
+                0,
+                (sum, item) => sum + item.quantity,
+              );
               final percent = (data.quantity / total) * 100;
               if (percent < 5) return '';
               return '${percent.toStringAsFixed(1)}%';
@@ -629,7 +771,10 @@ class _PieChartWidget extends StatelessWidget {
               isVisible: true,
               labelPosition: ChartDataLabelPosition.outside,
               textStyle: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
-              connectorLineSettings: ConnectorLineSettings(type: ConnectorType.curve, length: '10%'),
+              connectorLineSettings: ConnectorLineSettings(
+                type: ConnectorType.curve,
+                length: '10%',
+              ),
             ),
             explode: true,
             explodeIndex: 0,

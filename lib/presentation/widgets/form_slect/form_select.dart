@@ -17,6 +17,8 @@ class FormSelect extends StatelessWidget {
   final List<String? Function(String?)>? validators;
   final String Function(Map<String, dynamic> item)? itemLabelBuilder;
   final String? initialValue;
+  final String? filterColumn;
+  final String? filterValue;
 
   const FormSelect({
     this.iniItems,
@@ -30,11 +32,13 @@ class FormSelect extends StatelessWidget {
     this.validators,
     this.itemLabelBuilder,
     this.initialValue,
+    this.filterColumn,
+    this.filterValue,
   });
 
   List<Map<String, dynamic>> _buildItems(FormSelectState state) {
     final allItems = [
-      {valueKey: 'select', lableKey: 'Select'},
+      {valueKey: 'select', lableKey: 'Chọn'},
       ...state.items,
       ...?iniItems,
     ];
@@ -58,15 +62,15 @@ class FormSelect extends StatelessWidget {
     List<Map<String, dynamic>> items,
     String? selectedValue,
   ) {
-    if (selectedValue == null) return 'Select';
+    if (selectedValue == null) return 'Chọn';
     final match = items.firstWhere(
       (item) => item[valueKey]?.toString() == selectedValue,
-      orElse: () => {lableKey: 'Select'},
+      orElse: () => {lableKey: 'Chọn'},
     );
     if (itemLabelBuilder != null) {
       return itemLabelBuilder!(match);
     }
-    return match[lableKey]?.toString() ?? 'Select';
+    return match[lableKey]?.toString() ?? 'Chọn';
   }
 
   @override
@@ -113,7 +117,13 @@ class FormSelect extends StatelessWidget {
 
               Future<void> handleTap() async {
                 if (tableName != null) {
-                  bloc.add(GetItemsFormEvent(tableName: tableName!));
+                  bloc.add(
+                    GetItemsFormEvent(
+                      tableName: tableName!,
+                      filterColumn: filterColumn,
+                      filterValue: filterValue,
+                    ),
+                  );
                   await bloc.stream.firstWhere(
                     (state) => state.status != Status.loading,
                   );
@@ -162,7 +172,7 @@ class FormSelect extends StatelessWidget {
                     );
 
                 if (selected != null) {
-                  final value = selected[valueKey]?.toString() ?? 'select';
+                  final value = selected[valueKey]?.toString() ?? 'chọn';
                   bloc.add(UpdateFiledFormEvent(value));
                   onChange?.call(value);
                   field.didChange(value);

@@ -10,12 +10,17 @@ class FormSelectEvent extends Equatable {
 
 class GetItemsFormEvent extends FormSelectEvent {
   final String tableName;
+  final String? filterColumn;
+  final String? filterValue;
 
-  const GetItemsFormEvent({required this.tableName});
+  const GetItemsFormEvent({
+    required this.tableName,
+    this.filterColumn,
+    this.filterValue,
+  });
 
   @override
-  // TODO: implement props
-  List<Object?> get props => [tableName];
+  List<Object?> get props => [tableName, filterColumn, filterValue];
 }
 
 class UpdateFiledFormEvent extends FormSelectEvent {

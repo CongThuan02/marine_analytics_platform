@@ -7,7 +7,7 @@ class TestLocalNotificationPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Test Local Notifications')),
+      appBar: AppBar(title: const Text('Test thông báo cục bộ')),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -26,7 +26,7 @@ class TestLocalNotificationPage extends StatelessWidget {
           ElevatedButton.icon(
             onPressed: () => _testSimpleNotification(context),
             icon: const Icon(Icons.notifications),
-            label: const Text('Test Simple Notification'),
+            label: const Text('Test thông báo đơn giản'),
           ),
           const SizedBox(height: 12),
 
@@ -34,7 +34,7 @@ class TestLocalNotificationPage extends StatelessWidget {
           ElevatedButton.icon(
             onPressed: () => _testWasteLimitNotification(context),
             icon: const Icon(Icons.warning),
-            label: const Text('Test Waste Limit Notification'),
+            label: const Text('Test thông báo hạn mức'),
           ),
           const SizedBox(height: 12),
 
@@ -42,7 +42,7 @@ class TestLocalNotificationPage extends StatelessWidget {
           ElevatedButton.icon(
             onPressed: () => _checkPermissions(context),
             icon: const Icon(Icons.info),
-            label: const Text('Check Notification Status'),
+            label: const Text('Kiểm tra trạng thái thông báo'),
           ),
           const SizedBox(height: 24),
 
@@ -81,7 +81,7 @@ class TestLocalNotificationPage extends StatelessWidget {
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('❌ Error: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text('❌ Lỗi: $e'), backgroundColor: Colors.red),
         );
       }
     }
@@ -102,7 +102,7 @@ class TestLocalNotificationPage extends StatelessWidget {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('✅ Waste limit notification sent!'),
+            content: Text('✅ Đã gửi thông báo hạn mức!'),
             backgroundColor: Colors.green,
           ),
         );
@@ -110,7 +110,7 @@ class TestLocalNotificationPage extends StatelessWidget {
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('❌ Error: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text('❌ Lỗi: $e'), backgroundColor: Colors.red),
         );
       }
     }
@@ -120,37 +120,37 @@ class TestLocalNotificationPage extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Notification Status'),
+        title: const Text('Trạng thái thông báo'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('To check notification permissions:'),
+            const Text('Để kiểm tra quyền thông báo:'),
             const SizedBox(height: 12),
             const Text(
               'Android:',
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
-            const Text('Settings → Apps → Your App → Notifications'),
+            const Text('Cài đặt → Ứng dụng → Ứng dụng của bạn → Thông báo'),
             const SizedBox(height: 12),
             const Text('iOS:', style: TextStyle(fontWeight: FontWeight.bold)),
-            const Text('Settings → Your App → Notifications'),
+            const Text('Cài đặt → Ứng dụng của bạn → Thông báo'),
             const SizedBox(height: 12),
             const Divider(),
             const SizedBox(height: 12),
             const Text(
-              'If notifications are not showing:',
+              'Nếu thông báo không hiển thị:',
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
-            const Text('1. Check permissions above'),
-            const Text('2. Restart the app'),
-            const Text('3. Try "Test Simple Notification"'),
+            const Text('1. Kiểm tra quyền ở trên'),
+            const Text('2. Khởi động lại ứng dụng'),
+            const Text('3. Thử "Test thông báo đơn giản"'),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
+            child: const Text('Đồng ý'),
           ),
         ],
       ),

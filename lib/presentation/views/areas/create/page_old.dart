@@ -13,10 +13,7 @@ class CreateAreaPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => AreaBloc()..add(GetAreas()),
-      child: _CreateAreaPage(),
-    );
+    return BlocProvider(create: (context) => AreaBloc()..add(GetAreas()), child: _CreateAreaPage());
   }
 }
 
@@ -33,10 +30,7 @@ class _CreateAreaPage extends StatelessWidget {
               context.loaderOverlay.show();
             }
             if (state.status == Status.success) {
-              showTopSnackBar(
-                Overlay.of(context),
-                CustomSnackBar.success(message: state.message),
-              );
+              showTopSnackBar(Overlay.of(context), CustomSnackBar.success(message: state.message));
               context.pop(true);
               context.loaderOverlay.hide();
             }
@@ -46,10 +40,7 @@ class _CreateAreaPage extends StatelessWidget {
           },
           child: Scaffold(
             appBar: AppBar(title: Text("Area List")),
-            body:
-                state.areas != null &&
-                    state.areas != [] &&
-                    state.status != Status.loading
+            body: state.areas != null && state.areas != [] && state.status != Status.loading
                 ? Padding(
                     padding: const EdgeInsets.only(bottom: 28.0),
                     child: RefreshIndicator(
@@ -70,12 +61,8 @@ class _CreateAreaPage extends StatelessWidget {
                                     child: BlocBuilder<AreaBloc, AreaState>(
                                       builder: (context, state) {
                                         return AlertDialog(
-                                          title: Text(
-                                            'Are you sure you want to delete ${state.areas?[index].name}',
-                                          ),
-                                          content: Text(
-                                            "Note: data cannot be recovered after deletion",
-                                          ),
+                                          title: Text('Bạn có chắc chắn muốn xóa không ${state.areas?[index].name}'),
+                                          content: Text("Lưu ý: dữ liệu không thể phục hồi sau khi xóa"),
 
                                           actions: <Widget>[
                                             Row(
@@ -86,23 +73,15 @@ class _CreateAreaPage extends StatelessWidget {
                                                     onPressed: () {
                                                       context.pop();
                                                     },
-                                                    child: Text("Close"),
+                                                    child: Text("Đóng"),
                                                   ),
                                                 ),
                                                 Expanded(
                                                   child: ElevatedButton(
                                                     onPressed: () {
-                                                      bloc.add(
-                                                        DeleteArea(
-                                                          id:
-                                                              state
-                                                                  .areas?[index]
-                                                                  .id ??
-                                                              '',
-                                                        ),
-                                                      );
+                                                      bloc.add(DeleteArea(id: state.areas?[index].id ?? ''));
                                                     },
-                                                    child: Text("Delete"),
+                                                    child: Text("Xoá"),
                                                   ),
                                                 ),
                                               ],
@@ -121,25 +100,19 @@ class _CreateAreaPage extends StatelessWidget {
                             },
                             child: Container(
                               padding: .symmetric(horizontal: 16, vertical: 12),
-                              decoration: BoxDecoration(
-                                border: Border.all(),
-                                borderRadius: .circular(12),
-                              ),
+                              decoration: BoxDecoration(border: Border.all(), borderRadius: .circular(12)),
                               child: Text('${state.areas?[index].name}'),
                             ),
                           );
                         },
-                        separatorBuilder: (context, index) =>
-                            SizedBox(height: 12),
+                        separatorBuilder: (context, index) => SizedBox(height: 12),
                         itemCount: state.areas?.length ?? 0,
                       ),
                     ),
                   )
                 : SizedBox.shrink(),
             floatingActionButton: FloatingActionButton(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadiusGeometry.circular(50),
-              ),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadiusGeometry.circular(50)),
               onPressed: () {
                 final bloc = context.read<AreaBloc>();
                 showModalBottomSheet(
@@ -165,10 +138,7 @@ class _CreateAreaPage extends StatelessWidget {
                                         child: Center(
                                           child: Text(
                                             "Add New Area",
-                                            style: TextStyle(
-                                              fontSize: 24,
-                                              fontWeight: .w500,
-                                            ),
+                                            style: TextStyle(fontSize: 24, fontWeight: .w500),
                                           ),
                                         ),
                                       ),
@@ -193,11 +163,7 @@ class _CreateAreaPage extends StatelessWidget {
                                           name: 'area',
                                           label: 'Area Name',
                                           onChanged: (value) {
-                                            bloc.add(
-                                              UpdateFieldName(
-                                                name: value ?? '',
-                                              ),
-                                            );
+                                            bloc.add(UpdateFieldName(name: value ?? ''));
                                           },
                                         ),
                                       ],
@@ -205,17 +171,11 @@ class _CreateAreaPage extends StatelessWidget {
                                   ),
                                   ElevatedButton(
                                     onPressed: () {
-                                      context.read<AreaBloc>().add(
-                                        CreateArea(),
-                                      );
+                                      context.read<AreaBloc>().add(CreateArea());
                                     },
                                     child: Text("Add"),
                                   ),
-                                  SizedBox(
-                                    height: MediaQuery.of(
-                                      context,
-                                    ).viewInsets.bottom,
-                                  ),
+                                  SizedBox(height: MediaQuery.of(context).viewInsets.bottom),
                                 ],
                               ),
                             ),

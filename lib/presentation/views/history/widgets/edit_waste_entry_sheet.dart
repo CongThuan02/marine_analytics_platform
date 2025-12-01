@@ -21,10 +21,12 @@ class EditWasteEntrySheet extends StatefulWidget {
 
 class _EditWasteEntrySheetState extends State<EditWasteEntrySheet> {
   final _formKey = GlobalKey<FormBuilderState>();
+  late String? _selectedAreaId;
 
   @override
   void initState() {
     super.initState();
+    _selectedAreaId = widget.entry.areaId;
     print('📝 Edit Sheet - Entry data:');
     print('   Area ID: ${widget.entry.areaId}');
     print('   Department ID: ${widget.entry.departmentId}');
@@ -80,9 +82,18 @@ class _EditWasteEntrySheetState extends State<EditWasteEntrySheet> {
               ),
               FormSelect(
                 name: 'area_id',
-                label: 'Area',
+                label: 'Khu vực',
                 tableName: 'areas',
                 initialValue: widget.entry.areaId,
+                onChange: (value) {
+                  setState(() {
+                    _selectedAreaId = value;
+                    // Reset department when area changes
+                    _formKey.currentState?.fields['department_id']?.didChange(
+                      'select',
+                    );
+                  });
+                },
                 iniItems: widget.entry.areaName != null
                     ? [
                         {
@@ -94,16 +105,19 @@ class _EditWasteEntrySheetState extends State<EditWasteEntrySheet> {
                 validators: [
                   (value) {
                     if (value == null || value == 'select') {
-                      return 'Please select an area';
+                      return 'Vui lòng chọn khu vực';
                     }
                     return null;
                   },
                 ],
               ),
               FormSelect(
+                key: ValueKey(_selectedAreaId), // Rebuild when area changes
                 name: 'department_id',
-                label: 'Department',
+                label: 'Phòng ban',
                 tableName: 'departments',
+                filterColumn: 'area_id',
+                filterValue: _selectedAreaId,
                 initialValue: widget.entry.departmentId,
                 iniItems: widget.entry.departmentName != null
                     ? [
@@ -116,7 +130,7 @@ class _EditWasteEntrySheetState extends State<EditWasteEntrySheet> {
                 validators: [
                   (value) {
                     if (value == null || value == 'select') {
-                      return 'Please select a department';
+                      return 'Vui lòng chọn phòng ban';
                     }
                     return null;
                   },
@@ -124,7 +138,7 @@ class _EditWasteEntrySheetState extends State<EditWasteEntrySheet> {
               ),
               FormSelect(
                 name: 'waste_type_id',
-                label: 'Waste Type',
+                label: 'Loại chất thải',
                 tableName: 'waste_types',
                 initialValue: widget.entry.wasteTypeId,
                 iniItems: widget.entry.wasteTypeName != null
@@ -147,7 +161,7 @@ class _EditWasteEntrySheetState extends State<EditWasteEntrySheet> {
                 validators: [
                   (value) {
                     if (value == null || value == 'select') {
-                      return 'Please select a waste type';
+                      return 'Vui lòng chọn loại chất thải';
                     }
                     return null;
                   },
@@ -156,23 +170,23 @@ class _EditWasteEntrySheetState extends State<EditWasteEntrySheet> {
               _DateField(),
               FormTextField(
                 name: 'quantity',
-                label: 'Quantity',
-                hintText: 'Example: 12.5',
+                label: 'Số lượng',
+                hintText: 'Ví dụ: 12.5',
                 validators: [
                   FormBuilderValidators.required(
-                    errorText: 'Please enter quantity',
+                    errorText: 'Vui lòng nhập số lượng',
                   ),
                   FormBuilderValidators.numeric(
-                    errorText: 'Quantity must be a number',
+                    errorText: 'Số lượng phải là số',
                   ),
                 ],
               ),
-              FormTextField(name: 'qr_code', label: 'QR Code (optional)'),
+              FormTextField(name: 'qr_code', label: 'Mã QR (tùy chọn)'),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: _handleSubmit,
-                  child: const Text("Update"),
+                  child: const Text("Cập nhật"),
                 ),
               ),
             ],
@@ -191,7 +205,7 @@ class _EditWasteEntrySheetState extends State<EditWasteEntrySheet> {
     final quantity = _parseQuantity(quantityString);
 
     if (quantity == null) {
-      _showSnackBar(context, 'Invalid quantity');
+      _showSnackBar(context, 'Số lượng không hợp lệ');
       return;
     }
 
@@ -225,7 +239,7 @@ class _EditWasteEntrySheetState extends State<EditWasteEntrySheet> {
         context.read<WasteEntryBloc>().add(const LoadWasteEntries());
         _showSnackBar(
           context,
-          'Waste entry updated successfully',
+          'Đã cập nhật bản ghi thành công',
           isError: false,
         );
         Navigator.of(context).pop();
@@ -233,7 +247,7 @@ class _EditWasteEntrySheetState extends State<EditWasteEntrySheet> {
     } catch (e) {
       print('❌ Update error: $e');
       if (context.mounted) {
-        _showSnackBar(context, 'Error updating entry: $e');
+        _showSnackBar(context, 'Lỗi khi cập nhật: $e');
       }
     }
 
@@ -306,7 +320,7 @@ class _DateField extends StatelessWidget {
     return FormBuilderField<DateTime>(
       name: 'date',
       validator: (value) {
-        if (value == null) return 'Please select entry date';
+        if (value == null) return 'Vui lòng chọn ngày nhập';
         return null;
       },
       builder: (field) {
@@ -327,7 +341,7 @@ class _DateField extends StatelessWidget {
           onTap: pickDate,
           child: InputDecorator(
             decoration: InputDecoration(
-              labelText: 'Entry Date',
+              labelText: 'Ngày nhập',
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -342,7 +356,7 @@ class _DateField extends StatelessWidget {
   }
 
   String _formatDate(DateTime? date) {
-    if (date == null) return 'Select Date';
+    if (date == null) return 'Chọn ngày';
 
     final day = date.day.toString().padLeft(2, '0');
     final month = date.month.toString().padLeft(2, '0');

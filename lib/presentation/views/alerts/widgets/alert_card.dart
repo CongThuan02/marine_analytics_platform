@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:marine_analytics_platform/core/constants/app_strings.dart';
+import 'package:marine_analytics_platform/core/localization/localization_extension.dart';
 import 'package:marine_analytics_platform/core/theme/app_theme.dart';
 import 'package:marine_analytics_platform/domain/entities/alert.dart';
 import 'package:marine_analytics_platform/global.dart';
@@ -54,7 +54,7 @@ class AlertCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          alert.areaName ?? 'Unknown Area',
+                          alert.areaName ?? 'Khu vực không xác định',
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -62,7 +62,8 @@ class AlertCard extends StatelessWidget {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          alert.wasteTypeName ?? 'Unknown Waste Type',
+                          alert.wasteTypeName ??
+                              'Loại chất thải không xác định',
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.grey.shade600,
@@ -111,7 +112,7 @@ class AlertCard extends StatelessWidget {
                   Expanded(
                     child: _buildStatItem(
                       icon: Icons.trending_up,
-                      label: 'Today',
+                      label: 'Hôm nay',
                       value:
                           '${_formatQuantity(alert.totalToday)} ${alert.wasteTypeUnit ?? 'kg'}',
                       color: color,
@@ -121,7 +122,7 @@ class AlertCard extends StatelessWidget {
                   Expanded(
                     child: _buildStatItem(
                       icon: Icons.speed,
-                      label: 'Limit',
+                      label: 'Hạn mức',
                       value:
                           '${_formatQuantity(alert.limitValue)} ${alert.wasteTypeUnit ?? 'kg'}',
                       color: AppTheme.primaryGreen,
@@ -168,7 +169,7 @@ class AlertCard extends StatelessWidget {
                   TextButton.icon(
                     onPressed: () => _confirmDelete(context),
                     icon: const Icon(Icons.close, size: 18),
-                    label: const Text(AppStrings.close),
+                    label: Text(context.l10n.close),
                     style: TextButton.styleFrom(
                       foregroundColor: Colors.grey.shade600,
                     ),
@@ -241,9 +242,9 @@ class AlertCard extends StatelessWidget {
     final diff = now.difference(dateTime);
 
     if (diff.inMinutes < 1) {
-      return 'Just now';
+      return 'Vừa xong';
     } else if (diff.inHours < 1) {
-      return '${diff.inMinutes}m ago';
+      return '${diff.inMinutes} phút trước';
     } else if (diff.inDays < 1) {
       return '${diff.inHours}h ago';
     } else {
@@ -259,14 +260,14 @@ class AlertCard extends StatelessWidget {
           children: [
             Icon(Icons.warning_amber_rounded, color: Colors.orange),
             SizedBox(width: 12),
-            Text(AppStrings.deleteAlert),
+            Text('Xóa cảnh báo'),
           ],
         ),
-        content: const Text(AppStrings.deleteAlertConfirm),
+        content: const Text('Bạn có chắc chắn muốn xóa cảnh báo này?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text(AppStrings.cancel),
+            child: Text(context.l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -282,7 +283,7 @@ class AlertCard extends StatelessWidget {
 
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text('Alert dismissed successfully'),
+                      content: Text('Đã đóng cảnh báo thành công'),
                       backgroundColor: Colors.green,
                     ),
                   );
@@ -291,7 +292,7 @@ class AlertCard extends StatelessWidget {
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('Error: $e'),
+                      content: Text('Lỗi: $e'),
                       backgroundColor: Colors.red,
                     ),
                   );
@@ -302,7 +303,7 @@ class AlertCard extends StatelessWidget {
               backgroundColor: Colors.red,
               foregroundColor: Colors.white,
             ),
-            child: const Text(AppStrings.close),
+            child: Text(context.l10n.close),
           ),
         ],
       ),

@@ -206,7 +206,7 @@ class ExcelExportService {
       final fileBytes = excel.encode();
 
       if (fileBytes == null) {
-        throw Exception('Failed to encode Excel file');
+        throw Exception('Không thể mã hóa file Excel');
       }
 
       // Get temporary directory

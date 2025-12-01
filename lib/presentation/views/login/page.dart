@@ -4,7 +4,7 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:go_router/go_router.dart';
 import 'package:loader_overlay/loader_overlay.dart';
-import 'package:marine_analytics_platform/core/constants/app_strings.dart';
+import 'package:marine_analytics_platform/core/localization/localization_extension.dart';
 import 'package:marine_analytics_platform/core/constants/enum_status.dart';
 import 'package:marine_analytics_platform/presentation/blocs/login/login_bloc.dart';
 import 'package:marine_analytics_platform/presentation/widgets/form_text_field.dart';
@@ -59,7 +59,7 @@ class _LoginViewState extends State<_LoginView> {
         }
       },
       child: Scaffold(
-        appBar: AppBar(title: const Text(AppStrings.login)),
+        appBar: AppBar(title: Text(context.l10n.login)),
         body: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
@@ -93,28 +93,28 @@ class _LoginViewState extends State<_LoginView> {
                   const SizedBox(height: 24),
                   FormTextField(
                     name: 'email',
-                    label: AppStrings.email,
+                    label: context.l10n.email,
                     validators: [
                       FormBuilderValidators.required(
-                        errorText: AppStrings.fieldRequired,
+                        errorText: 'Trường này là bắt buộc',
                       ),
                       FormBuilderValidators.email(
-                        errorText: AppStrings.invalidEmail,
+                        errorText: 'Email không hợp lệ',
                       ),
                     ],
                   ),
                   const SizedBox(height: 16),
                   FormTextField(
                     name: 'password',
-                    label: AppStrings.password,
+                    label: context.l10n.password,
                     isPassword: true,
                     validators: [
                       FormBuilderValidators.required(
-                        errorText: AppStrings.fieldRequired,
+                        errorText: 'Trường này là bắt buộc',
                       ),
                       FormBuilderValidators.minLength(
                         6,
-                        errorText: 'Minimum 6 characters',
+                        errorText: 'Tối thiểu 6 ký tự',
                       ),
                     ],
                   ),
@@ -123,13 +123,13 @@ class _LoginViewState extends State<_LoginView> {
                     height: 48,
                     child: ElevatedButton(
                       onPressed: _submit,
-                      child: const Text(AppStrings.login),
+                      child: Text(context.l10n.login),
                     ),
                   ),
                   const SizedBox(height: 12),
                   TextButton(
                     onPressed: () => context.pushNamed('/register'),
-                    child: const Text("Don't have an account? Register now"),
+                    child: const Text("Chưa có tài khoản? Đăng ký ngay"),
                   ),
                 ],
               ),
