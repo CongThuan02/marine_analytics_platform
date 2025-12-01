@@ -103,20 +103,20 @@ class _RegisterViewState extends State<_RegisterView> {
                       FormBuilderValidators.minLength(6, errorText: 'Tối thiểu 6 ký tự'),
                     ],
                   ),
-                  const SizedBox(height: 16),
-                  FormSelect(
-                    name: "department_id",
-                    label: "Phòng ban",
-                    tableName: "departments",
-                    validators: [
-                      (value) {
-                        if (value == null || value == 'select') {
-                          return 'Vui lòng chọn phòng';
-                        }
-                        return null;
-                      },
-                    ],
-                  ),
+                  // const SizedBox(height: 16),
+                  // FormSelect(
+                  //   name: "department_id",
+                  //   label: "Phòng ban",
+                  //   tableName: "departments",
+                  //   // validators: [
+                  //   //   (value) {
+                  //   //     if (value == null || value == 'select') {
+                  //   //       return 'Vui lòng chọn phòng';
+                  //   //     }
+                  //   //     return null;
+                  //   //   },
+                  //   // ],
+                  // ),
                   const SizedBox(height: 16),
                   FormSelect(
                     name: 'role',

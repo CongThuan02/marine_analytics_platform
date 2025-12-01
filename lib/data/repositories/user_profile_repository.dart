@@ -23,26 +23,22 @@ class UserProfileRepository {
     if (password == null || password.length < 6) {
       throw const RegisterException('Mật khẩu phải có ít nhất 6 ký tự.');
     }
-    if (departmentId?.isEmpty ?? true) {
-      throw const RegisterException('Vui lòng chọn phòng.');
-    }
+    // if (departmentId?.isEmpty ?? true) {
+    //   throw const RegisterException('Vui lòng chọn phòng.');
+    // }
     if (role?.isEmpty ?? true) {
       throw const RegisterException('Vui lòng chọn vai trò.');
     }
 
     try {
-      final response = await supabase.auth.signUp(
-        email: email!,
-        password: password,
-        data: {'department_id': departmentId, 'role': role},
-      );
+      final response = await supabase.auth.signUp(email: email!, password: password, data: {'role': role});
 
       final user = response.user;
       if (user == null) {
         throw const RegisterException('Không thể lấy thông tin người dùng từ Supabase.');
       }
 
-      await supabase.from('users_profile').insert({'id': user.id, 'department_id': departmentId, 'role': role});
+      await supabase.from('users_profile').insert({'id': user.id, 'role': role});
 
       final requiresConfirmation = response.session == null || user.emailConfirmedAt == null;
       return requiresConfirmation

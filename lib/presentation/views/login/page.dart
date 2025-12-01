@@ -40,22 +40,16 @@ class _LoginViewState extends State<_LoginView> {
         context.loaderOverlay.hide();
 
         if (state.status == Status.success && state.message != null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message!),
-              backgroundColor: Colors.green,
-            ),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(state.message!), backgroundColor: Colors.green));
           context.go('/');
         }
 
         if (state.status == Status.fail && state.message != null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message!),
-              backgroundColor: Colors.red,
-            ),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(state.message!), backgroundColor: Colors.red));
         }
       },
       child: Scaffold(
@@ -69,38 +63,24 @@ class _LoginViewState extends State<_LoginView> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   // Clickable Logo
-                  const Center(
-                    child: ClickableLogo(
-                      logoSize: 80,
-                      titleFontSize: 32,
-                      subtitleFontSize: 16,
-                    ),
-                  ),
+                  const Center(child: ClickableLogo(logoSize: 80, titleFontSize: 32, subtitleFontSize: 16)),
                   const SizedBox(height: 32),
                   Text(
-                    "Welcome Back!",
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
+                    "Chào mừng bạn quay lại!",
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    "Login to continue managing waste.",
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.grey.shade600,
-                    ),
+                    "Vui lòng đăng nhập để sử dụng ứng dụng.",
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey.shade600),
                   ),
                   const SizedBox(height: 24),
                   FormTextField(
                     name: 'email',
                     label: context.l10n.email,
                     validators: [
-                      FormBuilderValidators.required(
-                        errorText: 'Trường này là bắt buộc',
-                      ),
-                      FormBuilderValidators.email(
-                        errorText: 'Email không hợp lệ',
-                      ),
+                      FormBuilderValidators.required(errorText: 'Trường này là bắt buộc'),
+                      FormBuilderValidators.email(errorText: 'Email không hợp lệ'),
                     ],
                   ),
                   const SizedBox(height: 16),
@@ -109,22 +89,14 @@ class _LoginViewState extends State<_LoginView> {
                     label: context.l10n.password,
                     isPassword: true,
                     validators: [
-                      FormBuilderValidators.required(
-                        errorText: 'Trường này là bắt buộc',
-                      ),
-                      FormBuilderValidators.minLength(
-                        6,
-                        errorText: 'Tối thiểu 6 ký tự',
-                      ),
+                      FormBuilderValidators.required(errorText: 'Trường này là bắt buộc'),
+                      FormBuilderValidators.minLength(6, errorText: 'Tối thiểu 6 ký tự'),
                     ],
                   ),
                   const SizedBox(height: 24),
                   SizedBox(
                     height: 48,
-                    child: ElevatedButton(
-                      onPressed: _submit,
-                      child: Text(context.l10n.login),
-                    ),
+                    child: ElevatedButton(onPressed: _submit, child: Text(context.l10n.login)),
                   ),
                   const SizedBox(height: 12),
                   TextButton(
@@ -147,8 +119,6 @@ class _LoginViewState extends State<_LoginView> {
     final email = values['email'] as String? ?? '';
     final password = values['password'] as String? ?? '';
     FocusScope.of(context).unfocus();
-    context.read<LoginBloc>().add(
-      LoginSubmitted(email: email, password: password),
-    );
+    context.read<LoginBloc>().add(LoginSubmitted(email: email, password: password));
   }
 }
