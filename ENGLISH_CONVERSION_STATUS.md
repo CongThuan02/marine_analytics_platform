@@ -44,7 +44,7 @@ None - files are either fully converted or not started
    - "Cài đặt" → "Settings"
    - "Quản lý hệ thống" → "System Management"
    - "Quản lý khu vực" → "Manage Areas"
-   - "Quản lý phòng ban" → "Manage Departments"
+   - "Quản lý phòng" → "Manage Departments"
    - "Quản lý loại chất thải" → "Manage Waste Types"
    - "Giám sát & Cảnh báo" → "Monitoring & Alerts"
    - "Quản lý hạn mức" → "Manage Limits"

@@ -106,7 +106,7 @@ class _AlertsView extends StatelessWidget {
                     const SizedBox(height: 16),
                     const Text('Không có cảnh báo', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
                     const SizedBox(height: 8),
-                    Text('All areas are within limits', style: TextStyle(color: Colors.grey.shade600)),
+                    Text('Không có cảnh báo nào', style: TextStyle(color: Colors.grey.shade600)),
                   ],
                 ),
               );

@@ -114,7 +114,7 @@ class _HistoryViewState extends State<_HistoryView> {
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
-                            'Filtered: ${_formatDateShort(_selectedDateRange!.start)} - ${_formatDateShort(_selectedDateRange!.end)} (${filteredEntries.length} entries)',
+                            'Thời gian: ${_formatDateShort(_selectedDateRange!.start)} - ${_formatDateShort(_selectedDateRange!.end)} (${filteredEntries.length} bản ghi)',
                             style: const TextStyle(fontSize: 13, color: AppTheme.primaryGreen),
                           ),
                         ),

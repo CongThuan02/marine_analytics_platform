@@ -18,7 +18,7 @@
 #### Phân nhóm chức năng
 **Quản lý hệ thống:**
 - Quản lý khu vực
-- Quản lý phòng ban
+- Quản lý phòng
 - Quản lý loại chất thải
 
 **Giám sát & Cảnh báo:**

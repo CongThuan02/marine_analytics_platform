@@ -40,7 +40,7 @@ Toàn bộ ứng dụng đã được chuyển đổi sang tiếng Việt, bao g
 
 **Menu Items**:
 - "Quản lý khu vực" - "Thêm, sửa, xóa khu vực"
-- "Quản lý phòng ban" - "Thêm, sửa, xóa phòng ban"
+- "Quản lý phòng" - "Thêm, sửa, xóa phòng"
 - "Quản lý loại chất thải" - "Thêm, sửa, xóa loại chất thải"
 - "Cảnh báo hạn mức" - "Xem cảnh báo vượt ngưỡng"
 - "Quản lý hạn mức" - "Thiết lập ngưỡng cảnh báo chất thải"
@@ -209,16 +209,16 @@ Toàn bộ ứng dụng đã được chuyển đổi sang tiếng Việt, bao g
 - Buttons: "Hủy", "Xóa", "Đồng ý"
 
 ### 11. Departments Page ✅
-**Title**: "Quản lý phòng ban"
+**Title**: "Quản lý phòng"
 
-**Empty State**: "Nhấn nút + để thêm phòng ban mới"
+**Empty State**: "Nhấn nút + để thêm phòng mới"
 
 **Create Form**:
 - Labels: "Tên", "Khu vực"
 - Button: "Lưu"
 
 **Edit Dialog**:
-- Title: "Chỉnh sửa phòng ban"
+- Title: "Chỉnh sửa phòng"
 - Buttons: "Hủy", "Cập nhật"
 
 **Delete Dialog**:

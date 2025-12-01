@@ -94,7 +94,7 @@ class _CreateReminderBottomSheetState extends State<CreateReminderBottomSheet> {
                               return DropdownMenuItem(value: dept, child: Text(dept.name ?? 'No name'));
                             }).toList(),
                             onChanged: (value) => setState(() => _selectedDepartment = value),
-                            validator: (value) => value == null ? 'Vui lòng chọn phòng ban' : null,
+                            validator: (value) => value == null ? 'Vui lòng chọn phòng' : null,
                           ),
                           const SizedBox(height: 16),
                           InkWell(

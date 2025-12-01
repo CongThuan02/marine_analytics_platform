@@ -19,9 +19,7 @@ class CreateDepartment extends StatelessWidget {
         }
       },
       child: ConstrainedBox(
-        constraints: BoxConstraints(
-          maxHeight: MediaQuery.of(context).size.height * 0.8,
-        ),
+        constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.8),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Padding(
@@ -34,6 +32,7 @@ class CreateDepartment extends StatelessWidget {
                     child: Column(
                       spacing: 12,
                       children: [
+                        Text("Thêm mới phòng"),
                         BlocSelector<DepartmentBloc, DepartmentState, String>(
                           selector: (state) {
                             return state.departmentModel.name;
@@ -43,22 +42,17 @@ class CreateDepartment extends StatelessWidget {
                               autofocus: true,
                               value: name,
                               name: 'name',
-                              label: "Tên",
+                              label: "Tên phòng",
                               validators: [
                                 (value) {
                                   if (value == null || value.trim().isEmpty) {
-                                    return 'Vui lòng nhập tên phòng ban';
+                                    return 'Vui lòng nhập tên phòng';
                                   }
                                   return null;
                                 },
                               ],
                               onChanged: (value) {
-                                bloc.add(
-                                  UpdateFieldDepartmentEvent(
-                                    key: 'name',
-                                    value: value,
-                                  ),
-                                );
+                                bloc.add(UpdateFieldDepartmentEvent(key: 'name', value: value));
                               },
                             );
                           },
@@ -74,20 +68,11 @@ class CreateDepartment extends StatelessWidget {
                           ],
                           onChange: (value) {
                             // Convert 'null' string to actual null for database
-                            final areaId = value == 'null' || value == 'select'
-                                ? null
-                                : value;
-                            bloc.add(
-                              UpdateFieldDepartmentEvent(
-                                key: 'area_id',
-                                value: areaId,
-                              ),
-                            );
+                            final areaId = value == 'null' || value == 'select' ? null : value;
+                            bloc.add(UpdateFieldDepartmentEvent(key: 'area_id', value: areaId));
                           },
                         ),
-                        SizedBox(
-                          height: MediaQuery.of(context).viewInsets.bottom,
-                        ),
+                        SizedBox(height: MediaQuery.of(context).viewInsets.bottom),
                       ],
                     ),
                   ),
@@ -99,22 +84,16 @@ class CreateDepartment extends StatelessWidget {
                           ? null
                           : () {
                               // Validate name is not empty
-                              final name = bloc.state.departmentModel.name
-                                  .trim();
+                              final name = bloc.state.departmentModel.name.trim();
                               if (name.isEmpty) {
                                 // Show dialog instead of snackbar for better visibility
                                 showDialog(
                                   context: context,
                                   builder: (ctx) => AlertDialog(
                                     title: const Text('Thiếu thông tin'),
-                                    content: const Text(
-                                      'Vui lòng nhập tên phòng ban',
-                                    ),
+                                    content: const Text('Vui lòng nhập tên phòng'),
                                     actions: [
-                                      TextButton(
-                                        onPressed: () => Navigator.pop(ctx),
-                                        child: const Text('Đồng ý'),
-                                      ),
+                                      TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Đồng ý')),
                                     ],
                                   ),
                                 );
@@ -126,10 +105,7 @@ class CreateDepartment extends StatelessWidget {
                           ? const SizedBox(
                               width: 20,
                               height: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: Colors.white,
-                              ),
+                              child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                             )
                           : const Center(child: Text("Lưu")),
                     );

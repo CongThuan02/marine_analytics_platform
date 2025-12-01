@@ -42,11 +42,11 @@
 19. ✅ "QR Code - Open History" → "Mã QR - Mở lịch sử"
 20. ✅ Test notification page instructions → Tiếng Việt
 21. ✅ "Your Firebase Cloud Messaging token" → "Firebase Cloud Messaging token của bạn"
-22. ✅ "Department/Waste Type Name" → "Tên phòng ban/loại chất thải"
+22. ✅ "Department/Waste Type Name" → "Tên phòng/loại chất thải"
 
 ### Lần 4 - Exception Messages (Validation & Error Handling):
 1. ✅ "You are not logged in" → "Bạn chưa đăng nhập"
-2. ✅ "Please select an area/department/waste type" → "Vui lòng chọn khu vực/phòng ban/loại chất thải"
+2. ✅ "Please select an area/department/waste type" → "Vui lòng chọn khu vực/phòng/loại chất thải"
 3. ✅ "Quantity must be greater than 0" → "Số lượng phải lớn hơn 0"
 4. ✅ "Unable to load waste history" → "Không thể tải lịch sử rác thải"
 5. ✅ "No data found for selected period" → "Không tìm thấy dữ liệu cho khoảng thời gian đã chọn"

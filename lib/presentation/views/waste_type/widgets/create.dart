@@ -32,6 +32,7 @@ class CreateWasteType extends StatelessWidget {
                     child: Column(
                       spacing: 12,
                       children: [
+                        Text("Thêm mới loại chất thải"),
                         BlocSelector<WasteTypeBloc, WasteTypeState, String>(
                           selector: (state) {
                             return state.wasteTypeModel?.name ?? '';

@@ -4,7 +4,7 @@
 
 Đã thêm 2 chức năng mới vào hệ thống:
 1. **Quản lý Hạn mức** - Đặt ngưỡng cảnh báo cho chất thải theo khu vực
-2. **Quản lý Nhắc nhở** - Tự động nhắc nhở phòng ban nhập liệu
+2. **Quản lý Nhắc nhở** - Tự động nhắc nhở phòng nhập liệu
 
 ---
 
@@ -54,7 +54,7 @@ lib/presentation/views/waste_limit/
 ## 2. Quản lý Nhắc nhở (Reminders)
 
 ### Mục đích
-- Tự động nhắc nhở phòng ban nhập dữ liệu
+- Tự động nhắc nhở phòng nhập dữ liệu
 - Đặt lịch nhắc nhở theo giờ và tần suất
 - Bật/tắt nhắc nhở linh hoạt
 
@@ -244,7 +244,7 @@ Setup cron để chạy Edge Function mỗi phút:
 2. Toggle bật/tắt
 3. Kiểm tra thời gian hiển thị đúng
 4. Xóa nhắc nhở
-5. Test với nhiều phòng ban
+5. Test với nhiều phòng
 
 ---
 
@@ -269,7 +269,7 @@ Setup cron để chạy Edge Function mỗi phút:
 ## Ghi chú quan trọng
 
 1. **Unique Constraint**: Mỗi khu vực chỉ có 1 hạn mức cho 1 loại chất thải
-2. **Cascade Delete**: Xóa khu vực/phòng ban sẽ xóa hạn mức/nhắc nhở liên quan
+2. **Cascade Delete**: Xóa khu vực/phòng sẽ xóa hạn mức/nhắc nhở liên quan
 3. **Time Format**: Thời gian lưu dạng HH:mm:ss
 4. **Frequency**: Chỉ hỗ trợ 'daily' và 'weekly'
 5. **Enabled**: Nhắc nhở có thể tắt mà không cần xóa

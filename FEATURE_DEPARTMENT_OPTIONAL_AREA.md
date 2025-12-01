@@ -1,7 +1,7 @@
 # Tính năng: Phòng ban không bắt buộc thuộc Khu vực
 
 ## 📋 Mô tả
-Cho phép tạo và quản lý phòng ban không thuộc khu vực cụ thể nào (area_id = null). Điều này hữu ích cho các phòng ban chung hoặc phòng ban cấp công ty.
+Cho phép tạo và quản lý phòng không thuộc khu vực cụ thể nào (area_id = null). Điều này hữu ích cho các phòng chung hoặc phòng cấp công ty.
 
 ## ✅ Đã implement
 
@@ -40,7 +40,7 @@ FormSelect(
 **File**: `lib/presentation/views/department/page.dart`
 
 Tạo StatefulWidget mới `_EditDepartmentDialog` với:
-- TextField cho tên phòng ban
+- TextField cho tên phòng
 - FormSelect cho khu vực (tùy chọn)
 - Xử lý convert 'null' string thành actual null
 - Loading state khi đang lưu
@@ -77,17 +77,17 @@ if (filterColumn != null && filterValue != null && filterValue != 'select') {
 
 ## 🎯 Cách hoạt động
 
-### Tạo phòng ban mới:
-1. User mở form tạo phòng ban
-2. Nhập tên phòng ban
+### Tạo phòng mới:
+1. User mở form tạo phòng
+2. Nhập tên phòng
 3. Có 3 lựa chọn cho khu vực:
    - "Chọn" (mặc định - sẽ lưu null)
    - "(Không thuộc khu vực nào)" - sẽ lưu null
    - Chọn một khu vực cụ thể - sẽ lưu area_id
 4. Nhấn "Lưu"
 
-### Sửa phòng ban:
-1. User nhấn nút edit trên phòng ban
+### Sửa phòng:
+1. User nhấn nút edit trên phòng
 2. Dialog hiển thị:
    - Tên hiện tại
    - Khu vực hiện tại (hoặc "Không thuộc khu vực nào" nếu null)
@@ -97,9 +97,9 @@ if (filterColumn != null && filterValue != null && filterValue != 'select') {
    - Chọn "Không thuộc khu vực nào" để remove area_id
 4. Nhấn "Cập nhật"
 
-### Khi chọn phòng ban trong form waste entry:
-- Nếu đã chọn khu vực A: Hiển thị phòng ban thuộc khu vực A + phòng ban không thuộc khu vực nào
-- Nếu chưa chọn khu vực: Hiển thị tất cả phòng ban
+### Khi chọn phòng trong form waste entry:
+- Nếu đã chọn khu vực A: Hiển thị phòng thuộc khu vực A + phòng không thuộc khu vực nào
+- Nếu chưa chọn khu vực: Hiển thị tất cả phòng
 
 ## 📊 Database Schema
 
@@ -120,18 +120,18 @@ CREATE TABLE departments (
 - Phòng IT - phục vụ toàn công ty
 - Phòng Kế toán - phục vụ toàn công ty
 - Ban Giám đốc
-- Các phòng ban hỗ trợ chung
+- Các phòng hỗ trợ chung
 
 **Phòng ban thuộc khu vực** phù hợp cho:
 - Phòng Sản xuất Khu A
 - Phòng Kho Khu B
 - Phòng Bảo trì Khu C
-- Các phòng ban hoạt động tại địa điểm cụ thể
+- Các phòng hoạt động tại địa điểm cụ thể
 
 ## ✨ Kết quả
 
 - ✅ Linh hoạt hơn trong quản lý cấu trúc tổ chức
 - ✅ Phù hợp với thực tế doanh nghiệp
-- ✅ Không bắt buộc phải tạo khu vực trước khi tạo phòng ban
+- ✅ Không bắt buộc phải tạo khu vực trước khi tạo phòng
 - ✅ Phòng ban chung có thể được chọn từ bất kỳ khu vực nào
 - ✅ UI rõ ràng với label "(tùy chọn)" và option "(Không thuộc khu vực nào)"

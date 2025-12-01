@@ -13,10 +13,7 @@ class CreateMultipleWasteEntriesSheetV2 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => MultipleWasteEntryBloc(),
-      child: const _CreateMultipleWasteEntriesView(),
-    );
+    return BlocProvider(create: (_) => MultipleWasteEntryBloc(), child: const _CreateMultipleWasteEntriesView());
   }
 }
 
@@ -24,12 +21,10 @@ class _CreateMultipleWasteEntriesView extends StatefulWidget {
   const _CreateMultipleWasteEntriesView();
 
   @override
-  State<_CreateMultipleWasteEntriesView> createState() =>
-      _CreateMultipleWasteEntriesViewState();
+  State<_CreateMultipleWasteEntriesView> createState() => _CreateMultipleWasteEntriesViewState();
 }
 
-class _CreateMultipleWasteEntriesViewState
-    extends State<_CreateMultipleWasteEntriesView> {
+class _CreateMultipleWasteEntriesViewState extends State<_CreateMultipleWasteEntriesView> {
   final _formKey = GlobalKey<FormBuilderState>();
   final Map<int, GlobalKey<FormBuilderState>> _itemFormKeys = {};
 
@@ -51,12 +46,9 @@ class _CreateMultipleWasteEntriesViewState
             ),
           );
         } else if (state.status == MultipleWasteEntryStatus.error) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.errorMessage ?? 'Đã xảy ra lỗi'),
-              backgroundColor: Colors.red,
-            ),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(state.errorMessage ?? 'Đã xảy ra lỗi'), backgroundColor: Colors.red));
         }
       },
       builder: (context, state) {
@@ -66,21 +58,14 @@ class _CreateMultipleWasteEntriesViewState
         }
 
         return Container(
-          constraints: BoxConstraints(
-            maxHeight: MediaQuery.of(context).size.height * 0.9,
-          ),
+          constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.9),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               _buildHeader(context, state),
               Expanded(
                 child: SingleChildScrollView(
-                  padding: EdgeInsets.only(
-                    left: 16,
-                    right: 16,
-                    top: 16,
-                    bottom: bottom + 24,
-                  ),
+                  padding: EdgeInsets.only(left: 16, right: 16, top: 16, bottom: bottom + 24),
                   child: FormBuilder(
                     key: _formKey,
                     child: Column(
@@ -117,43 +102,25 @@ class _CreateMultipleWasteEntriesViewState
           Container(
             width: 50,
             height: 4,
-            decoration: BoxDecoration(
-              color: Colors.grey.shade400,
-              borderRadius: BorderRadius.circular(4),
-            ),
+            decoration: BoxDecoration(color: Colors.grey.shade400, borderRadius: BorderRadius.circular(4)),
           ),
           const SizedBox(height: 12),
           Row(
             children: [
-              const Icon(
-                Icons.add_circle_outline,
-                color: AppTheme.primaryGreen,
-              ),
+              const Icon(Icons.add_circle_outline, color: AppTheme.primaryGreen),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   'Thêm nhiều loại chất thải',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
-                ),
-                decoration: BoxDecoration(
-                  color: AppTheme.primaryGreen,
-                  borderRadius: BorderRadius.circular(20),
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(color: AppTheme.primaryGreen, borderRadius: BorderRadius.circular(20)),
                 child: Text(
                   '${state.wasteItems.length} loại',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12,
-                  ),
+                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
                 ),
               ),
             ],
@@ -167,12 +134,7 @@ class _CreateMultipleWasteEntriesViewState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Thông tin chung',
-          style: Theme.of(
-            context,
-          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-        ),
+        Text('Thông tin chung', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
         const SizedBox(height: 12),
         FormSelect(
           name: 'area_id',
@@ -195,7 +157,7 @@ class _CreateMultipleWasteEntriesViewState
           validators: [
             (value) {
               if (value == null || value == 'select') {
-                return 'Vui lòng chọn phòng ban';
+                return 'Vui lòng chọn phòng';
               }
               return null;
             },
@@ -213,15 +175,11 @@ class _CreateMultipleWasteEntriesViewState
       children: [
         Text(
           'Danh sách chất thải',
-          style: Theme.of(
-            context,
-          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
         ),
         TextButton.icon(
           onPressed: () {
-            context.read<MultipleWasteEntryBloc>().add(
-              const AddWasteItemEvent(),
-            );
+            context.read<MultipleWasteEntryBloc>().add(const AddWasteItemEvent());
           },
           icon: const Icon(Icons.add),
           label: const Text('Thêm loại'),
@@ -231,10 +189,7 @@ class _CreateMultipleWasteEntriesViewState
     );
   }
 
-  List<Widget> _buildWasteItemsList(
-    BuildContext context,
-    MultipleWasteEntryState state,
-  ) {
+  List<Widget> _buildWasteItemsList(BuildContext context, MultipleWasteEntryState state) {
     return List.generate(state.wasteItems.length, (index) {
       return Padding(
         padding: const EdgeInsets.only(bottom: 12),
@@ -245,18 +200,11 @@ class _CreateMultipleWasteEntriesViewState
           wasteItem: state.wasteItems[index],
           canRemove: state.wasteItems.length > 1,
           onRemove: () {
-            context.read<MultipleWasteEntryBloc>().add(
-              RemoveWasteItemEvent(index),
-            );
+            context.read<MultipleWasteEntryBloc>().add(RemoveWasteItemEvent(index));
           },
           onWasteTypeChanged: (wasteTypeId, name, unit) {
             context.read<MultipleWasteEntryBloc>().add(
-              UpdateWasteTypeEvent(
-                index: index,
-                wasteTypeId: wasteTypeId,
-                name: name,
-                unit: unit,
-              ),
+              UpdateWasteTypeEvent(index: index, wasteTypeId: wasteTypeId, name: name, unit: unit),
             );
           },
         ),
@@ -264,10 +212,7 @@ class _CreateMultipleWasteEntriesViewState
     });
   }
 
-  Widget _buildSubmitButton(
-    BuildContext context,
-    MultipleWasteEntryState state,
-  ) {
+  Widget _buildSubmitButton(BuildContext context, MultipleWasteEntryState state) {
     final isLoading = state.status == MultipleWasteEntryStatus.loading;
 
     return SizedBox(
@@ -278,17 +223,10 @@ class _CreateMultipleWasteEntriesViewState
             ? const SizedBox(
                 width: 20,
                 height: 20,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: Colors.white,
-                ),
+                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
               )
             : const Icon(Icons.save),
-        label: Text(
-          isLoading
-              ? 'Đang lưu...'
-              : 'Lưu ${state.wasteItems.length} loại chất thải',
-        ),
+        label: Text(isLoading ? 'Đang lưu...' : 'Lưu ${state.wasteItems.length} loại chất thải'),
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.symmetric(vertical: 16),
           backgroundColor: AppTheme.primaryGreen,
@@ -302,11 +240,7 @@ class _CreateMultipleWasteEntriesViewState
     // Validate common fields
     final formState = _formKey.currentState;
     if (!(formState?.saveAndValidate() ?? false)) {
-      _showSnackBar(
-        context,
-        'Vui lòng điền đầy đủ thông tin chung',
-        isError: true,
-      );
+      _showSnackBar(context, 'Vui lòng điền đầy đủ thông tin chung', isError: true);
       return;
     }
 
@@ -326,11 +260,7 @@ class _CreateMultipleWasteEntriesViewState
       final quantity = _parseQuantity(quantityString);
 
       if (quantity == null || quantity <= 0) {
-        _showSnackBar(
-          context,
-          'Số lượng không hợp lệ cho loại chất thải ${i + 1}',
-          isError: true,
-        );
+        _showSnackBar(context, 'Số lượng không hợp lệ cho loại chất thải ${i + 1}', isError: true);
         return;
       }
 
@@ -338,11 +268,7 @@ class _CreateMultipleWasteEntriesViewState
     }
 
     if (!allValid) {
-      _showSnackBar(
-        context,
-        'Vui lòng điền đầy đủ thông tin loại chất thải',
-        isError: true,
-      );
+      _showSnackBar(context, 'Vui lòng điền đầy đủ thông tin loại chất thải', isError: true);
       return;
     }
 
@@ -354,12 +280,7 @@ class _CreateMultipleWasteEntriesViewState
 
     // Submit
     context.read<MultipleWasteEntryBloc>().add(
-      SubmitMultipleEntriesEvent(
-        areaId: areaId,
-        departmentId: departmentId,
-        date: date,
-        quantities: quantities,
-      ),
+      SubmitMultipleEntriesEvent(areaId: areaId, departmentId: departmentId, date: date, quantities: quantities),
     );
   }
 
@@ -369,17 +290,10 @@ class _CreateMultipleWasteEntriesViewState
     return double.tryParse(sanitized);
   }
 
-  void _showSnackBar(
-    BuildContext context,
-    String message, {
-    bool isError = false,
-  }) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: isError ? Colors.red : AppTheme.primaryGreen,
-      ),
-    );
+  void _showSnackBar(BuildContext context, String message, {bool isError = false}) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message), backgroundColor: isError ? Colors.red : AppTheme.primaryGreen));
   }
 }
 
@@ -389,8 +303,7 @@ class _WasteItemCard extends StatelessWidget {
   final WasteItemState wasteItem;
   final bool canRemove;
   final VoidCallback onRemove;
-  final Function(String wasteTypeId, String name, String unit)
-  onWasteTypeChanged;
+  final Function(String wasteTypeId, String name, String unit) onWasteTypeChanged;
 
   const _WasteItemCard({
     super.key,
@@ -423,20 +336,14 @@ class _WasteItemCard extends StatelessWidget {
                     ),
                     child: Text(
                       '${index + 1}',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: AppTheme.primaryGreen,
-                      ),
+                      style: const TextStyle(fontWeight: FontWeight.bold, color: AppTheme.primaryGreen),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
                       wasteItem.wasteTypeName ?? 'Loại chất thải ${index + 1}',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
+                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                     ),
                   ),
                   if (canRemove)
@@ -479,24 +386,15 @@ class _WasteItemCard extends StatelessWidget {
               FormBuilderTextField(
                 name: 'quantity_$index',
                 decoration: InputDecoration(
-                  labelText:
-                      'Số lượng${wasteItem.unit != null ? ' (${wasteItem.unit})' : ''}',
+                  labelText: 'Số lượng${wasteItem.unit != null ? ' (${wasteItem.unit})' : ''}',
                   hintText: 'Ví dụ: 12.5',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                   prefixIcon: const Icon(Icons.scale),
                 ),
-                keyboardType: const TextInputType.numberWithOptions(
-                  decimal: true,
-                ),
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
                 validator: FormBuilderValidators.compose([
-                  FormBuilderValidators.required(
-                    errorText: 'Vui lòng nhập số lượng',
-                  ),
-                  FormBuilderValidators.numeric(
-                    errorText: 'Số lượng phải là số',
-                  ),
+                  FormBuilderValidators.required(errorText: 'Vui lòng nhập số lượng'),
+                  FormBuilderValidators.numeric(errorText: 'Số lượng phải là số'),
                 ]),
               ),
             ],
@@ -508,17 +406,9 @@ class _WasteItemCard extends StatelessWidget {
 
   Future<void> _fetchWasteTypeDetails(String wasteTypeId) async {
     try {
-      final response = await supabase
-          .from('waste_types')
-          .select('name, unit')
-          .eq('id', wasteTypeId)
-          .single();
+      final response = await supabase.from('waste_types').select('name, unit').eq('id', wasteTypeId).single();
 
-      onWasteTypeChanged(
-        wasteTypeId,
-        response['name'] as String,
-        response['unit'] as String? ?? '',
-      );
+      onWasteTypeChanged(wasteTypeId, response['name'] as String, response['unit'] as String? ?? '');
     } catch (e) {
       print('Error fetching waste type: $e');
     }
@@ -554,9 +444,7 @@ class _DateField extends StatelessWidget {
           child: InputDecorator(
             decoration: InputDecoration(
               labelText: 'Ngày nhập',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
               errorText: field.errorText,
               suffixIcon: const Icon(Icons.calendar_today),
             ),

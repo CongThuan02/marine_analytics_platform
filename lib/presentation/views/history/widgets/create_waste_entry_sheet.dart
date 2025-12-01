@@ -78,7 +78,7 @@ class _CreateWasteEntrySheetState extends State<CreateWasteEntrySheet> {
                 validators: [
                   (value) {
                     if (value == null || value == 'select') {
-                      return 'Vui lòng chọn phòng ban';
+                      return 'Vui lòng chọn phòng';
                     }
                     return null;
                   },

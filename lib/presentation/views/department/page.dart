@@ -36,7 +36,7 @@ class _DepartmentPage extends StatelessWidget {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("Quản lý phòng ban"),
+          title: const Text("Quản lý phòng"),
           actions: [IconButton(icon: const Icon(Icons.refresh), onPressed: () => bloc.add(GetDepartmentEvent()))],
         ),
         body: BlocBuilder<DepartmentBloc, DepartmentState>(
@@ -56,7 +56,7 @@ class _DepartmentPage extends StatelessWidget {
                     const SizedBox(height: 16),
                     const Text('No departments yet', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
                     const SizedBox(height: 8),
-                    Text('Nhấn nút + để thêm phòng ban mới', style: TextStyle(color: Colors.grey.shade600)),
+                    Text('Nhấn nút + để thêm phòng mới', style: TextStyle(color: Colors.grey.shade600)),
                   ],
                 ),
               );
@@ -190,7 +190,7 @@ class _DepartmentPage extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Bạn có chắc muốn xoá phòng ban "$name"?', style: const TextStyle(fontSize: 16)),
+              Text('Bạn có chắc muốn xoá phòng "$name"?', style: const TextStyle(fontSize: 16)),
               const SizedBox(height: 12),
               Container(
                 padding: const EdgeInsets.all(12),
@@ -297,7 +297,7 @@ class _EditDepartmentDialogState extends State<_EditDepartmentDialog> {
         children: [
           Icon(Icons.edit, color: AppTheme.primaryGreen),
           SizedBox(width: 12),
-          Text('Chỉnh sửa phòng ban'),
+          Text('Chỉnh sửa phòng'),
         ],
       ),
       content: SizedBox(
@@ -308,7 +308,7 @@ class _EditDepartmentDialogState extends State<_EditDepartmentDialog> {
             TextField(
               controller: _nameController,
               autofocus: true,
-              decoration: const InputDecoration(labelText: 'Tên phòng ban', border: OutlineInputBorder()),
+              decoration: const InputDecoration(labelText: 'Tên phòng', border: OutlineInputBorder()),
             ),
             const SizedBox(height: 16),
             FormSelect(

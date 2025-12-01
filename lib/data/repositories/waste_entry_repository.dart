@@ -24,9 +24,7 @@ class WasteEntryRepository {
           .order('date', ascending: false)
           .order('created_at', ascending: false);
 
-      return (response as List<dynamic>)
-          .map((item) => WasteEntryModel.fromMap(item as Map<String, dynamic>))
-          .toList();
+      return (response as List<dynamic>).map((item) => WasteEntryModel.fromMap(item as Map<String, dynamic>)).toList();
     } catch (e) {
       throw Exception('Không thể tải lịch sử rác thải: $e');
     }
@@ -42,7 +40,7 @@ class WasteEntryRepository {
       throw Exception('Vui lòng chọn khu vực.');
     }
     if (entry.departmentId.isEmpty) {
-      throw Exception('Vui lòng chọn phòng ban.');
+      throw Exception('Vui lòng chọn phòng.');
     }
     if (entry.wasteTypeId.isEmpty) {
       throw Exception('Vui lòng chọn loại chất thải.');
@@ -85,10 +83,7 @@ class WasteEntryRepository {
     }
   }
 
-  Future<String> updateWasteEntry({
-    required String id,
-    required WasteEntryModel entry,
-  }) async {
+  Future<String> updateWasteEntry({required String id, required WasteEntryModel entry}) async {
     final userId = supabase.auth.currentUser?.id;
     if (userId == null) {
       throw Exception('Bạn chưa đăng nhập.');
@@ -98,7 +93,7 @@ class WasteEntryRepository {
       throw Exception('Vui lòng chọn khu vực.');
     }
     if (entry.departmentId.isEmpty) {
-      throw Exception('Vui lòng chọn phòng ban.');
+      throw Exception('Vui lòng chọn phòng.');
     }
     if (entry.wasteTypeId.isEmpty) {
       throw Exception('Vui lòng chọn loại chất thải.');
@@ -149,11 +144,7 @@ class WasteEntryRepository {
       print('   Quantity: ${entry.quantity}');
 
       // Get area and waste type names
-      final areaResponse = await supabase
-          .from('areas')
-          .select('name')
-          .eq('id', entry.areaId)
-          .maybeSingle();
+      final areaResponse = await supabase.from('areas').select('name').eq('id', entry.areaId).maybeSingle();
 
       final wasteTypeResponse = await supabase
           .from('waste_types')

@@ -24,7 +24,7 @@ class UserProfileRepository {
       throw const RegisterException('Mật khẩu phải có ít nhất 6 ký tự.');
     }
     if (departmentId?.isEmpty ?? true) {
-      throw const RegisterException('Vui lòng chọn phòng ban.');
+      throw const RegisterException('Vui lòng chọn phòng.');
     }
     if (role?.isEmpty ?? true) {
       throw const RegisterException('Vui lòng chọn vai trò.');
@@ -39,28 +39,19 @@ class UserProfileRepository {
 
       final user = response.user;
       if (user == null) {
-        throw const RegisterException(
-          'Không thể lấy thông tin người dùng từ Supabase.',
-        );
+        throw const RegisterException('Không thể lấy thông tin người dùng từ Supabase.');
       }
 
-      await supabase.from('users_profile').insert({
-        'id': user.id,
-        'department_id': departmentId,
-        'role': role,
-      });
+      await supabase.from('users_profile').insert({'id': user.id, 'department_id': departmentId, 'role': role});
 
-      final requiresConfirmation =
-          response.session == null || user.emailConfirmedAt == null;
+      final requiresConfirmation = response.session == null || user.emailConfirmedAt == null;
       return requiresConfirmation
           ? 'Đăng ký thành công. Vui lòng kiểm tra email để xác minh tài khoản.'
           : 'Đăng ký thành công.';
     } on AuthException catch (e) {
       throw RegisterException(e.message);
     } on PostgrestException catch (e) {
-      throw RegisterException(
-        e.message ?? 'Không thể lưu thông tin người dùng.',
-      );
+      throw RegisterException(e.message ?? 'Không thể lưu thông tin người dùng.');
     } catch (e) {
       throw RegisterException('Không thể đăng ký: $e');
     }

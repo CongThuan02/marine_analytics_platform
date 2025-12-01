@@ -62,9 +62,9 @@
 - ✅ Buttons: "Lưu", "Hủy", "Cập nhật", "Xóa"
 
 ### Departments
-- ✅ Page title: "Quản lý phòng ban"
-- ✅ "Nhấn nút + để thêm phòng ban mới"
-- ✅ "Chỉnh sửa phòng ban"
+- ✅ Page title: "Quản lý phòng"
+- ✅ "Nhấn nút + để thêm phòng mới"
+- ✅ "Chỉnh sửa phòng"
 - ✅ "Xác nhận xóa"
 - ✅ Form labels và buttons
 

@@ -10,7 +10,7 @@ import re
 TRANSLATIONS = {
     # Validation messages
     "Vui lòng chọn khu vực": "Please select an area",
-    "Vui lòng chọn phòng ban": "Please select a department",
+    "Vui lòng chọn phòng": "Please select a department",
     "Vui lòng chọn loại chất thải": "Please select a waste type",
     "Vui lòng chọn loại chất thải cho mục": "Please select waste type for item",
     "Vui lòng nhập số lượng": "Please enter quantity",
@@ -42,7 +42,7 @@ TRANSLATIONS = {
     
     # Empty states
     "Chưa có loại chất thải nào": "No waste types yet",
-    "Chưa có phòng ban nào": "No departments yet",
+    "Chưa có phòng nào": "No departments yet",
     "Chưa có khu vực nào": "No areas yet",
     "Chưa có dữ liệu chất thải cho ngày này": "No waste data for this day",
     "Chưa có dữ liệu chất thải cho tháng này": "No waste data for this month",

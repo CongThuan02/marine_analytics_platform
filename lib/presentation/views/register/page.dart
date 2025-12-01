@@ -17,10 +17,7 @@ class RegisterPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => RegisterBloc(),
-      child: const _RegisterView(),
-    );
+    return BlocProvider(create: (_) => RegisterBloc(), child: const _RegisterView());
   }
 }
 
@@ -35,12 +32,9 @@ class _RegisterViewState extends State<_RegisterView> {
   final _formKey = GlobalKey<FormBuilderState>();
 
   void _showSnackBar(String message, {bool isError = false}) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: isError ? Colors.red : Colors.green,
-      ),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message), backgroundColor: isError ? Colors.red : Colors.green));
   }
 
   void _onSubmit() {
@@ -92,19 +86,12 @@ class _RegisterViewState extends State<_RegisterView> {
               child: Column(
                 children: [
                   // Clickable Logo
-                  const ClickableLogo(
-                    logoSize: 70,
-                    titleFontSize: 28,
-                    subtitleFontSize: 14,
-                  ),
+                  const ClickableLogo(logoSize: 70, titleFontSize: 28, subtitleFontSize: 14),
                   const SizedBox(height: 32),
                   FormTextField(
                     name: "email",
                     label: context.l10n.email,
-                    validators: [
-                      FormBuilderValidators.required(),
-                      FormBuilderValidators.email(),
-                    ],
+                    validators: [FormBuilderValidators.required(), FormBuilderValidators.email()],
                   ),
                   const SizedBox(height: 16),
                   FormTextField(
@@ -113,10 +100,7 @@ class _RegisterViewState extends State<_RegisterView> {
                     label: context.l10n.password,
                     validators: [
                       FormBuilderValidators.required(),
-                      FormBuilderValidators.minLength(
-                        6,
-                        errorText: 'Tối thiểu 6 ký tự',
-                      ),
+                      FormBuilderValidators.minLength(6, errorText: 'Tối thiểu 6 ký tự'),
                     ],
                   ),
                   const SizedBox(height: 16),
@@ -127,7 +111,7 @@ class _RegisterViewState extends State<_RegisterView> {
                     validators: [
                       (value) {
                         if (value == null || value == 'select') {
-                          return 'Vui lòng chọn phòng ban';
+                          return 'Vui lòng chọn phòng';
                         }
                         return null;
                       },
@@ -154,10 +138,7 @@ class _RegisterViewState extends State<_RegisterView> {
                   const SizedBox(height: 24),
                   SizedBox(
                     width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: _onSubmit,
-                      child: Text(context.l10n.register),
-                    ),
+                    child: ElevatedButton(onPressed: _onSubmit, child: Text(context.l10n.register)),
                   ),
                 ],
               ),

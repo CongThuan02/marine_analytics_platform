@@ -12,7 +12,7 @@ TRANSLATIONS = {
     "Cài đặt": "Settings",
     "Quản lý hệ thống": "System Management",
     "Quản lý khu vực": "Manage Areas",
-    "Quản lý phòng ban": "Manage Departments",
+    "Quản lý phòng": "Manage Departments",
     "Quản lý loại chất thải": "Manage Waste Types",
     "Giám sát & Cảnh báo": "Monitoring & Alerts",
     "Cảnh báo hạn mức": "Limit Alerts",
@@ -42,10 +42,10 @@ TRANSLATIONS = {
     
     # Departments
     "Phòng ban": "Department",
-    "phòng ban": "department",
-    "Thêm, sửa, xóa phòng ban": "Add, edit, delete departments",
-    "Chọn phòng ban": "Select department",
-    "Vui lòng chọn phòng ban": "Please select a department",
+    "phòng": "department",
+    "Thêm, sửa, xóa phòng": "Add, edit, delete departments",
+    "Chọn phòng": "Select department",
+    "Vui lòng chọn phòng": "Please select a department",
     
     # Waste Types
     "Loại chất thải": "Waste Type",

@@ -46,12 +46,7 @@ class _EditWasteEntrySheetState extends State<EditWasteEntrySheet> {
         }
       },
       child: SingleChildScrollView(
-        padding: EdgeInsets.only(
-          left: 16,
-          right: 16,
-          top: 16,
-          bottom: bottom + 24,
-        ),
+        padding: EdgeInsets.only(left: 16, right: 16, top: 16, bottom: bottom + 24),
         child: FormBuilder(
           key: _formKey,
           initialValue: {
@@ -69,16 +64,11 @@ class _EditWasteEntrySheetState extends State<EditWasteEntrySheet> {
               Container(
                 width: 50,
                 height: 4,
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade400,
-                  borderRadius: BorderRadius.circular(4),
-                ),
+                decoration: BoxDecoration(color: Colors.grey.shade400, borderRadius: BorderRadius.circular(4)),
               ),
               Text(
-                "Edit Waste Entry",
-                style: Theme.of(
-                  context,
-                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+                "Chỉnh sửa thông tin",
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
               ),
               FormSelect(
                 name: 'area_id',
@@ -89,17 +79,12 @@ class _EditWasteEntrySheetState extends State<EditWasteEntrySheet> {
                   setState(() {
                     _selectedAreaId = value;
                     // Reset department when area changes
-                    _formKey.currentState?.fields['department_id']?.didChange(
-                      'select',
-                    );
+                    _formKey.currentState?.fields['department_id']?.didChange('select');
                   });
                 },
                 iniItems: widget.entry.areaName != null
                     ? [
-                        {
-                          'id': widget.entry.areaId,
-                          'name': widget.entry.areaName,
-                        },
+                        {'id': widget.entry.areaId, 'name': widget.entry.areaName},
                       ]
                     : null,
                 validators: [
@@ -121,16 +106,13 @@ class _EditWasteEntrySheetState extends State<EditWasteEntrySheet> {
                 initialValue: widget.entry.departmentId,
                 iniItems: widget.entry.departmentName != null
                     ? [
-                        {
-                          'id': widget.entry.departmentId,
-                          'name': widget.entry.departmentName,
-                        },
+                        {'id': widget.entry.departmentId, 'name': widget.entry.departmentName},
                       ]
                     : null,
                 validators: [
                   (value) {
                     if (value == null || value == 'select') {
-                      return 'Vui lòng chọn phòng ban';
+                      return 'Vui lòng chọn phòng';
                     }
                     return null;
                   },
@@ -173,21 +155,14 @@ class _EditWasteEntrySheetState extends State<EditWasteEntrySheet> {
                 label: 'Số lượng',
                 hintText: 'Ví dụ: 12.5',
                 validators: [
-                  FormBuilderValidators.required(
-                    errorText: 'Vui lòng nhập số lượng',
-                  ),
-                  FormBuilderValidators.numeric(
-                    errorText: 'Số lượng phải là số',
-                  ),
+                  FormBuilderValidators.required(errorText: 'Vui lòng nhập số lượng'),
+                  FormBuilderValidators.numeric(errorText: 'Số lượng phải là số'),
                 ],
               ),
               FormTextField(name: 'qr_code', label: 'Mã QR (tùy chọn)'),
               SizedBox(
                 width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _handleSubmit,
-                  child: const Text("Cập nhật"),
-                ),
+                child: ElevatedButton(onPressed: _handleSubmit, child: const Text("Cập nhật")),
               ),
             ],
           ),
@@ -218,9 +193,7 @@ class _EditWasteEntrySheetState extends State<EditWasteEntrySheet> {
             'area_id': values['area_id'],
             'department_id': values['department_id'],
             'waste_type_id': values['waste_type_id'],
-            'date': (values['date'] as DateTime).toIso8601String().split(
-              'T',
-            )[0],
+            'date': (values['date'] as DateTime).toIso8601String().split('T')[0],
             'quantity': quantity,
             'qr_code': (values['qr_code'] as String?)?.trim(),
           })
@@ -237,11 +210,7 @@ class _EditWasteEntrySheetState extends State<EditWasteEntrySheet> {
 
       if (context.mounted) {
         context.read<WasteEntryBloc>().add(const LoadWasteEntries());
-        _showSnackBar(
-          context,
-          'Đã cập nhật bản ghi thành công',
-          isError: false,
-        );
+        _showSnackBar(context, 'Đã cập nhật bản ghi thành công', isError: false);
         Navigator.of(context).pop();
       }
     } catch (e) {
@@ -260,37 +229,18 @@ class _EditWasteEntrySheetState extends State<EditWasteEntrySheet> {
     return double.tryParse(sanitized);
   }
 
-  void _showSnackBar(
-    BuildContext context,
-    String message, {
-    bool isError = true,
-  }) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: isError ? Colors.red : Colors.green,
-      ),
-    );
+  void _showSnackBar(BuildContext context, String message, {bool isError = true}) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message), backgroundColor: isError ? Colors.red : Colors.green));
   }
 
-  Future<void> _checkWasteLimit({
-    required String areaId,
-    required String wasteTypeId,
-    required double quantity,
-  }) async {
+  Future<void> _checkWasteLimit({required String areaId, required String wasteTypeId, required double quantity}) async {
     try {
       // Get area and waste type names
-      final areaResponse = await supabase
-          .from('areas')
-          .select('name')
-          .eq('id', areaId)
-          .maybeSingle();
+      final areaResponse = await supabase.from('areas').select('name').eq('id', areaId).maybeSingle();
 
-      final wasteTypeResponse = await supabase
-          .from('waste_types')
-          .select('name')
-          .eq('id', wasteTypeId)
-          .maybeSingle();
+      final wasteTypeResponse = await supabase.from('waste_types').select('name').eq('id', wasteTypeId).maybeSingle();
 
       if (areaResponse == null || wasteTypeResponse == null) {
         print('⚠️ Could not fetch area or waste type names');
@@ -342,9 +292,7 @@ class _DateField extends StatelessWidget {
           child: InputDecorator(
             decoration: InputDecoration(
               labelText: 'Ngày nhập',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
               errorText: field.errorText,
               suffixIcon: const Icon(Icons.calendar_today),
             ),

@@ -49,15 +49,15 @@ INSERT INTO areas (name) VALUES
 ```
 
 ### Ghi chú
-- Mỗi khu vực có thể có nhiều phòng ban
-- Khi xóa khu vực, các phòng ban liên quan sẽ có `area_id = null`
+- Mỗi khu vực có thể có nhiều phòng
+- Khi xóa khu vực, các phòng liên quan sẽ có `area_id = null`
 - Dùng để phân tích thống kê theo vùng địa lý
 
 ---
 
 ## 2. Bảng `departments` - Phòng ban
 
-Quản lý các phòng ban/đơn vị thuộc khu vực
+Quản lý các phòng/đơn vị thuộc khu vực
 
 ### Cấu trúc
 ```sql
@@ -78,8 +78,8 @@ INSERT INTO departments (name, area_id) VALUES
 ```
 
 ### Ghi chú
-- Một phòng ban thuộc một khu vực
-- Có thể tồn tại phòng ban không thuộc khu vực nào (`area_id = null`)
+- Một phòng thuộc một khu vực
+- Có thể tồn tại phòng không thuộc khu vực nào (`area_id = null`)
 - Dùng để phân quyền và theo dõi trách nhiệm
 
 ---
@@ -165,7 +165,7 @@ create trigger on_auth_user_created
 
 ### Ghi chú
 - `id` phải khớp với `auth.users.id` của Supabase
-- Mỗi user thuộc một phòng ban
+- Mỗi user thuộc một phòng
 - Dùng để phân quyền và audit trail
 
 ---
@@ -361,7 +361,7 @@ create trigger trigger_check_waste_limit
 
 ## 8. Bảng `reminders` - Nhắc nhở nhập liệu
 
-Cấu hình nhắc nhở cho phòng ban
+Cấu hình nhắc nhở cho phòng
 
 ### Cấu trúc
 ```sql
@@ -535,7 +535,7 @@ create policy "Admins can do everything"
   );
 ```
 
-#### 3. Staff chỉ xem dữ liệu phòng ban mình
+#### 3. Staff chỉ xem dữ liệu phòng mình
 ```sql
 create policy "Staff can view own department data"
   on waste_entries for select

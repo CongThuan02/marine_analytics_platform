@@ -1,7 +1,7 @@
 # Tính năng: Lọc Phòng ban theo Khu vực
 
 ## 📋 Mô tả
-Khi người dùng chọn khu vực trong form thêm/sửa rác thải, dropdown phòng ban sẽ chỉ hiển thị các phòng ban thuộc khu vực đã chọn.
+Khi người dùng chọn khu vực trong form thêm/sửa rác thải, dropdown phòng sẽ chỉ hiển thị các phòng thuộc khu vực đã chọn.
 
 ## ✅ Đã implement
 
@@ -140,7 +140,7 @@ class _EditWasteEntrySheetState extends State<EditWasteEntrySheet> {
 
 ## 🎯 Cách hoạt động
 
-1. **Khi form load lần đầu**: Department dropdown hiển thị tất cả phòng ban (hoặc filtered nếu có area_id)
+1. **Khi form load lần đầu**: Department dropdown hiển thị tất cả phòng (hoặc filtered nếu có area_id)
 
 2. **Khi user chọn khu vực**:
    - `onChange` callback được gọi
@@ -151,7 +151,7 @@ class _EditWasteEntrySheetState extends State<EditWasteEntrySheet> {
 3. **Khi department dropdown được mở**:
    - FormSelect gửi `GetItemsFormEvent` với `filterColumn='area_id'` và `filterValue=_selectedAreaId`
    - Repository thực hiện query: `supabase.from('departments').select().eq('area_id', _selectedAreaId)`
-   - Chỉ các phòng ban thuộc khu vực đã chọn được hiển thị
+   - Chỉ các phòng thuộc khu vực đã chọn được hiển thị
 
 ## 📝 Lưu ý
 
@@ -168,7 +168,7 @@ class _EditWasteEntrySheetState extends State<EditWasteEntrySheet> {
 
 ## ✨ Kết quả
 
-Người dùng giờ chỉ thấy các phòng ban thuộc khu vực đã chọn, giúp:
+Người dùng giờ chỉ thấy các phòng thuộc khu vực đã chọn, giúp:
 - Giảm confusion
 - Tăng tốc độ nhập liệu
-- Tránh chọn sai phòng ban không thuộc khu vực
+- Tránh chọn sai phòng không thuộc khu vực

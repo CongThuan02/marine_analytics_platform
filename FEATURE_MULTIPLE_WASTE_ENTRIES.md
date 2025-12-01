@@ -77,7 +77,7 @@ lib/presentation/views/
 
 ### Thêm nhiều loại (mới)
 1. Tap FAB extended "Nhiều loại"
-2. Điền thông tin chung (khu vực, phòng ban, ngày)
+2. Điền thông tin chung (khu vực, phòng, ngày)
 3. Chọn loại rác thải đầu tiên và số lượng
 4. Tap "Thêm loại" để thêm loại khác
 5. Điền thông tin cho các loại tiếp theo
@@ -119,7 +119,7 @@ Loại 4: Chất thải tái chế (20 kg)
 ## 🎯 Benefits
 
 ### 1. Tiết kiệm thời gian
-- Không cần nhập lại khu vực, phòng ban, ngày
+- Không cần nhập lại khu vực, phòng, ngày
 - Thêm nhiều loại trong 1 lần mở form
 
 ### 2. Giảm lỗi
