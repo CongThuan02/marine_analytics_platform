@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:marine_analytics_platform/core/services/fcm_service.dart';
 import 'package:marine_analytics_platform/core/services/local_notification_service.dart';
 import 'package:marine_analytics_platform/core/theme/app_theme.dart';
 import 'package:marine_analytics_platform/global.dart';
@@ -76,9 +78,17 @@ class SettingsPage extends StatelessWidget {
           const SizedBox(height: 24),
 
           // Testing section
-          if (kDebugMode) ...{
+          if (!kDebugMode) ...{
             _buildSectionTitle('Kiểm tra & Debug'),
             const SizedBox(height: 12),
+            _buildSettingCard(
+              context,
+              icon: Icons.notifications_active,
+              title: 'Xem FCM Token',
+              subtitle: 'Hiển thị Firebase Cloud Messaging token',
+              onTap: () => _showFCMToken(context),
+            ),
+            const SizedBox(height: 8),
             _buildSettingCard(
               context,
               icon: Icons.bug_report,
@@ -259,6 +269,106 @@ class SettingsPage extends StatelessWidget {
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
             child: const Text('Đăng xuất'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _showFCMToken(BuildContext context) async {
+    final fcmService = FCMService();
+    final token = fcmService.fcmToken;
+
+    if (token == null) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('⏳ FCM Token chưa sẵn sàng. Vui lòng đợi vài giây...'),
+            backgroundColor: Colors.orange,
+            duration: Duration(seconds: 3),
+          ),
+        );
+      }
+      return;
+    }
+
+    if (!context.mounted) return;
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Row(
+          children: [
+            Icon(Icons.notifications_active, color: AppTheme.primaryGreen),
+            const SizedBox(width: 8),
+            const Text('FCM Token'),
+          ],
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Firebase Cloud Messaging token:',
+                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
+              ),
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.grey.shade300),
+                ),
+                child: SelectableText(
+                  token,
+                  style: const TextStyle(fontSize: 12, fontFamily: 'monospace', height: 1.4),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.blue.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.blue.shade200),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.info_outline, color: Colors.blue.shade700, size: 20),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Dùng token này để test gửi notification từ Firebase Console',
+                        style: TextStyle(fontSize: 12, color: Colors.blue.shade700),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Đóng')),
+          ElevatedButton.icon(
+            onPressed: () {
+              Clipboard.setData(ClipboardData(text: token));
+              Navigator.pop(dialogContext);
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('✅ Đã sao chép FCM Token vào clipboard!'),
+                    backgroundColor: Colors.green,
+                    duration: Duration(seconds: 2),
+                  ),
+                );
+              }
+            },
+            icon: const Icon(Icons.copy, size: 18),
+            label: const Text('Sao chép'),
+            style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryGreen, foregroundColor: Colors.white),
           ),
         ],
       ),

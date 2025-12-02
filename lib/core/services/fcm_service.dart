@@ -16,6 +16,9 @@ class FCMService {
   String? _fcmToken;
   String? get fcmToken => _fcmToken;
 
+  bool _isInitialized = false;
+  bool get isInitialized => _isInitialized;
+
   /// Initialize FCM
   Future<void> initialize() async {
     // Request permission
@@ -65,6 +68,72 @@ class FCMService {
       _fcmToken = newToken;
       _saveFCMToken(newToken);
     });
+
+    _isInitialized = true;
+  }
+
+  /// Wait for FCM token to be ready (with timeout)
+  /// Returns token if available, null if timeout or error
+  Future<String?> waitForToken({
+    Duration timeout = const Duration(seconds: 10),
+  }) async {
+    // If token already available, return immediately
+    if (_fcmToken != null) {
+      print('✅ FCM token already available');
+      return _fcmToken;
+    }
+
+    print('⏳ Waiting for FCM token...');
+
+    try {
+      // Try to get token with timeout
+      final token = await _messaging.getToken().timeout(
+        timeout,
+        onTimeout: () {
+          print('⏱️ FCM token timeout after ${timeout.inSeconds}s');
+          return null;
+        },
+      );
+
+      if (token != null) {
+        _fcmToken = token;
+        print('✅ FCM token received: ${token.substring(0, 20)}...');
+
+        // Save to database if user is logged in
+        final userId = supabase.auth.currentUser?.id;
+        if (userId != null) {
+          await _saveFCMToken(token);
+        }
+      } else {
+        print('❌ FCM token is null - check permissions and APNs config');
+      }
+
+      return token;
+    } catch (e) {
+      print('❌ Error getting FCM token: $e');
+      return null;
+    }
+  }
+
+  /// Check if notification permission is granted
+  Future<bool> hasPermission() async {
+    final settings = await _messaging.getNotificationSettings();
+    return settings.authorizationStatus == AuthorizationStatus.authorized;
+  }
+
+  /// Request notification permission
+  Future<bool> requestPermission() async {
+    final settings = await _messaging.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+      provisional: false,
+    );
+
+    final granted =
+        settings.authorizationStatus == AuthorizationStatus.authorized;
+    print(granted ? '✅ Permission granted' : '❌ Permission denied');
+    return granted;
   }
 
   /// Setup local notifications
