@@ -4,6 +4,7 @@ import 'package:marine_analytics_platform/global.dart';
 import 'package:marine_analytics_platform/presentation/views/alerts/page.dart';
 import 'package:marine_analytics_platform/presentation/views/alerts/create_test_alert_page.dart';
 import 'package:marine_analytics_platform/presentation/views/test_local_notification_page.dart';
+import 'package:marine_analytics_platform/presentation/views/test_reminder_notification_page.dart';
 import 'package:marine_analytics_platform/presentation/views/areas/create/page.dart';
 import 'package:marine_analytics_platform/presentation/views/qr_code_page.dart';
 import 'package:marine_analytics_platform/test_supabase_connection.dart';
@@ -89,6 +90,16 @@ final appRouter = GoRouter(
       path: '/test-connection',
       name: '/test-connection',
       builder: (context, state) => const TestSupabaseConnectionPage(),
+    ),
+    GoRoute(
+      path: '/test-local-notification',
+      name: '/test-local-notification',
+      builder: (context, state) => const TestLocalNotificationPage(),
+    ),
+    GoRoute(
+      path: '/test-reminder-notification',
+      name: '/test-reminder-notification',
+      builder: (context, state) => const TestReminderNotificationPage(),
     ),
     GoRoute(
       path: '/qr-code',

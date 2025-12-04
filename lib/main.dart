@@ -9,6 +9,7 @@ import 'package:marine_analytics_platform/core/di/injection_container.dart'
 import 'package:marine_analytics_platform/core/localization/app_localizations.dart';
 import 'package:marine_analytics_platform/core/services/fcm_service.dart';
 import 'package:marine_analytics_platform/core/services/local_notification_service.dart';
+import 'package:marine_analytics_platform/core/services/reminder_notification_service.dart';
 import 'package:marine_analytics_platform/core/theme/app_theme.dart';
 import 'package:marine_analytics_platform/firebase_options.dart';
 import 'package:marine_analytics_platform/routes/app_router.dart';
@@ -72,7 +73,7 @@ Future<void> initDeepLinks() async {
 
 /// Handle deep link
 Future<void> _handleDeepLink(Uri uri) async {
-  print('🔗 Deep link received: $uri');
+  print('   Deep link received: $uri');
   print('   Scheme: ${uri.scheme}');
   print('   Host: ${uri.host}');
   print('   Path: ${uri.path}');
@@ -139,6 +140,14 @@ Future<void> main() async {
     print('✅ Local notifications initialized successfully');
   } catch (e) {
     print('⚠️ Local notification init error: $e');
+  }
+
+  // 🔹 Init Reminder Notifications
+  try {
+    await ReminderNotificationService().initialize();
+    print('✅ Reminder notifications initialized successfully');
+  } catch (e) {
+    print('⚠️ Reminder notification init error: $e');
   }
 
   runApp(const MyApp());
