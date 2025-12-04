@@ -4,8 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:loader_overlay/loader_overlay.dart';
-import 'package:marine_analytics_platform/core/di/injection_container.dart'
-    as di;
+import 'package:marine_analytics_platform/core/di/injection_container.dart' as di;
 import 'package:marine_analytics_platform/core/localization/app_localizations.dart';
 import 'package:marine_analytics_platform/core/services/fcm_service.dart';
 import 'package:marine_analytics_platform/core/services/local_notification_service.dart';
@@ -35,8 +34,7 @@ class DeepLinkService with WidgetsBindingObserver {
 
   Future<void> _getInitialLink() async {
     try {
-      final uriString =
-          WidgetsBinding.instance.platformDispatcher.defaultRouteName;
+      final uriString = WidgetsBinding.instance.platformDispatcher.defaultRouteName;
       if (uriString != "/") {
         final uri = Uri.parse(uriString);
         lastLink = uriString;
@@ -50,8 +48,7 @@ class DeepLinkService with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     try {
-      final uriString =
-          WidgetsBinding.instance.platformDispatcher.defaultRouteName;
+      final uriString = WidgetsBinding.instance.platformDispatcher.defaultRouteName;
       if (uriString != lastLink && uriString != "/") {
         final uri = Uri.parse(uriString);
         lastLink = uriString;
@@ -67,7 +64,7 @@ Future<void> initDeepLinks() async {
   await deepLinkService.init();
 
   deepLinkService.stream.listen((uri) async {
-    await _handleDeepLink(uri); // 💥 run async, avoid blocking main thread
+    await _handleDeepLink(uri);
   });
 }
 
@@ -84,7 +81,6 @@ Future<void> _handleDeepLink(Uri uri) async {
   // Check if user is logged in
   final session = supabase.auth.currentSession;
   if (session == null) {
-    print('⚠️ User not logged in, cannot navigate via deep link');
     return;
   }
 
@@ -92,11 +88,9 @@ Future<void> _handleDeepLink(Uri uri) async {
   if (uri.host == 'ships' || uri.pathSegments.contains('ships')) {
     // Navigate to history/ships page
     appRouter.go('/ships');
-    print('✅ Navigated to /ships');
   } else if (uri.host == 'alerts' || uri.pathSegments.contains('alerts')) {
     // Navigate to alerts page
     appRouter.go('/alerts');
-    print('✅ Navigated to /alerts');
   } else if (uri.host == 'home' || uri.path == '/') {
     // Navigate to home page
     appRouter.go('/');

@@ -159,7 +159,6 @@ class _EditWasteEntrySheetState extends State<EditWasteEntrySheet> {
                   FormBuilderValidators.numeric(errorText: 'Số lượng phải là số'),
                 ],
               ),
-              FormTextField(name: 'qr_code', label: 'Mã QR (tùy chọn)'),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(onPressed: _handleSubmit, child: const Text("Cập nhật")),

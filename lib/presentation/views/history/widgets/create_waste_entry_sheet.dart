@@ -115,7 +115,6 @@ class _CreateWasteEntrySheetState extends State<CreateWasteEntrySheet> {
                   FormBuilderValidators.numeric(errorText: 'Số lượng phải là số'),
                 ],
               ),
-              FormTextField(name: 'qr_code', label: 'Mã QR (tùy chọn)'),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(onPressed: _handleSubmit, child: Text(context.l10n.save)),
