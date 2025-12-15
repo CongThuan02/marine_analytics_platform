@@ -219,6 +219,14 @@ class ExcelExportService {
 
       print('✅ Excel file created: $filePath');
 
+      // Kiểm tra file tồn tại trước khi chia sẻ
+      if (!await file.exists()) {
+        throw Exception('File Excel không được tạo thành công');
+      }
+
+      final fileSize = await file.length();
+      print('📄 File size: ${fileSize} bytes');
+
       // Share file
       await Share.shareXFiles(
         [XFile(filePath)],
@@ -230,7 +238,16 @@ class ExcelExportService {
       print('✅ Excel file shared successfully');
     } catch (e) {
       print('❌ Error exporting to Excel: $e');
-      rethrow;
+      print('❌ Error type: ${e.runtimeType}');
+      if (e is FileSystemException) {
+        throw Exception('Lỗi truy cập file: ${e.message}');
+      } else if (e.toString().contains('permission')) {
+        throw Exception(
+          'Không có quyền tạo file. Vui lòng kiểm tra quyền ứng dụng.',
+        );
+      } else {
+        throw Exception('Lỗi xuất Excel: $e');
+      }
     }
   }
 

@@ -10,13 +10,17 @@ import 'package:marine_analytics_platform/presentation/blocs/waste_entry/waste_e
 import 'package:marine_analytics_platform/presentation/views/history/widgets/create_multiple_waste_entries_sheet_v2.dart';
 import 'package:marine_analytics_platform/presentation/views/history/widgets/create_waste_entry_sheet.dart';
 import 'package:marine_analytics_platform/presentation/views/history/widgets/edit_waste_entry_sheet.dart';
+import 'package:marine_analytics_platform/presentation/views/history/widgets/import_excel_dialog.dart';
 
 class HistoryPage extends StatelessWidget {
   const HistoryPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(create: (_) => WasteEntryBloc()..add(const LoadWasteEntries()), child: const _HistoryView());
+    return BlocProvider(
+      create: (_) => WasteEntryBloc()..add(const LoadWasteEntries()),
+      child: const _HistoryView(),
+    );
   }
 }
 
@@ -42,22 +46,65 @@ class _HistoryViewState extends State<_HistoryView> {
         }
 
         if (state.status == Status.success && state.message != null) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(state.message!), backgroundColor: Colors.green));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.message!),
+              backgroundColor: Colors.green,
+            ),
+          );
         }
         if (state.status == Status.fail && state.message != null) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(state.message!), backgroundColor: Colors.red));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.message!),
+              backgroundColor: Colors.red,
+            ),
+          );
         }
       },
       child: Scaffold(
         appBar: AppBar(
           title: const Text("Lịch sử chất thải"),
           actions: [
-            IconButton(icon: const Icon(Icons.filter_list), onPressed: () => _showDateRangePicker(context)),
-            IconButton(icon: const Icon(Icons.file_download), onPressed: () => _showExportDialog(context)),
+            IconButton(
+              icon: const Icon(Icons.filter_list),
+              onPressed: () => _showDateRangePicker(context),
+            ),
+            PopupMenuButton<String>(
+              icon: const Icon(Icons.more_vert),
+              onSelected: (value) {
+                switch (value) {
+                  case 'import':
+                    _showImportDialog(context);
+                    break;
+                  case 'export':
+                    _showExportDialog(context);
+                    break;
+                }
+              },
+              itemBuilder: (context) => [
+                const PopupMenuItem(
+                  value: 'import',
+                  child: Row(
+                    children: [
+                      Icon(Icons.upload_file, color: AppTheme.primaryGreen),
+                      SizedBox(width: 12),
+                      Text('Import Excel'),
+                    ],
+                  ),
+                ),
+                const PopupMenuItem(
+                  value: 'export',
+                  child: Row(
+                    children: [
+                      Icon(Icons.file_download, color: AppTheme.primaryGreen),
+                      SizedBox(width: 12),
+                      Text('Xuất Excel'),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
         body: BlocBuilder<WasteEntryBloc, WasteEntryState>(
@@ -68,8 +115,14 @@ class _HistoryViewState extends State<_HistoryView> {
                 : state.entries.where((entry) {
                     if (entry.date == null) return false;
                     final entryDate = entry.date!;
-                    return entryDate.isAfter(_selectedDateRange!.start.subtract(const Duration(days: 1))) &&
-                        entryDate.isBefore(_selectedDateRange!.end.add(const Duration(days: 1)));
+                    return entryDate.isAfter(
+                          _selectedDateRange!.start.subtract(
+                            const Duration(days: 1),
+                          ),
+                        ) &&
+                        entryDate.isBefore(
+                          _selectedDateRange!.end.add(const Duration(days: 1)),
+                        );
                   }).toList();
 
             if (filteredEntries.isEmpty) {
@@ -80,7 +133,11 @@ class _HistoryViewState extends State<_HistoryView> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.search_off, size: 64, color: Colors.grey.shade400),
+                    Icon(
+                      Icons.search_off,
+                      size: 64,
+                      color: Colors.grey.shade400,
+                    ),
                     const SizedBox(height: 16),
                     Text(
                       _selectedDateRange == null
@@ -91,7 +148,8 @@ class _HistoryViewState extends State<_HistoryView> {
                     if (_selectedDateRange != null) ...[
                       const SizedBox(height: 8),
                       TextButton.icon(
-                        onPressed: () => setState(() => _selectedDateRange = null),
+                        onPressed: () =>
+                            setState(() => _selectedDateRange = null),
                         icon: const Icon(Icons.clear),
                         label: const Text('Xóa bộ lọc'),
                       ),
@@ -110,17 +168,25 @@ class _HistoryViewState extends State<_HistoryView> {
                     color: AppTheme.primaryGreen.withOpacity(0.1),
                     child: Row(
                       children: [
-                        const Icon(Icons.filter_list, size: 20, color: AppTheme.primaryGreen),
+                        const Icon(
+                          Icons.filter_list,
+                          size: 20,
+                          color: AppTheme.primaryGreen,
+                        ),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
                             'Thời gian: ${_formatDateShort(_selectedDateRange!.start)} - ${_formatDateShort(_selectedDateRange!.end)} (${filteredEntries.length} bản ghi)',
-                            style: const TextStyle(fontSize: 13, color: AppTheme.primaryGreen),
+                            style: const TextStyle(
+                              fontSize: 13,
+                              color: AppTheme.primaryGreen,
+                            ),
                           ),
                         ),
                         IconButton(
                           icon: const Icon(Icons.close, size: 20),
-                          onPressed: () => setState(() => _selectedDateRange = null),
+                          onPressed: () =>
+                              setState(() => _selectedDateRange = null),
                           padding: EdgeInsets.zero,
                           constraints: const BoxConstraints(),
                         ),
@@ -130,10 +196,15 @@ class _HistoryViewState extends State<_HistoryView> {
                 Expanded(
                   child: RefreshIndicator(
                     onRefresh: () async {
-                      context.read<WasteEntryBloc>().add(const LoadWasteEntries());
+                      context.read<WasteEntryBloc>().add(
+                        const LoadWasteEntries(),
+                      );
                     },
                     child: ListView.separated(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
                       itemCount: filteredEntries.length,
                       separatorBuilder: (_, __) => const SizedBox(height: 12),
                       itemBuilder: (context, index) {
@@ -176,7 +247,10 @@ class _HistoryViewState extends State<_HistoryView> {
       isScrollControlled: true,
       useSafeArea: true,
       builder: (_) {
-        return BlocProvider.value(value: bloc, child: const CreateWasteEntrySheet());
+        return BlocProvider.value(
+          value: bloc,
+          child: const CreateWasteEntrySheet(),
+        );
       },
     );
   }
@@ -188,7 +262,10 @@ class _HistoryViewState extends State<_HistoryView> {
       isScrollControlled: true,
       useSafeArea: true,
       builder: (_) {
-        return BlocProvider.value(value: bloc, child: const CreateMultipleWasteEntriesSheetV2());
+        return BlocProvider.value(
+          value: bloc,
+          child: const CreateMultipleWasteEntriesSheetV2(),
+        );
       },
     );
   }
@@ -219,6 +296,15 @@ class _HistoryViewState extends State<_HistoryView> {
         _selectedDateRange = picked;
       });
     }
+  }
+
+  void _showImportDialog(BuildContext context) {
+    final bloc = context.read<WasteEntryBloc>();
+    showDialog(
+      context: context,
+      builder: (dialogContext) =>
+          BlocProvider.value(value: bloc, child: const ImportExcelDialog()),
+    );
   }
 
   void _showExportDialog(BuildContext context) {
@@ -261,7 +347,12 @@ class _HistoryViewState extends State<_HistoryView> {
               icon: Icons.calendar_month,
               onTap: () {
                 Navigator.pop(dialogContext);
-                _exportData(context, 'monthly', _getMonthStart(), DateTime.now());
+                _exportData(
+                  context,
+                  'monthly',
+                  _getMonthStart(),
+                  DateTime.now(),
+                );
               },
             ),
             _ExportPeriodButton(
@@ -282,12 +373,22 @@ class _HistoryViewState extends State<_HistoryView> {
             ),
           ],
         ),
-        actions: [TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Hủy'))],
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Hủy'),
+          ),
+        ],
       ),
     );
   }
 
-  Future<void> _exportData(BuildContext context, String period, DateTime startDate, DateTime endDate) async {
+  Future<void> _exportData(
+    BuildContext context,
+    String period,
+    DateTime startDate,
+    DateTime endDate,
+  ) async {
     try {
       if (!context.mounted) return;
       context.loaderOverlay.show();
@@ -295,7 +396,9 @@ class _HistoryViewState extends State<_HistoryView> {
       final state = context.read<WasteEntryBloc>().state;
       final entries = state.entries.where((entry) {
         if (entry.date == null) return false;
-        return entry.date!.isAfter(startDate.subtract(const Duration(days: 1))) &&
+        return entry.date!.isAfter(
+              startDate.subtract(const Duration(days: 1)),
+            ) &&
             entry.date!.isBefore(endDate.add(const Duration(days: 1)));
       }).toList();
 
@@ -311,15 +414,21 @@ class _HistoryViewState extends State<_HistoryView> {
       );
 
       if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Đã xuất file Excel thành công'), backgroundColor: Colors.green));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Đã xuất file Excel thành công'),
+            backgroundColor: Colors.green,
+          ),
+        );
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Lỗi khi xuất: $e'), backgroundColor: Colors.red));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Lỗi khi xuất: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
       }
     } finally {
       if (context.mounted) {
@@ -382,7 +491,9 @@ class _WasteEntryTile extends StatelessWidget {
               Expanded(
                 child: Text(
                   entry.wasteTypeName ?? 'Loại chất thải',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
               IconButton(
@@ -403,11 +514,28 @@ class _WasteEntryTile extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 8),
-          _InfoRow(icon: Icons.balance, label: 'Số lượng', value: _formatQuantity(entry.quantity, entry.wasteTypeUnit)),
-          _InfoRow(icon: Icons.factory, label: 'Phòng ban', value: entry.departmentName ?? '--'),
-          _InfoRow(icon: Icons.map, label: 'Khu vực', value: entry.areaName ?? '--'),
-          _InfoRow(icon: Icons.today, label: 'Ngày', value: _formatDate(entry.date)),
-          if ((entry.qrCode ?? '').isNotEmpty) _InfoRow(icon: Icons.qr_code, label: 'QR', value: entry.qrCode!),
+          _InfoRow(
+            icon: Icons.balance,
+            label: 'Số lượng',
+            value: _formatQuantity(entry.quantity, entry.wasteTypeUnit),
+          ),
+          _InfoRow(
+            icon: Icons.factory,
+            label: 'Phòng ban',
+            value: entry.departmentName ?? '--',
+          ),
+          _InfoRow(
+            icon: Icons.map,
+            label: 'Khu vực',
+            value: entry.areaName ?? '--',
+          ),
+          _InfoRow(
+            icon: Icons.today,
+            label: 'Ngày',
+            value: _formatDate(entry.date),
+          ),
+          if ((entry.qrCode ?? '').isNotEmpty)
+            _InfoRow(icon: Icons.qr_code, label: 'QR', value: entry.qrCode!),
         ],
       ),
     );
@@ -436,33 +564,50 @@ class _WasteEntryTile extends StatelessWidget {
             Text('Xóa bản ghi'),
           ],
         ),
-        content: const Text('Bạn có chắc chắn muốn xóa mục rác thải này không?'),
+        content: const Text(
+          'Bạn có chắc chắn muốn xóa mục rác thải này không?',
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Hủy')),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Hủy'),
+          ),
           ElevatedButton(
             onPressed: () async {
               try {
                 print('🗑️ Deleting entry ${entry.id}');
-                await supabase.from('waste_entries').delete().eq('id', entry.id);
+                await supabase
+                    .from('waste_entries')
+                    .delete()
+                    .eq('id', entry.id);
                 print('✅ Delete successful');
 
                 if (context.mounted) {
                   context.read<WasteEntryBloc>().add(const LoadWasteEntries());
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Đã xóa bản ghi thành công'), backgroundColor: Colors.green),
+                    const SnackBar(
+                      content: Text('Đã xóa bản ghi thành công'),
+                      backgroundColor: Colors.green,
+                    ),
                   );
                 }
                 Navigator.pop(dialogContext);
               } catch (e) {
                 print('❌ Lỗi xóa: $e');
                 if (context.mounted) {
-                  ScaffoldMessenger.of(
-                    context,
-                  ).showSnackBar(SnackBar(content: Text('Lỗi khi xóa: $e'), backgroundColor: Colors.red));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Lỗi khi xóa: $e'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
                 }
               }
             },
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
             child: const Text('Xóa'),
           ),
         ],
@@ -473,7 +618,9 @@ class _WasteEntryTile extends StatelessWidget {
   static String _formatQuantity(double? quantity, String? unit) {
     if (quantity == null) return '--';
     final isInt = quantity % 1 == 0;
-    final value = isInt ? quantity.toStringAsFixed(0) : quantity.toStringAsFixed(2);
+    final value = isInt
+        ? quantity.toStringAsFixed(0)
+        : quantity.toStringAsFixed(2);
     return unit != null && unit.isNotEmpty ? '$value $unit' : value;
   }
 
@@ -491,7 +638,11 @@ class _InfoRow extends StatelessWidget {
   final String label;
   final String value;
 
-  const _InfoRow({required this.icon, required this.label, required this.value});
+  const _InfoRow({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -501,9 +652,16 @@ class _InfoRow extends StatelessWidget {
         children: [
           Icon(icon, size: 16, color: Colors.grey.shade600),
           const SizedBox(width: 6),
-          Text('$label:', style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w500)),
+          Text(
+            '$label:',
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w500),
+          ),
           const SizedBox(width: 6),
-          Expanded(child: Text(value, style: Theme.of(context).textTheme.bodyMedium)),
+          Expanded(
+            child: Text(value, style: Theme.of(context).textTheme.bodyMedium),
+          ),
         ],
       ),
     );
@@ -515,7 +673,11 @@ class _ExportPeriodButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
 
-  const _ExportPeriodButton({required this.label, required this.icon, required this.onTap});
+  const _ExportPeriodButton({
+    required this.label,
+    required this.icon,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
