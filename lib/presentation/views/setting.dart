@@ -112,6 +112,14 @@ class SettingsPage extends StatelessWidget {
               subtitle: 'Kiểm tra thông báo nhắc nhở theo lịch',
               onTap: () => context.pushNamed('/test-reminder-notification'),
             ),
+            const SizedBox(height: 8),
+            _buildSettingCard(
+              context,
+              icon: Icons.bug_report,
+              title: 'Debug Import Excel',
+              subtitle: 'Kiểm tra lỗi import và database',
+              onTap: () => context.push('/test-import-debug'),
+            ),
             const SizedBox(height: 24),
           },
           // Account section
@@ -130,18 +138,27 @@ class SettingsPage extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppTheme.primaryGreen.withOpacity(0.1), AppTheme.primaryGreenLight.withOpacity(0.05)],
+          colors: [
+            AppTheme.primaryGreen.withOpacity(0.1),
+            AppTheme.primaryGreenLight.withOpacity(0.05),
+          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppTheme.primaryGreen.withOpacity(0.3), width: 1),
+        border: Border.all(
+          color: AppTheme.primaryGreen.withOpacity(0.3),
+          width: 1,
+        ),
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(color: AppTheme.primaryGreen, borderRadius: BorderRadius.circular(12)),
+            decoration: BoxDecoration(
+              color: AppTheme.primaryGreen,
+              borderRadius: BorderRadius.circular(12),
+            ),
             child: const Icon(Icons.person, color: Colors.white, size: 32),
           ),
           const SizedBox(width: 16),
@@ -149,9 +166,18 @@ class SettingsPage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(user?.email ?? 'User', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                Text(
+                  user?.email ?? 'User',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 const SizedBox(height: 4),
-                Text('Đã đăng nhập', style: TextStyle(fontSize: 14, color: Colors.grey.shade600)),
+                Text(
+                  'Đã đăng nhập',
+                  style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+                ),
               ],
             ),
           ),
@@ -163,7 +189,11 @@ class SettingsPage extends StatelessWidget {
   Widget _buildSectionTitle(String title) {
     return Text(
       title,
-      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.primaryGreen),
+      style: const TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.bold,
+        color: AppTheme.primaryGreen,
+      ),
     );
   }
 
@@ -200,9 +230,21 @@ class SettingsPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                     const SizedBox(height: 4),
-                    Text(subtitle, style: TextStyle(fontSize: 13, color: Colors.grey.shade600)),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -231,7 +273,10 @@ class SettingsPage extends StatelessWidget {
             children: [
               Container(
                 padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(color: Colors.red.shade100, borderRadius: BorderRadius.circular(10)),
+                decoration: BoxDecoration(
+                  color: Colors.red.shade100,
+                  borderRadius: BorderRadius.circular(10),
+                ),
                 child: Icon(Icons.logout, color: Colors.red.shade700, size: 24),
               ),
               const SizedBox(width: 16),
@@ -241,10 +286,20 @@ class SettingsPage extends StatelessWidget {
                   children: [
                     Text(
                       'Đăng xuất',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.red.shade700),
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.red.shade700,
+                      ),
                     ),
                     const SizedBox(height: 4),
-                    Text('Thoát khỏi tài khoản hiện tại', style: TextStyle(fontSize: 13, color: Colors.red.shade600)),
+                    Text(
+                      'Thoát khỏi tài khoản hiện tại',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.red.shade600,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -267,15 +322,24 @@ class SettingsPage extends StatelessWidget {
             Text('Xác nhận đăng xuất'),
           ],
         ),
-        content: const Text('Bạn có chắc chắn muốn đăng xuất?', style: TextStyle(fontSize: 16)),
+        content: const Text(
+          'Bạn có chắc chắn muốn đăng xuất?',
+          style: TextStyle(fontSize: 16),
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Hủy')),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Hủy'),
+          ),
           ElevatedButton(
             onPressed: () async {
               Navigator.pop(dialogContext);
               await _logout(context);
             },
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
             child: const Text('Đăng xuất'),
           ),
         ],
@@ -291,7 +355,9 @@ class SettingsPage extends StatelessWidget {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('⏳ FCM Token chưa sẵn sàng. Vui lòng đợi vài giây...'),
+            content: Text(
+              '⏳ FCM Token chưa sẵn sàng. Vui lòng đợi vài giây...',
+            ),
             backgroundColor: Colors.orange,
             duration: Duration(seconds: 3),
           ),
@@ -331,7 +397,11 @@ class SettingsPage extends StatelessWidget {
                 ),
                 child: SelectableText(
                   token,
-                  style: const TextStyle(fontSize: 12, fontFamily: 'monospace', height: 1.4),
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontFamily: 'monospace',
+                    height: 1.4,
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
@@ -344,12 +414,19 @@ class SettingsPage extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.info_outline, color: Colors.blue.shade700, size: 20),
+                    Icon(
+                      Icons.info_outline,
+                      color: Colors.blue.shade700,
+                      size: 20,
+                    ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         'Dùng token này để test gửi notification từ Firebase Console',
-                        style: TextStyle(fontSize: 12, color: Colors.blue.shade700),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.blue.shade700,
+                        ),
                       ),
                     ),
                   ],
@@ -359,7 +436,10 @@ class SettingsPage extends StatelessWidget {
           ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Đóng')),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Đóng'),
+          ),
           ElevatedButton.icon(
             onPressed: () {
               Clipboard.setData(ClipboardData(text: token));
@@ -376,7 +456,10 @@ class SettingsPage extends StatelessWidget {
             },
             icon: const Icon(Icons.copy, size: 18),
             label: const Text('Sao chép'),
-            style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryGreen, foregroundColor: Colors.white),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.primaryGreen,
+              foregroundColor: Colors.white,
+            ),
           ),
         ],
       ),
@@ -408,7 +491,9 @@ class SettingsPage extends StatelessWidget {
       print('❌ Lỗi: $e');
 
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('❌ Lỗi: $e'), backgroundColor: Colors.red));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('❌ Lỗi: $e'), backgroundColor: Colors.red),
+        );
       }
     }
   }
@@ -432,7 +517,9 @@ class SettingsPage extends StatelessWidget {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('⚠️ Đã gửi cảnh báo hạn mức! Kiểm tra khay thông báo.'),
+            content: Text(
+              '⚠️ Đã gửi cảnh báo hạn mức! Kiểm tra khay thông báo.',
+            ),
             backgroundColor: Colors.orange,
             duration: Duration(seconds: 3),
           ),
@@ -442,7 +529,9 @@ class SettingsPage extends StatelessWidget {
       print('❌ Lỗi: $e');
 
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('❌ Lỗi: $e'), backgroundColor: Colors.red));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('❌ Lỗi: $e'), backgroundColor: Colors.red),
+        );
       }
     }
   }
@@ -471,9 +560,12 @@ class SettingsPage extends StatelessWidget {
 
       // Show success message
       if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Đăng xuất thành công'), backgroundColor: AppTheme.success));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Đăng xuất thành công'),
+            backgroundColor: AppTheme.success,
+          ),
+        );
       }
     } catch (e) {
       // Close loading dialog
@@ -483,9 +575,12 @@ class SettingsPage extends StatelessWidget {
 
       // Show error
       if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Lỗi đăng xuất: $e'), backgroundColor: Colors.red));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Lỗi đăng xuất: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
       }
     }
   }

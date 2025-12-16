@@ -97,6 +97,7 @@
     <!-- iOS Permission message -->
     <key>NSUserTrackingUsageDescription</key>
     <string>We use notifications to keep you updated.</string>
-
+<key>NSPhotoLibraryUsageDescription</key>
+<string>Ứng dụng cần quyền truy cập thư viện ảnh để cho phép người dùng chọn hoặc tải lên hình ảnh phục vụ cho việc ghi nhận và quản lý dữ liệu.</string>
 </dict>
 </plist>

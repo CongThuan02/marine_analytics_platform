@@ -174,19 +174,7 @@ class _CreateMultipleWasteEntriesSheetState extends State<CreateMultipleWasteEnt
           ],
         ),
         const SizedBox(height: 12),
-        FormSelect(
-          name: 'department_id',
-          label: 'Phòng ban',
-          tableName: 'departments',
-          validators: [
-            (value) {
-              if (value == null || value == 'select') {
-                return 'Vui lòng chọn phòng';
-              }
-              return null;
-            },
-          ],
-        ),
+        FormSelect(name: 'department_id', label: 'Phòng ban', tableName: 'departments'),
         const SizedBox(height: 12),
         _DateField(),
       ],

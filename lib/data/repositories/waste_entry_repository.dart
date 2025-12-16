@@ -1,4 +1,5 @@
 import 'package:marine_analytics_platform/core/services/local_notification_service.dart';
+import 'package:marine_analytics_platform/core/utils/value_sanitizer.dart';
 import 'package:marine_analytics_platform/data/models/waste_entry_model.dart';
 import 'package:marine_analytics_platform/global.dart';
 
@@ -24,7 +25,9 @@ class WasteEntryRepository {
           .order('date', ascending: false)
           .order('created_at', ascending: false);
 
-      return (response as List<dynamic>).map((item) => WasteEntryModel.fromMap(item as Map<String, dynamic>)).toList();
+      return (response as List<dynamic>)
+          .map((item) => WasteEntryModel.fromMap(item as Map<String, dynamic>))
+          .toList();
     } catch (e) {
       throw Exception('Không thể tải lịch sử rác thải: $e');
     }
@@ -36,12 +39,7 @@ class WasteEntryRepository {
       throw Exception('Bạn chưa đăng nhập.');
     }
 
-    if (entry.areaId.isEmpty) {
-      throw Exception('Vui lòng chọn khu vực.');
-    }
-    if (entry.departmentId.isEmpty) {
-      throw Exception('Vui lòng chọn phòng.');
-    }
+    // Area is now optional - no validation needed
     if (entry.wasteTypeId.isEmpty) {
       throw Exception('Vui lòng chọn loại chất thải.');
     }
@@ -58,17 +56,23 @@ class WasteEntryRepository {
 
     final payload = {
       'user_id': userId,
-      'department_id': entry.departmentId,
-      'area_id': entry.areaId,
-      'waste_type_id': entry.wasteTypeId,
+      'department_id': ValueSanitizer.sanitizeUUID(entry.departmentId),
+      'area_id': ValueSanitizer.sanitizeUUID(entry.areaId),
+      'waste_type_id': ValueSanitizer.sanitizeUUID(entry.wasteTypeId),
       'quantity': entry.quantity,
       'date': formatDate(entry.date),
-      'qr_code': (entry.qrCode?.isNotEmpty ?? false) ? entry.qrCode : null,
+      'qr_code': ValueSanitizer.sanitizeNullableString(entry.qrCode),
     };
+
+    // Log and sanitize the entire payload
+    final sanitizedPayload = ValueSanitizer.logAndSanitize(
+      payload,
+      'CREATE_WASTE_ENTRY',
+    );
 
     try {
       print('💾 [SAVE] Inserting waste entry...');
-      await supabase.from('waste_entries').insert(payload);
+      await supabase.from('waste_entries').insert(sanitizedPayload);
       print('✅ [SAVE] Waste entry saved successfully');
 
       // Check waste limit and show notification if exceeded
@@ -83,18 +87,16 @@ class WasteEntryRepository {
     }
   }
 
-  Future<String> updateWasteEntry({required String id, required WasteEntryModel entry}) async {
+  Future<String> updateWasteEntry({
+    required String id,
+    required WasteEntryModel entry,
+  }) async {
     final userId = supabase.auth.currentUser?.id;
     if (userId == null) {
       throw Exception('Bạn chưa đăng nhập.');
     }
 
-    if (entry.areaId.isEmpty) {
-      throw Exception('Vui lòng chọn khu vực.');
-    }
-    if (entry.departmentId.isEmpty) {
-      throw Exception('Vui lòng chọn phòng.');
-    }
+    // Area is now optional - no validation needed
     if (entry.wasteTypeId.isEmpty) {
       throw Exception('Vui lòng chọn loại chất thải.');
     }
@@ -110,17 +112,26 @@ class WasteEntryRepository {
     }
 
     final payload = {
-      'department_id': entry.departmentId,
-      'area_id': entry.areaId,
-      'waste_type_id': entry.wasteTypeId,
+      'department_id': ValueSanitizer.sanitizeUUID(entry.departmentId),
+      'area_id': ValueSanitizer.sanitizeUUID(entry.areaId),
+      'waste_type_id': ValueSanitizer.sanitizeUUID(entry.wasteTypeId),
       'quantity': entry.quantity,
       'date': formatDate(entry.date),
-      'qr_code': (entry.qrCode?.isNotEmpty ?? false) ? entry.qrCode : null,
+      'qr_code': ValueSanitizer.sanitizeNullableString(entry.qrCode),
     };
+
+    // Log and sanitize the entire payload
+    final sanitizedPayload = ValueSanitizer.logAndSanitize(
+      payload,
+      'UPDATE_WASTE_ENTRY',
+    );
 
     try {
       print('💾 [UPDATE] Updating waste entry...');
-      await supabase.from('waste_entries').update(payload).eq('id', id);
+      await supabase
+          .from('waste_entries')
+          .update(sanitizedPayload)
+          .eq('id', id);
       print('✅ [UPDATE] Waste entry updated successfully');
 
       // Check waste limit and show notification if exceeded
@@ -143,8 +154,18 @@ class WasteEntryRepository {
       print('   Waste Type ID: ${entry.wasteTypeId}');
       print('   Quantity: ${entry.quantity}');
 
+      // Skip if no area ID (area is optional now)
+      if (entry.areaId.isEmpty) {
+        print('⚠️ [WASTE LIMIT CHECK] No area ID, skipping check');
+        return;
+      }
+
       // Get area and waste type names
-      final areaResponse = await supabase.from('areas').select('name').eq('id', entry.areaId).maybeSingle();
+      final areaResponse = await supabase
+          .from('areas')
+          .select('name')
+          .eq('id', entry.areaId)
+          .maybeSingle();
 
       final wasteTypeResponse = await supabase
           .from('waste_types')

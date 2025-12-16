@@ -75,14 +75,6 @@ class _CreateWasteEntrySheetState extends State<CreateWasteEntrySheet> {
                 tableName: 'departments',
                 filterColumn: 'area_id',
                 filterValue: _selectedAreaId,
-                validators: [
-                  (value) {
-                    if (value == null || value == 'select') {
-                      return 'Vui lòng chọn phòng';
-                    }
-                    return null;
-                  },
-                ],
               ),
               FormSelect(
                 name: 'waste_type_id',

@@ -109,14 +109,6 @@ class _EditWasteEntrySheetState extends State<EditWasteEntrySheet> {
                         {'id': widget.entry.departmentId, 'name': widget.entry.departmentName},
                       ]
                     : null,
-                validators: [
-                  (value) {
-                    if (value == null || value == 'select') {
-                      return 'Vui lòng chọn phòng';
-                    }
-                    return null;
-                  },
-                ],
               ),
               FormSelect(
                 name: 'waste_type_id',

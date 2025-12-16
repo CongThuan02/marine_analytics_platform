@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:marine_analytics_platform/core/constants/enum_status.dart';
+import 'package:marine_analytics_platform/core/utils/value_sanitizer.dart';
 
 import 'bloc/form_select_bloc.dart';
 
@@ -172,10 +173,21 @@ class FormSelect extends StatelessWidget {
                     );
 
                 if (selected != null) {
-                  final value = selected[valueKey]?.toString() ?? 'chọn';
-                  bloc.add(UpdateFiledFormEvent(value));
-                  onChange?.call(value);
-                  field.didChange(value);
+                  final rawValue = selected[valueKey]?.toString() ?? 'chọn';
+
+                  // Sanitize the value - if it's "select", convert to empty string
+                  final sanitizedValue = ValueSanitizer.sanitizeString(
+                    rawValue,
+                  );
+                  final finalValue = sanitizedValue.isEmpty ? '' : rawValue;
+
+                  print(
+                    '🧹 FormSelect: Raw value: "$rawValue", Sanitized: "$finalValue"',
+                  );
+
+                  bloc.add(UpdateFiledFormEvent(finalValue));
+                  onChange?.call(finalValue);
+                  field.didChange(finalValue);
                 }
               }
 

@@ -56,36 +56,13 @@ final appRouter = GoRouter(
   routes: [
     GoRoute(path: '/splash', builder: (context, state) => const SplashScreen()),
     GoRoute(path: '/intro', builder: (context, state) => IntroView()),
-    GoRoute(
-      path: '/department',
-      name: '/department',
-      builder: (context, state) => DepartmentPage(),
-    ),
-    GoRoute(
-      path: '/wasteType',
-      name: '/wasteType',
-      builder: (context, state) => WasteTypePage(),
-    ),
-    GoRoute(
-      path: '/wasteLimit',
-      name: '/wasteLimit',
-      builder: (context, state) => const WasteLimitPage(),
-    ),
-    GoRoute(
-      path: '/reminder',
-      name: '/reminder',
-      builder: (context, state) => const ReminderPage(),
-    ),
-    GoRoute(
-      path: '/alerts',
-      name: '/alerts',
-      builder: (context, state) => const AlertsPage(),
-    ),
-    GoRoute(
-      path: '/alerts/test',
-      name: '/alerts/test',
-      builder: (context, state) => const CreateTestAlertPage(),
-    ),
+
+    GoRoute(path: '/department', name: '/department', builder: (context, state) => DepartmentPage()),
+    GoRoute(path: '/wasteType', name: '/wasteType', builder: (context, state) => WasteTypePage()),
+    GoRoute(path: '/wasteLimit', name: '/wasteLimit', builder: (context, state) => const WasteLimitPage()),
+    GoRoute(path: '/reminder', name: '/reminder', builder: (context, state) => const ReminderPage()),
+    GoRoute(path: '/alerts', name: '/alerts', builder: (context, state) => const AlertsPage()),
+    GoRoute(path: '/alerts/test', name: '/alerts/test', builder: (context, state) => const CreateTestAlertPage()),
     GoRoute(
       path: '/test-connection',
       name: '/test-connection',
@@ -101,26 +78,10 @@ final appRouter = GoRouter(
       name: '/test-reminder-notification',
       builder: (context, state) => const TestReminderNotificationPage(),
     ),
-    GoRoute(
-      path: '/qr-code',
-      name: '/qr-code',
-      builder: (context, state) => const QRCodePage(),
-    ),
-    GoRoute(
-      path: '/create/area',
-      name: '/create/area',
-      builder: (context, state) => CreateAreaPage(),
-    ),
-    GoRoute(
-      path: '/login',
-      name: '/login',
-      builder: (context, state) => LoginPage(),
-    ),
-    GoRoute(
-      path: '/register',
-      name: '/register',
-      builder: (context, state) => RegisterPage(),
-    ),
+    GoRoute(path: '/qr-code', name: '/qr-code', builder: (context, state) => const QRCodePage()),
+    GoRoute(path: '/create/area', name: '/create/area', builder: (context, state) => CreateAreaPage()),
+    GoRoute(path: '/login', name: '/login', builder: (context, state) => LoginPage()),
+    GoRoute(path: '/register', name: '/register', builder: (context, state) => RegisterPage()),
     ShellRoute(
       builder: (context, state, child) {
         int currentIndex = 0;
@@ -151,18 +112,9 @@ final appRouter = GoRouter(
             currentIndex: currentIndex,
             onTap: goToTab,
             items: const [
-              BottomNavigationBarItem(
-                icon: Icon(Icons.home),
-                label: "Tổng quan",
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.directions_boat),
-                label: "Lịch sử",
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.settings),
-                label: "Cài đặt",
-              ),
+              BottomNavigationBarItem(icon: Icon(Icons.home), label: "Tổng quan"),
+              BottomNavigationBarItem(icon: Icon(Icons.directions_boat), label: "Lịch sử"),
+              BottomNavigationBarItem(icon: Icon(Icons.settings), label: "Cài đặt"),
             ],
           ),
         );

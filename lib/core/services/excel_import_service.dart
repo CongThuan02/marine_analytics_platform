@@ -1,13 +1,13 @@
 import 'dart:io';
 import 'package:excel/excel.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:marine_analytics_platform/core/services/data_resolver_service.dart';
+import 'package:marine_analytics_platform/core/services/data_resolver_service_v3.dart';
 import 'package:marine_analytics_platform/data/models/waste_entry_model.dart';
 import 'package:path_provider/path_provider.dart';
 
 class ExcelImportService {
   static const String templateFileName = 'mau_import_chat_thai.xlsx';
-  final _dataResolver = DataResolverService();
+  final _dataResolver = DataResolverServiceV3();
 
   /// Tạo file Excel mẫu để import
   Future<String> createTemplateFile() async {
@@ -22,8 +22,8 @@ class ExcelImportService {
       'Loại chất thải',
       'Số lượng',
       'Đơn vị',
-      'Phòng ban',
-      'Khu vực',
+      'Phòng ban (tùy chọn)',
+      'Khu vực (tùy chọn)',
       'Ngày (dd/mm/yyyy)',
       'Mã QR (tùy chọn)',
       'Ghi chú (tùy chọn)',
@@ -42,15 +42,21 @@ class ExcelImportService {
     }
 
     // Đặt định dạng cho cột số lượng (cột B) để tránh hiểu nhầm thành ngày
-    for (int row = 1; row <= 100; row++) {
-      // Format 100 dòng đầu
-      final quantityCell = sheet.cell(
-        CellIndex.indexByColumnRow(columnIndex: 1, rowIndex: row),
-      );
-      quantityCell.cellStyle = CellStyle(
-        numberFormat:
-            NumFormat.standard_2, // Định dạng số với 2 chữ số thập phân
-      );
+    try {
+      for (int row = 1; row <= 100; row++) {
+        // Format 100 dòng đầu
+        final quantityCell = sheet.cell(
+          CellIndex.indexByColumnRow(columnIndex: 1, rowIndex: row),
+        );
+
+        // Use simple number format to avoid custom numFmtId issues
+        quantityCell.cellStyle = CellStyle(
+          numberFormat: NumFormat.standard_0, // Định dạng số đơn giản
+        );
+      }
+    } catch (e) {
+      print('DEBUG: Warning - Could not set number format: $e');
+      // Continue without formatting if there's an error
     }
 
     // Thêm dữ liệu mẫu
@@ -116,7 +122,7 @@ class ExcelImportService {
       ),
     );
     noteCell.value = TextCellValue(
-      'LƯU Ý: Cột "Số lượng" phải chứa số (VD: 10.5), không được để trống',
+      'LƯU Ý: Cột "Số lượng" phải chứa số (VD: 10.5), không được để trống. Phòng ban và Khu vực có thể để trống.',
     );
     noteCell.cellStyle = CellStyle(italic: true, fontColorHex: ExcelColor.red);
 
@@ -173,51 +179,82 @@ class ExcelImportService {
 
   /// Phân tích dữ liệu từ file Excel
   Future<List<WasteEntryModel>> _parseExcelData(List<int> bytes) async {
-    final excel = Excel.decodeBytes(bytes);
-    final entries = <WasteEntryModel>[];
+    try {
+      print('DEBUG: Starting Excel parsing...');
 
-    // Lấy sheet đầu tiên
-    final sheetName = excel.tables.keys.first;
-    final sheet = excel.tables[sheetName];
-
-    if (sheet == null || sheet.rows.isEmpty) {
-      throw Exception('File Excel trống hoặc không hợp lệ');
-    }
-
-    // Bỏ qua header (dòng đầu tiên)
-    for (int i = 1; i < sheet.rows.length; i++) {
-      final row = sheet.rows[i];
-
-      print('DEBUG: Processing row ${i + 1}, cells: ${row.length}');
-
-      // Kiểm tra dòng có dữ liệu không
-      if (row.isEmpty || _isRowEmpty(row)) {
-        print('DEBUG: Skipping empty row ${i + 1}');
-        continue;
-      }
-
-      // Kiểm tra dòng có đủ dữ liệu cần thiết không
-      if (!_hasRequiredData(row)) {
-        print('DEBUG: Skipping row ${i + 1} - missing required data');
-        continue;
-      }
-
+      // Try to decode Excel with error handling
+      Excel excel;
       try {
-        final entry = _parseRowToWasteEntry(row, i + 1);
-        if (entry != null) {
-          entries.add(entry);
-          print('DEBUG: Successfully parsed row ${i + 1}');
-        }
+        excel = Excel.decodeBytes(bytes);
+        print('DEBUG: Excel decoded successfully');
       } catch (e) {
-        throw Exception('Lỗi tại dòng ${i + 1}: $e');
+        print('DEBUG: Excel decode error: $e');
+
+        // If it's a numFmtId error, try alternative parsing
+        if (e.toString().contains('numFmtId') ||
+            e.toString().contains('custom')) {
+          throw Exception(
+            'File Excel có định dạng không hợp lệ. Vui lòng:\n'
+            '1. Mở file trong Excel\n'
+            '2. Chọn tất cả dữ liệu (Ctrl+A)\n'
+            '3. Copy (Ctrl+C)\n'
+            '4. Tạo file mới và Paste Special > Values Only\n'
+            '5. Lưu lại và thử import lại',
+          );
+        }
+
+        throw Exception('Không thể đọc file Excel: $e');
       }
-    }
 
-    if (entries.isEmpty) {
-      throw Exception('Không tìm thấy dữ liệu hợp lệ trong file');
-    }
+      final entries = <WasteEntryModel>[];
 
-    return entries;
+      // Lấy sheet đầu tiên
+      final sheetName = excel.tables.keys.first;
+      final sheet = excel.tables[sheetName];
+
+      if (sheet == null || sheet.rows.isEmpty) {
+        throw Exception('File Excel trống hoặc không hợp lệ');
+      }
+
+      // Bỏ qua header (dòng đầu tiên)
+      for (int i = 1; i < sheet.rows.length; i++) {
+        final row = sheet.rows[i];
+
+        print('DEBUG: Processing row ${i + 1}, cells: ${row.length}');
+
+        // Kiểm tra dòng có dữ liệu không
+        if (row.isEmpty || _isRowEmpty(row)) {
+          print('DEBUG: Skipping empty row ${i + 1}');
+          continue;
+        }
+
+        // Kiểm tra dòng có đủ dữ liệu cần thiết không
+        if (!_hasRequiredData(row)) {
+          print('DEBUG: Skipping row ${i + 1} - missing required data');
+          continue;
+        }
+
+        try {
+          final entry = _parseRowToWasteEntry(row, i + 1);
+          if (entry != null) {
+            entries.add(entry);
+            print('DEBUG: Successfully parsed row ${i + 1}');
+          }
+        } catch (e) {
+          throw Exception('Lỗi tại dòng ${i + 1}: $e');
+        }
+      }
+
+      if (entries.isEmpty) {
+        throw Exception('Không tìm thấy dữ liệu hợp lệ trong file');
+      }
+
+      print('DEBUG: Excel parsing completed successfully');
+      return entries;
+    } catch (e) {
+      print('DEBUG: Excel parsing failed: $e');
+      rethrow;
+    }
   }
 
   /// Chuyển đổi một dòng thành WasteEntryModel (chưa resolve IDs)
@@ -283,87 +320,111 @@ class ExcelImportService {
     );
   }
 
-  /// Lấy giá trị từ cell
+  /// Lấy giá trị từ cell với xử lý lỗi an toàn
   String _getCellValue(List<Data?> row, int index) {
-    if (index >= row.length || row[index] == null) {
+    try {
+      if (index >= row.length || row[index] == null) {
+        return '';
+      }
+
+      final cell = row[index]!;
+      if (cell.value == null) {
+        return '';
+      }
+
+      // Xử lý các loại cell khác nhau từ Excel
+      final cellValue = cell.value;
+      String value;
+
+      // Kiểm tra kiểu dữ liệu và xử lý phù hợp
+      final cellType = cellValue.runtimeType.toString();
+
+      if (cellType.contains('Date')) {
+        // Excel hiểu nhầm dữ liệu thành ngày - xử lý khác nhau cho từng cột
+        value = _handleDateCellValue(cellValue, index);
+      } else {
+        // Xử lý bình thường cho các kiểu khác
+        value = _handleNormalCellValue(cellValue);
+      }
+
+      value = value.trim();
+
+      // Debug: Log giá trị và kiểu dữ liệu để debug
+      if (index == 1) {
+        // Cột số lượng
+        print(
+          'DEBUG: Cột số lượng - Giá trị gốc: "$cellValue", Kiểu: ${cellValue.runtimeType}, Giá trị xử lý: "$value"',
+        );
+      } else if (index == 5) {
+        // Cột ngày
+        print(
+          'DEBUG: Cột ngày - Giá trị gốc: "$cellValue", Kiểu: ${cellValue.runtimeType}, Giá trị xử lý: "$value"',
+        );
+      }
+
+      return value;
+    } catch (e) {
+      print('DEBUG: Error getting cell value at index $index: $e');
       return '';
     }
+  }
 
-    final cell = row[index]!;
-    if (cell.value == null) {
-      return '';
-    }
+  /// Xử lý cell value kiểu Date
+  String _handleDateCellValue(dynamic cellValue, int index) {
+    try {
+      final dateStr = cellValue.toString();
 
-    // Xử lý các loại cell khác nhau từ Excel
-    final cellValue = cell.value;
-    String value;
-
-    // Kiểm tra kiểu dữ liệu và xử lý phù hợp
-    final cellType = cellValue.runtimeType.toString();
-
-    if (cellType.contains('Date')) {
-      // Excel hiểu nhầm dữ liệu thành ngày - xử lý khác nhau cho từng cột
-      try {
-        final dateStr = cellValue.toString();
-
-        if (index == 1) {
-          // Cột số lượng - lấy phần ngày làm số
-          if (dateStr.contains('T') && dateStr.contains('-')) {
-            final parts = dateStr.split('-');
-            if (parts.length >= 3) {
-              final dayPart = parts[2].split('T')[0];
-              value = dayPart;
-            } else {
-              value = dateStr;
-            }
-          } else {
-            // Thử truy cập thuộc tính day
-            final dynamic dynamicValue = cellValue;
-            if (dynamicValue.day != null) {
-              value = dynamicValue.day.toString();
-            } else {
-              value = dateStr;
-            }
+      if (index == 1) {
+        // Cột số lượng - lấy phần ngày làm số
+        if (dateStr.contains('T') && dateStr.contains('-')) {
+          final parts = dateStr.split('-');
+          if (parts.length >= 3) {
+            final dayPart = parts[2].split('T')[0];
+            return dayPart;
           }
-        } else if (index == 5) {
-          // Cột ngày - chuyển về định dạng dd/mm/yyyy
-          if (dateStr.contains('T') && dateStr.contains('-')) {
+        }
+
+        // Thử truy cập thuộc tính day
+        try {
+          final dynamic dynamicValue = cellValue;
+          if (dynamicValue.day != null) {
+            return dynamicValue.day.toString();
+          }
+        } catch (e) {
+          // Ignore and continue
+        }
+
+        return dateStr;
+      } else if (index == 5) {
+        // Cột ngày - chuyển về định dạng dd/mm/yyyy
+        if (dateStr.contains('T') && dateStr.contains('-')) {
+          try {
             // Parse ISO date: "2024-12-15T00:00:00.000Z"
             final isoDate = DateTime.parse(dateStr);
-            value =
-                '${isoDate.day.toString().padLeft(2, '0')}/${isoDate.month.toString().padLeft(2, '0')}/${isoDate.year}';
-          } else {
-            value = dateStr;
+            return '${isoDate.day.toString().padLeft(2, '0')}/${isoDate.month.toString().padLeft(2, '0')}/${isoDate.year}';
+          } catch (e) {
+            return dateStr;
           }
-        } else {
-          // Các cột khác - xử lý bình thường
-          value = dateStr;
         }
-      } catch (e) {
-        // Fallback: lấy string representation
-        value = cellValue.toString();
+        return dateStr;
+      } else {
+        // Các cột khác - xử lý bình thường
+        return dateStr;
       }
-    } else {
-      // Xử lý bình thường cho các kiểu khác
-      value = cellValue.toString();
+    } catch (e) {
+      print('DEBUG: Error handling date cell value: $e');
+      return cellValue.toString();
     }
+  }
 
-    value = value.trim();
-
-    // Debug: Log giá trị và kiểu dữ liệu để debug
-    if (index == 1) {
-      // Cột số lượng
-      print(
-        'DEBUG: Cột số lượng - Giá trị gốc: "$cellValue", Kiểu: ${cellValue.runtimeType}, Giá trị xử lý: "$value"',
-      );
-    } else if (index == 5) {
-      // Cột ngày
-      print(
-        'DEBUG: Cột ngày - Giá trị gốc: "$cellValue", Kiểu: ${cellValue.runtimeType}, Giá trị xử lý: "$value"',
-      );
+  /// Xử lý cell value bình thường
+  String _handleNormalCellValue(dynamic cellValue) {
+    try {
+      return cellValue.toString();
+    } catch (e) {
+      print('DEBUG: Error handling normal cell value: $e');
+      return '';
     }
-
-    return value;
   }
 
   /// Kiểm tra dòng có trống không
