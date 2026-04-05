@@ -25,7 +25,7 @@ class CreateDepartment extends StatelessWidget {
           child: Padding(
             padding: EdgeInsets.only(top: 20.0),
             child: Column(
-              mainAxisSize: .min,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Expanded(
                   child: SingleChildScrollView(

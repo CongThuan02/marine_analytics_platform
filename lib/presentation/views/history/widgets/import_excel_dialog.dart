@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:marine_analytics_platform/core/services/excel_import_service.dart';
-import 'package:marine_analytics_platform/core/services/excel_import_service_v2.dart';
 import 'package:marine_analytics_platform/core/theme/app_theme.dart';
 import 'package:marine_analytics_platform/data/models/waste_entry_model.dart';
 import 'package:marine_analytics_platform/presentation/blocs/waste_entry/waste_entry_bloc.dart';
@@ -16,7 +15,6 @@ class ImportExcelDialog extends StatefulWidget {
 
 class _ImportExcelDialogState extends State<ImportExcelDialog> {
   final _importService = ExcelImportService();
-  final _importServiceV2 = ExcelImportServiceV2();
   bool _isLoading = false;
   List<WasteEntryModel>? _previewData;
   Map<String, dynamic>? _validationResult;
@@ -117,7 +115,7 @@ class _ImportExcelDialogState extends State<ImportExcelDialog> {
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(color: Colors.grey.shade50, borderRadius: BorderRadius.circular(12)),
           child: Row(
-            mainAxisAlignment: .spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               _buildStatItem('Tổng dòng', totalRows.toString(), Colors.blue),
               _buildStatItem('Hợp lệ', validRows.toString(), Colors.green),
@@ -186,7 +184,7 @@ class _ImportExcelDialogState extends State<ImportExcelDialog> {
 
   Widget _buildStatItem(String label, String value, Color color) {
     return Column(
-      mainAxisSize: .min,
+      mainAxisSize: MainAxisSize.min,
       children: [
         Text(
           value,
@@ -305,15 +303,7 @@ class _ImportExcelDialogState extends State<ImportExcelDialog> {
     try {
       String filePath;
 
-      // Try V2 service first (simpler template)
-      try {
-        filePath = await _importServiceV2.createSimpleTemplateFile();
-        print('✅ Used V2 template service');
-      } catch (e) {
-        print('❌ V2 template failed, trying original: $e');
-        filePath = await _importService.createTemplateFile();
-        print('✅ Used original template service');
-      }
+      filePath = await _importService.createTemplateFile();
 
       await Share.shareXFiles([XFile(filePath)], text: 'File Excel mẫu import chất thải');
 
@@ -341,21 +331,7 @@ class _ImportExcelDialogState extends State<ImportExcelDialog> {
     try {
       List<WasteEntryModel> entries;
 
-      // Try original service first, fallback to V2 if numFmtId error
-      try {
-        entries = await _importService.pickAndImportExcelFile();
-        print('✅ Used original import service');
-      } catch (e) {
-        print('❌ Original import failed: $e');
-
-        if (e.toString().contains('numFmtId') || e.toString().contains('custom')) {
-          print('🔄 Trying V2 import service for format issues...');
-          entries = await _importServiceV2.pickAndImportExcelFile();
-          print('✅ Used V2 import service');
-        } else {
-          rethrow;
-        }
-      }
+      entries = await _importService.pickAndImportExcelFile();
 
       final validationResult = await _importService.validateImportData(entries);
 
@@ -418,16 +394,8 @@ class _ImportExcelDialogState extends State<ImportExcelDialog> {
     try {
       final validEntries = _validationResult!['validEntries'] as List<WasteEntryModel>;
 
-      // Resolve IDs trước khi import - try V2 service first
-      List<WasteEntryModel> resolvedEntries;
-      try {
-        resolvedEntries = await _importServiceV2.resolveEntryIds(validEntries);
-        print('✅ Used V2 resolve service');
-      } catch (e) {
-        print('❌ V2 resolve failed, trying original: $e');
-        resolvedEntries = await _importService.resolveEntryIds(validEntries);
-        print('✅ Used original resolve service');
-      }
+      // Resolve IDs trước khi import
+      final resolvedEntries = await _importService.resolveEntryIds(validEntries);
 
       // Import tất cả entries cùng lúc
       context.read<WasteEntryBloc>().add(ImportMultipleWasteEntries(resolvedEntries));

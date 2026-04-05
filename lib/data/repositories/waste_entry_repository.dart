@@ -67,7 +67,7 @@ class WasteEntryRepository {
     // Log and sanitize the entire payload
     final sanitizedPayload = ValueSanitizer.logAndSanitize(
       payload,
-      'CREATE_WASTE_ENTRY',
+      label: 'CREATE_WASTE_ENTRY',
     );
 
     try {
@@ -123,7 +123,7 @@ class WasteEntryRepository {
     // Log and sanitize the entire payload
     final sanitizedPayload = ValueSanitizer.logAndSanitize(
       payload,
-      'UPDATE_WASTE_ENTRY',
+      label: 'UPDATE_WASTE_ENTRY',
     );
 
     try {

@@ -99,8 +99,8 @@ class _CreateAreaPage extends StatelessWidget {
                               });
                             },
                             child: Container(
-                              padding: .symmetric(horizontal: 16, vertical: 12),
-                              decoration: BoxDecoration(border: Border.all(), borderRadius: .circular(12)),
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                              decoration: BoxDecoration(border: Border.all(), borderRadius: BorderRadius.circular(12)),
                               child: Text('${state.areas?[index].name}'),
                             ),
                           );
@@ -112,7 +112,7 @@ class _CreateAreaPage extends StatelessWidget {
                   )
                 : SizedBox.shrink(),
             floatingActionButton: FloatingActionButton(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadiusGeometry.circular(50)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
               onPressed: () {
                 final bloc = context.read<AreaBloc>();
                 showModalBottomSheet(
@@ -128,22 +128,22 @@ class _CreateAreaPage extends StatelessWidget {
                               physics: NeverScrollableScrollPhysics(),
                               child: Column(
                                 spacing: 12,
-                                mainAxisSize: .min,
+                                mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Row(
-                                    mainAxisAlignment: .center,
-                                    crossAxisAlignment: .center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
                                     children: [
                                       Expanded(
                                         child: Center(
                                           child: Text(
                                             "Add New Area",
-                                            style: TextStyle(fontSize: 24, fontWeight: .w500),
+                                            style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
                                           ),
                                         ),
                                       ),
                                       Align(
-                                        alignment: .bottomRight,
+                                        alignment: Alignment.bottomRight,
                                         child: IconButton(
                                           onPressed: () {
                                             context.pop();

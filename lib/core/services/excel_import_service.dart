@@ -1,13 +1,13 @@
 import 'dart:io';
 import 'package:excel/excel.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:marine_analytics_platform/core/services/data_resolver_service_v3.dart';
+import 'package:marine_analytics_platform/core/services/data_resolver_service.dart';
 import 'package:marine_analytics_platform/data/models/waste_entry_model.dart';
 import 'package:path_provider/path_provider.dart';
 
 class ExcelImportService {
   static const String templateFileName = 'mau_import_chat_thai.xlsx';
-  final _dataResolver = DataResolverServiceV3();
+  final _dataResolver = DataResolverService();
 
   /// Tạo file Excel mẫu để import
   Future<String> createTemplateFile() async {
