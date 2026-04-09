@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:excel/excel.dart';
+import 'package:flutter/material.dart';
 import 'package:marine_analytics_platform/data/models/waste_entry_model.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -233,6 +234,7 @@ class ExcelExportService {
         subject: 'Waste Report - $period',
         text:
             'Waste report from ${_formatDate(startDate)} to ${_formatDate(endDate)}',
+        sharePositionOrigin: const Rect.fromLTWH(100, 100, 200, 200),
       );
 
       print('✅ Excel file shared successfully');

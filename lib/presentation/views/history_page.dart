@@ -58,41 +58,7 @@ class _HistoryViewState extends State<_HistoryView> {
           title: const Text("Lịch sử chất thải"),
           actions: [
             IconButton(icon: const Icon(Icons.filter_list), onPressed: () => _showDateRangePicker(context)),
-            PopupMenuButton<String>(
-              icon: const Icon(Icons.more_vert),
-              onSelected: (value) {
-                switch (value) {
-                  case 'import':
-                    _showImportDialog(context);
-                    break;
-                  case 'export':
-                    _showExportDialog(context);
-                    break;
-                }
-              },
-              itemBuilder: (context) => [
-                const PopupMenuItem(
-                  value: 'import',
-                  child: Row(
-                    children: [
-                      Icon(Icons.upload_file, color: AppTheme.primaryGreen),
-                      SizedBox(width: 12),
-                      Text('Import Excel'),
-                    ],
-                  ),
-                ),
-                const PopupMenuItem(
-                  value: 'export',
-                  child: Row(
-                    children: [
-                      Icon(Icons.file_download, color: AppTheme.primaryGreen),
-                      SizedBox(width: 12),
-                      Text('Xuất Excel'),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+            IconButton(icon: const Icon(Icons.file_download), onPressed: () => _showExportDialog(context)),
           ],
         ),
         body: BlocBuilder<WasteEntryBloc, WasteEntryState>(
@@ -185,14 +151,14 @@ class _HistoryViewState extends State<_HistoryView> {
         floatingActionButton: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // FloatingActionButton.extended(
-            //   onPressed: () => _showAddMultipleSheet(context),
-            //   heroTag: 'add_multiple',
-            //   label: const Text('Nhiều loại'),
-            //   icon: const Icon(Icons.add_circle_outline),
-            //   backgroundColor: AppTheme.primaryGreen,
-            // ),
-            // const SizedBox(height: 12),
+            FloatingActionButton.extended(
+              onPressed: () => _showAddMultipleSheet(context),
+              heroTag: 'add_multiple',
+              label: const Text('Nhiều loại'),
+              icon: const Icon(Icons.add_circle_outline),
+              backgroundColor: AppTheme.primaryGreen,
+            ),
+            const SizedBox(height: 12),
             FloatingActionButton(
               onPressed: () => _showAddSingleSheet(context),
               heroTag: 'add_single',
