@@ -19,3 +19,10 @@ class CreateWasteEntry extends WasteEntryEvent {
   List<Object?> get props => [entry];
 }
 
+class ImportMultipleWasteEntries extends WasteEntryEvent {
+  final List<WasteEntryModel> entries;
+  const ImportMultipleWasteEntries(this.entries);
+
+  @override
+  List<Object?> get props => [entries];
+}

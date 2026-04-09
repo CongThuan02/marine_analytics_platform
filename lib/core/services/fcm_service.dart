@@ -1,6 +1,7 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:marine_analytics_platform/global.dart';
+import 'package:marine_analytics_platform/routes/app_router.dart';
 
 /// Service to manage Firebase Cloud Messaging
 class FCMService {
@@ -14,6 +15,9 @@ class FCMService {
 
   String? _fcmToken;
   String? get fcmToken => _fcmToken;
+
+  bool _isInitialized = false;
+  bool get isInitialized => _isInitialized;
 
   /// Initialize FCM
   Future<void> initialize() async {
@@ -64,6 +68,72 @@ class FCMService {
       _fcmToken = newToken;
       _saveFCMToken(newToken);
     });
+
+    _isInitialized = true;
+  }
+
+  /// Wait for FCM token to be ready (with timeout)
+  /// Returns token if available, null if timeout or error
+  Future<String?> waitForToken({
+    Duration timeout = const Duration(seconds: 10),
+  }) async {
+    // If token already available, return immediately
+    if (_fcmToken != null) {
+      print('✅ FCM token already available');
+      return _fcmToken;
+    }
+
+    print('⏳ Waiting for FCM token...');
+
+    try {
+      // Try to get token with timeout
+      final token = await _messaging.getToken().timeout(
+        timeout,
+        onTimeout: () {
+          print('⏱️ FCM token timeout after ${timeout.inSeconds}s');
+          return null;
+        },
+      );
+
+      if (token != null) {
+        _fcmToken = token;
+        print('✅ FCM token received: ${token.substring(0, 20)}...');
+
+        // Save to database if user is logged in
+        final userId = supabase.auth.currentUser?.id;
+        if (userId != null) {
+          await _saveFCMToken(token);
+        }
+      } else {
+        print('❌ FCM token is null - check permissions and APNs config');
+      }
+
+      return token;
+    } catch (e) {
+      print('❌ Error getting FCM token: $e');
+      return null;
+    }
+  }
+
+  /// Check if notification permission is granted
+  Future<bool> hasPermission() async {
+    final settings = await _messaging.getNotificationSettings();
+    return settings.authorizationStatus == AuthorizationStatus.authorized;
+  }
+
+  /// Request notification permission
+  Future<bool> requestPermission() async {
+    final settings = await _messaging.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+      provisional: false,
+    );
+
+    final granted =
+        settings.authorizationStatus == AuthorizationStatus.authorized;
+    print(granted ? '✅ Permission granted' : '❌ Permission denied');
+    return granted;
   }
 
   /// Setup local notifications
@@ -123,40 +193,26 @@ class FCMService {
     // For now just log, notification will show when app is in background
   }
 
-  /// Show local notification
-  Future<void> _showLocalNotification(RemoteMessage message) async {
-    try {
-      final notification = message.notification;
-      if (notification == null) {
-        print('⚠️ Notification is null, skipping local notification');
-        return;
-      }
-
-      // Simplify - don't use local notification, just log
-      print('📬 Notification received:');
-      print('   Title: ${notification.title}');
-      print('   Body: ${notification.body}');
-      print('   Data: ${message.data}');
-
-      // FCM will automatically show notification when app is in background
-      // When app is in foreground, can show dialog or snackbar instead of notification
-    } catch (e) {
-      print('❌ Error handling notification: $e');
-    }
-  }
-
   /// Handle notification tap
   void _handleNotificationTap(RemoteMessage message) {
     print('🔔 Notification tapped: ${message.data}');
-    // Navigate to alerts page
-    // You can use navigation service here
+
+    // Navigate to alerts page using push instead of go
+    // Navigate to alerts page using push instead of go
+    // push() preserves the navigation stack and allows back navigation
+    // go() replaces the entire stack
+    appRouter.push('/alerts');
+    print('✅ Navigated to alerts page using push()');
   }
 
   /// Save FCM token to database
   Future<void> _saveFCMToken(String token) async {
     try {
       final userId = supabase.auth.currentUser?.id;
-      if (userId == null) return;
+      if (userId == null) {
+        print('ℹ️ User not logged in, FCM token not saved to database');
+        return;
+      }
 
       // Save token to user_fcm_tokens table with upsert
       await supabase.from('user_fcm_tokens').upsert(
@@ -171,6 +227,13 @@ class FCMService {
       print('✅ FCM token saved to database');
     } catch (e) {
       print('❌ Error saving FCM token: $e');
+    }
+  }
+
+  /// Save FCM token after login
+  Future<void> saveFCMTokenAfterLogin() async {
+    if (_fcmToken != null) {
+      await _saveFCMToken(_fcmToken!);
     }
   }
 

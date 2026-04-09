@@ -8,9 +8,9 @@ class WasteTypeRepository {
         'name': wasteType.name,
         'unit': wasteType.unit,
       });
-      return "Data added successfully";
+      return "Đã thêm dữ liệu thành công";
     } catch (e) {
-      return "Failed to add data: $e";
+      return "Thêm dữ liệu thất bại: $e";
     }
   }
 
@@ -32,9 +32,9 @@ class WasteTypeRepository {
   Future<String> deleteWasteType({required String id}) async {
     try {
       await supabase.from('waste_types').delete().eq('id', id);
-      return "Waste type deleted successfully";
+      return "Đã xóa loại chất thải thành công";
     } catch (e) {
-      return "Delete failed";
+      return "Xóa thất bại";
     }
   }
 }

@@ -35,6 +35,30 @@ serve(async (req) => {
               sound: "default",
               badge: "1",
             },
+            // iOS specific configuration (REQUIRED for iOS to show notification)
+            apns: {
+              payload: {
+                aps: {
+                  alert: {
+                    title: title,
+                    body: body,
+                  },
+                  sound: "default",
+                  badge: 1,
+                  "content-available": 1,
+                },
+              },
+            },
+            // Android specific configuration
+            android: {
+              notification: {
+                title: title,
+                body: body,
+                sound: "default",
+                channelId: "alerts_channel",
+              },
+              priority: "high",
+            },
             data: data,
             priority: "high",
           }),

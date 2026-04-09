@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:marine_analytics_platform/core/theme/app_theme.dart';
 import 'package:marine_analytics_platform/data/repositories/waste_stats_repository.dart';
+import 'package:marine_analytics_platform/presentation/views/overviews/widgets/stacked_waste_bar_chart.dart';
 import 'package:marine_analytics_platform/presentation/views/overviews/widgets/trend_chart_widget.dart';
 
 class TrendComparisonTab extends StatefulWidget {
@@ -14,6 +15,7 @@ class _TrendComparisonTabState extends State<TrendComparisonTab> {
   final _repository = WasteStatsRepository();
   TrendPeriod _selectedPeriod = TrendPeriod.monthly;
   List<TrendDataPoint>? _trendData;
+  StackedWasteData? _stackedWasteData;
   bool _isLoading = false;
   String? _errorMessage;
 
@@ -30,14 +32,23 @@ class _TrendComparisonTabState extends State<TrendComparisonTab> {
     });
 
     try {
-      final data = await _repository.fetchTrendData(
+      // Load trend data
+      final trendData = await _repository.fetchTrendData(
+        trendPeriod: _selectedPeriod,
+        endDate: DateTime.now(),
+        periodsCount: _selectedPeriod == TrendPeriod.monthly ? 12 : 5,
+      );
+
+      // Load stacked waste type data across periods
+      final stackedData = await _repository.fetchStackedWasteTypeData(
         trendPeriod: _selectedPeriod,
         endDate: DateTime.now(),
         periodsCount: _selectedPeriod == TrendPeriod.monthly ? 12 : 5,
       );
 
       setState(() {
-        _trendData = data;
+        _trendData = trendData;
+        _stackedWasteData = stackedData;
         _isLoading = false;
       });
     } catch (e) {
@@ -63,7 +74,7 @@ class _TrendComparisonTabState extends State<TrendComparisonTab> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Comparison Period',
+                    'Khoảng thời gian so sánh',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -73,12 +84,12 @@ class _TrendComparisonTabState extends State<TrendComparisonTab> {
                     segments: const [
                       ButtonSegment(
                         value: TrendPeriod.monthly,
-                        label: Text('Monthly'),
+                        label: Text('Hàng tháng'),
                         icon: Icon(Icons.calendar_view_month),
                       ),
                       ButtonSegment(
                         value: TrendPeriod.yearly,
-                        label: Text('Yearly'),
+                        label: Text('Hàng năm'),
                         icon: Icon(Icons.calendar_today),
                       ),
                     ],
@@ -136,7 +147,7 @@ class _TrendComparisonTabState extends State<TrendComparisonTab> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Error loading data',
+                      'Lỗi tải dữ liệu',
                       style: TextStyle(
                         color: Colors.red.shade700,
                         fontWeight: FontWeight.bold,
@@ -169,12 +180,26 @@ class _TrendComparisonTabState extends State<TrendComparisonTab> {
                   )
                   .toList(),
               title: _selectedPeriod == TrendPeriod.monthly
-                  ? 'Monthly Waste Trend (Last 12 Months)'
-                  : 'Yearly Waste Trend (Last 5 Years)',
+                  ? 'Xu hướng rác thải theo tháng (12 tháng gần nhất)'
+                  : 'Xu hướng rác thải theo năm (5 năm gần nhất)',
               xAxisTitle: _selectedPeriod == TrendPeriod.monthly
-                  ? 'Month'
+                  ? 'Tháng'
                   : 'Year',
             ),
+            const SizedBox(height: 16),
+
+            // Stacked waste type bar chart
+            if (_stackedWasteData != null &&
+                _stackedWasteData!.series.isNotEmpty)
+              StackedWasteBarChart(
+                periods: _stackedWasteData!.periods,
+                series: _stackedWasteData!.series
+                    .map((e) => WasteTypeSeriesData(name: e.name, data: e.data))
+                    .toList(),
+                title: _selectedPeriod == TrendPeriod.monthly
+                    ? 'So sánh loại rác thải theo tháng (12 tháng gần nhất)'
+                    : 'So sánh loại rác thải theo năm (5 năm gần nhất)',
+              ),
             const SizedBox(height: 24),
 
             // Statistics table
@@ -207,7 +232,7 @@ class _TrendComparisonTabState extends State<TrendComparisonTab> {
             Expanded(
               child: _SummaryCard(
                 icon: Icons.trending_up,
-                label: 'Total',
+                label: 'Tổng',
                 value: '${_formatQuantity(totalQuantity)} kg',
                 color: AppTheme.primaryGreen,
               ),
@@ -216,7 +241,7 @@ class _TrendComparisonTabState extends State<TrendComparisonTab> {
             Expanded(
               child: _SummaryCard(
                 icon: Icons.show_chart,
-                label: 'Average',
+                label: 'Trung bình',
                 value: '${_formatQuantity(avgQuantity)} kg',
                 color: AppTheme.secondaryTeal,
               ),
@@ -229,7 +254,7 @@ class _TrendComparisonTabState extends State<TrendComparisonTab> {
             Expanded(
               child: _SummaryCard(
                 icon: Icons.arrow_upward,
-                label: 'Highest',
+                label: 'Cao nhất',
                 value:
                     '${maxPeriod.period}\n${_formatQuantity(maxPeriod.quantity)} kg',
                 color: Colors.orange,
@@ -239,7 +264,7 @@ class _TrendComparisonTabState extends State<TrendComparisonTab> {
             Expanded(
               child: _SummaryCard(
                 icon: Icons.arrow_downward,
-                label: 'Lowest',
+                label: 'Thấp nhất',
                 value:
                     '${minPeriod.period}\n${_formatQuantity(minPeriod.quantity)} kg',
                 color: Colors.blue,
@@ -261,7 +286,7 @@ class _TrendComparisonTabState extends State<TrendComparisonTab> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Detailed Statistics',
+              'Thống kê chi tiết',
               style: Theme.of(
                 context,
               ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
-import 'package:marine_analytics_platform/core/constants/app_strings.dart';
 import 'package:marine_analytics_platform/core/constants/enum_status.dart';
 import 'package:marine_analytics_platform/core/theme/app_theme.dart';
 import 'package:marine_analytics_platform/data/models/waste_stats.dart';
@@ -73,14 +71,14 @@ class _StatsOverviewView extends StatelessWidget {
               const SizedBox(height: 16),
               _SummaryCard(
                 icon: Icons.scale,
-                label: AppStrings.totalQuantity,
+                label: 'Tổng khối lượng',
                 value: '${_formatQuantity(stats.totalQuantity)} kg',
                 color: AppTheme.primaryGreen,
               ),
               const SizedBox(height: 12),
               _SummaryCard(
                 icon: Icons.description_outlined,
-                label: AppStrings.entryCount,
+                label: 'Số lượng bản ghi',
                 value: stats.entryCount.toString(),
                 color: AppTheme.secondaryTeal,
               ),
@@ -100,7 +98,7 @@ class _StatsOverviewView extends StatelessWidget {
                 )
               else ...[
                 Text(
-                  AppStrings.wasteDistribution,
+                  'Phân bố chất thải',
                   style: Theme.of(
                     context,
                   ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
@@ -115,7 +113,7 @@ class _StatsOverviewView extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          AppStrings.detailsByWasteType,
+                          'Chi tiết theo loại chất thải',
                           style: Theme.of(context).textTheme.titleLarge
                               ?.copyWith(fontWeight: FontWeight.bold),
                         ),
@@ -129,7 +127,7 @@ class _StatsOverviewView extends StatelessWidget {
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
-                            'Total: ${_formatQuantity(stats.totalQuantity)} kg',
+                            'Tổng: ${_formatQuantity(stats.totalQuantity)} kg',
                             style: const TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.bold,
@@ -188,7 +186,7 @@ class _StatsOverviewView extends StatelessWidget {
                                   const SizedBox(width: 8),
                                   Expanded(
                                     child: Text(
-                                      'Check data',
+                                      'Kiểm tra dữ liệu',
                                       style: TextStyle(
                                         fontSize: 11,
                                         fontWeight: FontWeight.bold,
@@ -202,10 +200,10 @@ class _StatsOverviewView extends StatelessWidget {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                'Breakdown total: ${_formatQuantity(breakdownTotal)} kg\n'
-                                'Stats total: ${_formatQuantity(stats.totalQuantity)} kg\n'
-                                'Total %: ${percentageTotal.toStringAsFixed(1)}%\n'
-                                'Types: ${stats.breakdowns.length} | Entries: ${stats.entryCount}',
+                                'Tổng phân tích: ${_formatQuantity(breakdownTotal)} kg\n'
+                                'Tổng thống kê: ${_formatQuantity(stats.totalQuantity)} kg\n'
+                                'Tổng %: ${percentageTotal.toStringAsFixed(1)}%\n'
+                                'Loại: ${stats.breakdowns.length} | Bản ghi: ${stats.entryCount}',
                                 style: TextStyle(
                                   fontSize: 10,
                                   color: isMatching
@@ -278,7 +276,7 @@ class _PeriodSelector extends StatelessWidget {
             final picked = await _pickDate(context, period, date);
             onChanged(picked);
           },
-          child: const Text('Change'),
+          child: const Text('Thay đổi'),
         ),
       ],
     );
@@ -322,7 +320,7 @@ class _PeriodSelector extends StatelessWidget {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              title: const Text('Select month and year'),
+              title: const Text('Chọn tháng và năm'),
               content: SizedBox(
                 width: 300,
                 height: 300,
@@ -403,7 +401,7 @@ class _PeriodSelector extends StatelessWidget {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('Cancel'),
+                  child: const Text('Hủy'),
                 ),
                 TextButton(
                   onPressed: () {
@@ -411,7 +409,7 @@ class _PeriodSelector extends StatelessWidget {
                       context,
                     ).pop(DateTime(selectedYear, selectedMonth));
                   },
-                  child: const Text('Select'),
+                  child: const Text('Chọn'),
                 ),
               ],
             );
@@ -438,7 +436,7 @@ class _PeriodSelector extends StatelessWidget {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              title: const Text('Select year'),
+              title: const Text('Chọn năm'),
               content: SizedBox(
                 width: 300,
                 height: 400,
@@ -520,13 +518,13 @@ class _PeriodSelector extends StatelessWidget {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('Cancel'),
+                  child: const Text('Hủy'),
                 ),
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop(DateTime(selectedYear));
                   },
-                  child: const Text('Select'),
+                  child: const Text('Chọn'),
                 ),
               ],
             );
@@ -687,7 +685,7 @@ class _BreakdownTile extends StatelessWidget {
                     if (totalQuantity > 0) ...[
                       const SizedBox(height: 4),
                       Text(
-                        'Total: ${_formatQuantity(totalQuantity)} kg',
+                        'Tổng: ${_formatQuantity(totalQuantity)} kg',
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.grey.shade600,
@@ -739,10 +737,10 @@ class _PieChartWidget extends StatelessWidget {
         ],
       ),
       child: SfCircularChart(
-        title: ChartTitle(
-          text: 'Distribution Ratio (%)',
-          textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-        ),
+        // title: ChartTitle(
+        //   text: 'Distribution Ratio (%)',
+        //   textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        // ),
         legend: Legend(
           isVisible: true,
           position: LegendPosition.bottom,

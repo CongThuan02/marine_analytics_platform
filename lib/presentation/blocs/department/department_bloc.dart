@@ -12,21 +12,31 @@ class DepartmentBloc extends Bloc<DepartmentEvent, DepartmentState> {
   DepartmentBloc() : super(DepartmentState()) {
     on<CreateDepartmentEvent>((event, emit) async {
       emit(state.copyWith(status: Status.loading));
-      var res = await _repository.createDepartment(department: state.departmentModel);
-      emit(state.copyWith(
+      var res = await _repository.createDepartment(
+        department: state.departmentModel,
+      );
+      emit(
+        state.copyWith(
           status: Status.success,
           message: res,
           departmentModel: DepartmentModel(
             id: '',
             name: '',
-            areaId: '',
+            areaId: null, // Reset to null instead of empty string
             createdAt: DateTime.now(),
-          )));
+          ),
+        ),
+      );
     });
     on<UpdateFieldDepartmentEvent>((event, emit) {
       final data = state.departmentModel.toMap();
       data[event.key] = event.value;
-      emit(state.copyWith(departmentModel: DepartmentModel.fromMap(data), status: Status.init));
+      emit(
+        state.copyWith(
+          departmentModel: DepartmentModel.fromMap(data),
+          status: Status.init,
+        ),
+      );
     });
     on<GetDepartmentEvent>((event, emit) async {
       emit(state.copyWith(status: Status.loading));

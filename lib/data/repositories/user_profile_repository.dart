@@ -18,49 +18,38 @@ class UserProfileRepository {
     final role = singUp.role?.trim();
 
     if (email?.isEmpty ?? true) {
-      throw const RegisterException('Please enter email.');
+      throw const RegisterException('Vui lòng nhập email.');
     }
     if (password == null || password.length < 6) {
-      throw const RegisterException('Password must be at least 6 characters.');
+      throw const RegisterException('Mật khẩu phải có ít nhất 6 ký tự.');
     }
-    if (departmentId?.isEmpty ?? true) {
-      throw const RegisterException('Please select a department.');
-    }
+    // if (departmentId?.isEmpty ?? true) {
+    //   throw const RegisterException('Vui lòng chọn phòng.');
+    // }
     if (role?.isEmpty ?? true) {
-      throw const RegisterException('Please select a role.');
+      throw const RegisterException('Vui lòng chọn vai trò.');
     }
 
     try {
-      final response = await supabase.auth.signUp(
-        email: email!,
-        password: password,
-        data: {'department_id': departmentId, 'role': role},
-      );
+      final response = await supabase.auth.signUp(email: email!, password: password, data: {'role': role});
 
       final user = response.user;
       if (user == null) {
-        throw const RegisterException(
-          'Unable to get user information from Supabase.',
-        );
+        throw const RegisterException('Không thể lấy thông tin người dùng từ Supabase.');
       }
 
-      await supabase.from('users_profile').insert({
-        'id': user.id,
-        'department_id': departmentId,
-        'role': role,
-      });
+      await supabase.from('users_profile').insert({'id': user.id, 'role': role});
 
-      final requiresConfirmation =
-          response.session == null || user.emailConfirmedAt == null;
+      final requiresConfirmation = response.session == null || user.emailConfirmedAt == null;
       return requiresConfirmation
-          ? 'Registration successful. Please check your email to verify your account.'
-          : 'Registration successful.';
+          ? 'Đăng ký thành công. Vui lòng kiểm tra email để xác minh tài khoản.'
+          : 'Đăng ký thành công.';
     } on AuthException catch (e) {
       throw RegisterException(e.message);
     } on PostgrestException catch (e) {
-      throw RegisterException(e.message ?? 'Unable to save user information.');
+      throw RegisterException(e.message ?? 'Không thể lưu thông tin người dùng.');
     } catch (e) {
-      throw RegisterException('Unable to register: $e');
+      throw RegisterException('Không thể đăng ký: $e');
     }
   }
 }

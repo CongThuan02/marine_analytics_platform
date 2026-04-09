@@ -11,13 +11,14 @@ class DepartmentState extends Equatable {
     this.items,
     this.status,
     DepartmentModel? departmentModel,
-  }) : departmentModel = departmentModel ??
-            DepartmentModel(
-              id: '',
-              name: '',
-              areaId: '',
-              createdAt: DateTime.now(),
-            );
+  }) : departmentModel =
+           departmentModel ??
+           DepartmentModel(
+             id: '',
+             name: '',
+             areaId: null, // Initialize with null instead of empty string
+             createdAt: DateTime.now(),
+           );
 
   DepartmentState copyWith({
     final String? message,

@@ -1,7 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:marine_analytics_platform/core/constants/app_strings.dart';
+import 'package:marine_analytics_platform/core/localization/localization_extension.dart';
 import 'package:marine_analytics_platform/core/di/injection_container.dart';
 import 'package:marine_analytics_platform/core/theme/app_theme.dart';
 import 'package:marine_analytics_platform/presentation/blocs/alert/alert_bloc.dart';
@@ -14,10 +15,7 @@ class AlertsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => sl<AlertBloc>()..add(const LoadAlerts()),
-      child: const _AlertsView(),
-    );
+    return BlocProvider(create: (context) => sl<AlertBloc>()..add(const LoadAlerts()), child: const _AlertsView());
   }
 }
 
@@ -28,45 +26,44 @@ class _AlertsView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(AppStrings.alertsTitle),
+        title: Text(context.l10n.alerts),
+        leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => context.pop()),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: () {
-              context.read<AlertBloc>().add(LoadAlerts());
-            },
-          ),
-          PopupMenuButton<String>(
-            onSelected: (value) {
-              if (value == 'delete_old') {
-                _showDeleteOldDialog(context);
-              } else if (value == 'test') {
-                context.pushNamed('/alerts/test');
-              }
-            },
-            itemBuilder: (context) => [
-              const PopupMenuItem(
-                value: 'test',
-                child: Row(
-                  children: [
-                    Icon(Icons.bug_report, size: 20, color: Colors.orange),
-                    SizedBox(width: 8),
-                    Text(AppStrings.testCreateAlert),
-                  ],
+          if (kDebugMode) ...{
+            IconButton(
+              icon: const Icon(Icons.refresh),
+              onPressed: () {
+                context.read<AlertBloc>().add(LoadAlerts());
+              },
+            ),
+            PopupMenuButton<String>(
+              onSelected: (value) {
+                if (value == 'delete_old') {
+                  _showDeleteOldDialog(context);
+                } else if (value == 'test') {
+                  context.pushNamed('/alerts/test');
+                }
+              },
+              itemBuilder: (context) => [
+                const PopupMenuItem(
+                  value: 'test',
+                  child: Row(
+                    children: [
+                      Icon(Icons.bug_report, size: 20, color: Colors.orange),
+                      SizedBox(width: 8),
+                      Text('Tạo cảnh báo test (85%)'),
+                    ],
+                  ),
                 ),
-              ),
-              const PopupMenuItem(
-                value: 'delete_old',
-                child: Row(
-                  children: [
-                    Icon(Icons.delete_sweep, size: 20),
-                    SizedBox(width: 8),
-                    Text(AppStrings.deleteOldAlerts),
-                  ],
+                const PopupMenuItem(
+                  value: 'delete_old',
+                  child: Row(
+                    children: [Icon(Icons.delete_sweep, size: 20), SizedBox(width: 8), Text('Xóa cảnh báo cũ')],
+                  ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
+          },
         ],
       ),
       body: BlocBuilder<AlertBloc, AlertState>(
@@ -80,14 +77,10 @@ class _AlertsView extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.error_outline,
-                    size: 64,
-                    color: Colors.red.shade300,
-                  ),
+                  Icon(Icons.error_outline, size: 64, color: Colors.red.shade300),
                   const SizedBox(height: 16),
                   Text(
-                    '${AppStrings.error}: ${state.message}',
+                    'Lỗi: ${state.message}',
                     style: TextStyle(color: Colors.red.shade700),
                     textAlign: TextAlign.center,
                   ),
@@ -96,7 +89,7 @@ class _AlertsView extends StatelessWidget {
                     onPressed: () {
                       context.read<AlertBloc>().add(LoadAlerts());
                     },
-                    child: const Text('Retry'),
+                    child: const Text('Thử lại'),
                   ),
                 ],
               ),
@@ -109,24 +102,11 @@ class _AlertsView extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      Icons.check_circle_outline,
-                      size: 80,
-                      color: AppTheme.success,
-                    ),
+                    Icon(Icons.check_circle_outline, size: 80, color: AppTheme.success),
                     const SizedBox(height: 16),
-                    const Text(
-                      AppStrings.noAlerts,
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
+                    const Text('Không có cảnh báo', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
                     const SizedBox(height: 8),
-                    Text(
-                      'All areas are within limits',
-                      style: TextStyle(color: Colors.grey.shade600),
-                    ),
+                    Text('Không có cảnh báo nào', style: TextStyle(color: Colors.grey.shade600)),
                   ],
                 ),
               );
@@ -176,7 +156,7 @@ class _AlertsView extends StatelessWidget {
           Expanded(
             child: _buildSummaryItem(
               icon: Icons.warning_amber_rounded,
-              label: 'Total Alerts',
+              label: 'Tổng cảnh báo',
               value: total.toString(),
               color: AppTheme.primaryGreen,
             ),
@@ -185,7 +165,7 @@ class _AlertsView extends StatelessWidget {
           Expanded(
             child: _buildSummaryItem(
               icon: Icons.error,
-              label: 'Critical',
+              label: 'Vượt mức',
               value: critical.toString(),
               color: Colors.red,
             ),
@@ -194,7 +174,7 @@ class _AlertsView extends StatelessWidget {
           Expanded(
             child: _buildSummaryItem(
               icon: Icons.info,
-              label: 'Warning',
+              label: 'Cảnh báo',
               value: warning.toString(),
               color: Colors.orange,
             ),
@@ -216,16 +196,9 @@ class _AlertsView extends StatelessWidget {
         const SizedBox(height: 4),
         Text(
           value,
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: color,
-          ),
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: color),
         ),
-        Text(
-          label,
-          style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-        ),
+        Text(label, style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
       ],
     );
   }
@@ -238,27 +211,19 @@ class _AlertsView extends StatelessWidget {
           children: [
             Icon(Icons.delete_sweep, color: Colors.orange),
             SizedBox(width: 12),
-            Text(AppStrings.deleteOldAlerts),
+            Text('Xóa cảnh báo cũ'),
           ],
         ),
-        content: const Text(
-          'Delete all alerts before today?',
-          style: TextStyle(fontSize: 16),
-        ),
+        content: const Text('Xóa tất cả cảnh báo trước hôm nay?', style: TextStyle(fontSize: 16)),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text(AppStrings.cancel),
-          ),
+          TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(context.l10n.cancel)),
           ElevatedButton(
             onPressed: () {
               // TODO: Implement DeleteOldAlerts use case
               Navigator.pop(dialogContext);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Feature coming soon')),
-              );
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Tính năng sắp ra mắt')));
             },
-            child: const Text(AppStrings.delete),
+            child: Text(context.l10n.delete),
           ),
         ],
       ),

@@ -1,5 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:marine_analytics_platform/core/services/fcm_service.dart';
+import 'package:marine_analytics_platform/core/services/local_notification_service.dart';
 import 'package:marine_analytics_platform/core/theme/app_theme.dart';
 import 'package:marine_analytics_platform/global.dart';
 
@@ -9,7 +13,7 @@ class SettingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Settings"), centerTitle: true),
+      appBar: AppBar(title: const Text("Cài đặt"), centerTitle: true),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -18,63 +22,108 @@ class SettingsPage extends StatelessWidget {
           const SizedBox(height: 24),
 
           // Management section
-          _buildSectionTitle('System Management'),
+          _buildSectionTitle('Quản lý hệ thống'),
           const SizedBox(height: 12),
           _buildSettingCard(
             context,
             icon: Icons.location_on,
-            title: 'Manage Areas',
-            subtitle: 'Add, edit, delete areas',
+            title: 'Quản lý khu vực',
+            subtitle: 'Thêm, sửa, xóa khu vực',
             onTap: () => context.pushNamed('/create/area'),
           ),
           const SizedBox(height: 8),
           _buildSettingCard(
             context,
             icon: Icons.business,
-            title: 'Manage Departments',
-            subtitle: 'Add, edit, delete departments',
+            title: 'Quản lý phòng',
+            subtitle: 'Thêm, sửa, xóa phòng',
             onTap: () => context.pushNamed('/department'),
           ),
           const SizedBox(height: 8),
           _buildSettingCard(
             context,
             icon: Icons.delete_outline,
-            title: 'Manage Waste Types',
-            subtitle: 'Add, edit, delete waste types',
+            title: 'Quản lý loại chất thải',
+            subtitle: 'Thêm, sửa, xóa loại chất thải',
             onTap: () => context.pushNamed('/wasteType'),
           ),
           const SizedBox(height: 24),
 
           // Monitoring section
-          _buildSectionTitle('Monitoring & Alerts'),
+          _buildSectionTitle('Giám sát & Cảnh báo'),
           const SizedBox(height: 12),
           _buildSettingCard(
             context,
             icon: Icons.notification_important,
-            title: 'Limit Alerts',
-            subtitle: 'View threshold alerts',
+            title: 'Cảnh báo hạn mức',
+            subtitle: 'Xem cảnh báo vượt ngưỡng',
             onTap: () => context.pushNamed('/alerts'),
           ),
           const SizedBox(height: 8),
           _buildSettingCard(
             context,
             icon: Icons.speed,
-            title: 'Manage Limits',
-            subtitle: 'Set waste alert thresholds',
+            title: 'Quản lý hạn mức',
+            subtitle: 'Thiết lập ngưỡng cảnh báo chất thải',
             onTap: () => context.pushNamed('/wasteLimit'),
           ),
           const SizedBox(height: 8),
           _buildSettingCard(
             context,
             icon: Icons.notifications_active,
-            title: 'Manage Reminders',
-            subtitle: 'Configure data entry reminders',
+            title: 'Quản lý nhắc nhở',
+            subtitle: 'Cấu hình nhắc nhở nhập liệu',
             onTap: () => context.pushNamed('/reminder'),
           ),
           const SizedBox(height: 24),
 
+          // Testing section
+          if (kDebugMode) ...{
+            _buildSectionTitle('Kiểm tra & Debug'),
+            const SizedBox(height: 12),
+            _buildSettingCard(
+              context,
+              icon: Icons.notifications_active,
+              title: 'Xem FCM Token',
+              subtitle: 'Hiển thị Firebase Cloud Messaging token',
+              onTap: () => _showFCMToken(context),
+            ),
+            const SizedBox(height: 8),
+            _buildSettingCard(
+              context,
+              icon: Icons.bug_report,
+              title: 'Test thông báo cục bộ',
+              subtitle: 'Kiểm tra thông báo không cần FCM/Google',
+              onTap: () => _testLocalNotification(context),
+            ),
+            const SizedBox(height: 8),
+            _buildSettingCard(
+              context,
+              icon: Icons.warning_amber,
+              title: 'Test cảnh báo hạn mức',
+              subtitle: 'Kiểm tra thông báo vượt hạn mức',
+              onTap: () => _testWasteLimitNotification(context),
+            ),
+            const SizedBox(height: 8),
+            _buildSettingCard(
+              context,
+              icon: Icons.alarm,
+              title: 'Test nhắc nhở tự động',
+              subtitle: 'Kiểm tra thông báo nhắc nhở theo lịch',
+              onTap: () => context.pushNamed('/test-reminder-notification'),
+            ),
+            const SizedBox(height: 8),
+            _buildSettingCard(
+              context,
+              icon: Icons.bug_report,
+              title: 'Debug Import Excel',
+              subtitle: 'Kiểm tra lỗi import và database',
+              onTap: () => context.push('/test-import-debug'),
+            ),
+            const SizedBox(height: 24),
+          },
           // Account section
-          _buildSectionTitle('Account'),
+          _buildSectionTitle('Tài khoản'),
           const SizedBox(height: 12),
           _buildLogoutButton(context),
         ],
@@ -126,7 +175,7 @@ class SettingsPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Logged in',
+                  'Đã đăng nhập',
                   style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
                 ),
               ],
@@ -236,7 +285,7 @@ class SettingsPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Logout',
+                      'Đăng xuất',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -245,7 +294,7 @@ class SettingsPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Sign out from current account',
+                      'Thoát khỏi tài khoản hiện tại',
                       style: TextStyle(
                         fontSize: 13,
                         color: Colors.red.shade600,
@@ -270,17 +319,17 @@ class SettingsPage extends StatelessWidget {
           children: [
             Icon(Icons.logout, color: Colors.red),
             SizedBox(width: 12),
-            Text('Confirm Logout'),
+            Text('Xác nhận đăng xuất'),
           ],
         ),
         content: const Text(
-          'Are you sure you want to logout?',
+          'Bạn có chắc chắn muốn đăng xuất?',
           style: TextStyle(fontSize: 16),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cancel'),
+            child: const Text('Hủy'),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -291,11 +340,200 @@ class SettingsPage extends StatelessWidget {
               backgroundColor: Colors.red,
               foregroundColor: Colors.white,
             ),
-            child: const Text('Logout'),
+            child: const Text('Đăng xuất'),
           ),
         ],
       ),
     );
+  }
+
+  Future<void> _showFCMToken(BuildContext context) async {
+    final fcmService = FCMService();
+    final token = fcmService.fcmToken;
+
+    if (token == null) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              '⏳ FCM Token chưa sẵn sàng. Vui lòng đợi vài giây...',
+            ),
+            backgroundColor: Colors.orange,
+            duration: Duration(seconds: 3),
+          ),
+        );
+      }
+      return;
+    }
+
+    if (!context.mounted) return;
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Row(
+          children: [
+            Icon(Icons.notifications_active, color: AppTheme.primaryGreen),
+            const SizedBox(width: 8),
+            const Text('FCM Token'),
+          ],
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Firebase Cloud Messaging token:',
+                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
+              ),
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.grey.shade300),
+                ),
+                child: SelectableText(
+                  token,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontFamily: 'monospace',
+                    height: 1.4,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.blue.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.blue.shade200),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.info_outline,
+                      color: Colors.blue.shade700,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Dùng token này để test gửi notification từ Firebase Console',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.blue.shade700,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Đóng'),
+          ),
+          ElevatedButton.icon(
+            onPressed: () {
+              Clipboard.setData(ClipboardData(text: token));
+              Navigator.pop(dialogContext);
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('✅ Đã sao chép FCM Token vào clipboard!'),
+                    backgroundColor: Colors.green,
+                    duration: Duration(seconds: 2),
+                  ),
+                );
+              }
+            },
+            icon: const Icon(Icons.copy, size: 18),
+            label: const Text('Sao chép'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.primaryGreen,
+              foregroundColor: Colors.white,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _testLocalNotification(BuildContext context) async {
+    try {
+      print('🔔 Testing local notification...');
+
+      await LocalNotificationService().showNotification(
+        title: '✅ Test thành công!',
+        body: 'Thông báo cục bộ đang hoạt động! Không cần FCM/Google.',
+        payload: 'test',
+      );
+
+      print('✅ Notification sent');
+
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('✅ Đã gửi thông báo! Kiểm tra khay thông báo.'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 3),
+          ),
+        );
+      }
+    } catch (e) {
+      print('❌ Lỗi: $e');
+
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('❌ Lỗi: $e'), backgroundColor: Colors.red),
+        );
+      }
+    }
+  }
+
+  Future<void> _testWasteLimitNotification(BuildContext context) async {
+    try {
+      print('🔔 Testing waste limit notification...');
+
+      await LocalNotificationService().showWasteLimitExceededNotification(
+        areaName: 'Bếp Test',
+        wasteTypeName: 'Rác nhựa',
+        totalQuantity: 125.5,
+        limitValue: 100.0,
+        exceededBy: 25.5,
+        percentage: '125.5',
+        period: 'monthly',
+      );
+
+      print('✅ Waste limit notification sent');
+
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              '⚠️ Đã gửi cảnh báo hạn mức! Kiểm tra khay thông báo.',
+            ),
+            backgroundColor: Colors.orange,
+            duration: Duration(seconds: 3),
+          ),
+        );
+      }
+    } catch (e) {
+      print('❌ Lỗi: $e');
+
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('❌ Lỗi: $e'), backgroundColor: Colors.red),
+        );
+      }
+    }
   }
 
   Future<void> _logout(BuildContext context) async {
@@ -324,7 +562,7 @@ class SettingsPage extends StatelessWidget {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Logged out successfully'),
+            content: Text('Đăng xuất thành công'),
             backgroundColor: AppTheme.success,
           ),
         );
@@ -339,7 +577,7 @@ class SettingsPage extends StatelessWidget {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Sign out error: $e'),
+            content: Text('Lỗi đăng xuất: $e'),
             backgroundColor: Colors.red,
           ),
         );

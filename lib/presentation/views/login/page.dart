@@ -4,20 +4,18 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:go_router/go_router.dart';
 import 'package:loader_overlay/loader_overlay.dart';
-import 'package:marine_analytics_platform/core/constants/app_strings.dart';
+import 'package:marine_analytics_platform/core/localization/localization_extension.dart';
 import 'package:marine_analytics_platform/core/constants/enum_status.dart';
 import 'package:marine_analytics_platform/presentation/blocs/login/login_bloc.dart';
 import 'package:marine_analytics_platform/presentation/widgets/form_text_field.dart';
+import 'package:marine_analytics_platform/presentation/widgets/clickable_logo.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => LoginBloc(),
-      child: const _LoginView(),
-    );
+    return BlocProvider(create: (_) => LoginBloc(), child: const _LoginView());
   }
 }
 
@@ -42,20 +40,20 @@ class _LoginViewState extends State<_LoginView> {
         context.loaderOverlay.hide();
 
         if (state.status == Status.success && state.message != null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message!), backgroundColor: Colors.green),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(state.message!), backgroundColor: Colors.green));
           context.go('/');
         }
 
         if (state.status == Status.fail && state.message != null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message!), backgroundColor: Colors.red),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(state.message!), backgroundColor: Colors.red));
         }
       },
       child: Scaffold(
-        appBar: AppBar(title: const Text(AppStrings.login)),
+        appBar: AppBar(title: Text(context.l10n.login)),
         body: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
@@ -64,46 +62,46 @@ class _LoginViewState extends State<_LoginView> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  // Clickable Logo
+                  const Center(child: ClickableLogo(logoSize: 80, titleFontSize: 32, subtitleFontSize: 16)),
+                  const SizedBox(height: 32),
                   Text(
-                    "Welcome Back!",
+                    "Chào mừng bạn quay lại!",
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    "Login to continue managing waste.",
+                    "Vui lòng đăng nhập để sử dụng ứng dụng.",
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey.shade600),
                   ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 24),
                   FormTextField(
                     name: 'email',
-                    label: AppStrings.email,
+                    label: context.l10n.email,
                     validators: [
-                      FormBuilderValidators.required(errorText: AppStrings.fieldRequired),
-                      FormBuilderValidators.email(errorText: AppStrings.invalidEmail),
+                      FormBuilderValidators.required(errorText: 'Trường này là bắt buộc'),
+                      FormBuilderValidators.email(errorText: 'Email không hợp lệ'),
                     ],
                   ),
                   const SizedBox(height: 16),
                   FormTextField(
                     name: 'password',
-                    label: AppStrings.password,
+                    label: context.l10n.password,
                     isPassword: true,
                     validators: [
-                      FormBuilderValidators.required(errorText: AppStrings.fieldRequired),
-                      FormBuilderValidators.minLength(6, errorText: 'Minimum 6 characters'),
+                      FormBuilderValidators.required(errorText: 'Trường này là bắt buộc'),
+                      FormBuilderValidators.minLength(6, errorText: 'Tối thiểu 6 ký tự'),
                     ],
                   ),
                   const SizedBox(height: 24),
                   SizedBox(
                     height: 48,
-                    child: ElevatedButton(
-                      onPressed: _submit,
-                      child: const Text(AppStrings.login),
-                    ),
+                    child: ElevatedButton(onPressed: _submit, child: Text(context.l10n.login)),
                   ),
                   const SizedBox(height: 12),
                   TextButton(
                     onPressed: () => context.pushNamed('/register'),
-                    child: const Text("Don't have an account? Register now"),
+                    child: const Text("Chưa có tài khoản? Đăng ký ngay"),
                   ),
                 ],
               ),

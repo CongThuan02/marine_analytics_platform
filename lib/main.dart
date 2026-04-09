@@ -2,11 +2,15 @@ import 'dart:async';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:loader_overlay/loader_overlay.dart';
-import 'package:marine_analytics_platform/core/di/injection_container.dart'
-    as di;
+import 'package:marine_analytics_platform/core/di/injection_container.dart' as di;
+import 'package:marine_analytics_platform/core/localization/app_localizations.dart';
 import 'package:marine_analytics_platform/core/services/fcm_service.dart';
+import 'package:marine_analytics_platform/core/services/local_notification_service.dart';
+import 'package:marine_analytics_platform/core/services/reminder_notification_service.dart';
 import 'package:marine_analytics_platform/core/theme/app_theme.dart';
+import 'package:marine_analytics_platform/firebase_options.dart';
 import 'package:marine_analytics_platform/routes/app_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -30,8 +34,7 @@ class DeepLinkService with WidgetsBindingObserver {
 
   Future<void> _getInitialLink() async {
     try {
-      final uriString =
-          WidgetsBinding.instance.platformDispatcher.defaultRouteName;
+      final uriString = WidgetsBinding.instance.platformDispatcher.defaultRouteName;
       if (uriString != "/") {
         final uri = Uri.parse(uriString);
         lastLink = uriString;
@@ -45,8 +48,7 @@ class DeepLinkService with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     try {
-      final uriString =
-          WidgetsBinding.instance.platformDispatcher.defaultRouteName;
+      final uriString = WidgetsBinding.instance.platformDispatcher.defaultRouteName;
       if (uriString != lastLink && uriString != "/") {
         final uri = Uri.parse(uriString);
         lastLink = uriString;
@@ -62,16 +64,39 @@ Future<void> initDeepLinks() async {
   await deepLinkService.init();
 
   deepLinkService.stream.listen((uri) async {
-    await _handleDeepLink(uri); // 💥 run async, avoid blocking main thread
+    await _handleDeepLink(uri);
   });
 }
 
 /// Handle deep link
 Future<void> _handleDeepLink(Uri uri) async {
-  if (uri.pathSegments.contains('ship')) {
-    // Delay 0 to avoid blocking main thread
-    await Future.delayed(Duration.zero);
-    appRouter.go('/intro');
+  print('   Deep link received: $uri');
+  print('   Scheme: ${uri.scheme}');
+  print('   Host: ${uri.host}');
+  print('   Path: ${uri.path}');
+
+  // Wait for app to be ready (after splash screen)
+  await Future.delayed(const Duration(milliseconds: 500));
+
+  // Check if user is logged in
+  final session = supabase.auth.currentSession;
+  if (session == null) {
+    return;
+  }
+
+  // Handle different deep link routes
+  if (uri.host == 'ships' || uri.pathSegments.contains('ships')) {
+    // Navigate to history/ships page
+    appRouter.go('/ships');
+  } else if (uri.host == 'alerts' || uri.pathSegments.contains('alerts')) {
+    // Navigate to alerts page
+    appRouter.go('/alerts');
+  } else if (uri.host == 'home' || uri.path == '/') {
+    // Navigate to home page
+    appRouter.go('/');
+    print('✅ Navigated to home');
+  } else {
+    print('⚠️ Unknown deep link route: ${uri.host}');
   }
 }
 
@@ -91,17 +116,32 @@ Future<void> main() async {
   // 🔹 Init deep link (Flutter-native)
   await initDeepLinks();
 
-  // 🔹 Init Firebase
-  await Firebase.initializeApp();
+  // 🔹 Init Firebase with options
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   // 🔹 Init FCM (Firebase Cloud Messaging)
-  // Only init if user is logged in
-  if (supabase.auth.currentSession != null) {
-    try {
-      await FCMService().initialize();
-    } catch (e) {
-      print('⚠️ FCM init error: $e');
-    }
+  // Initialize FCM regardless of login status (needed for login/register screens)
+  try {
+    await FCMService().initialize();
+    print('✅ FCM initialized successfully');
+  } catch (e) {
+    print('⚠️ FCM init error: $e');
+  }
+
+  // 🔹 Init Local Notifications
+  try {
+    await LocalNotificationService().initialize();
+    print('✅ Local notifications initialized successfully');
+  } catch (e) {
+    print('⚠️ Local notification init error: $e');
+  }
+
+  // 🔹 Init Reminder Notifications
+  try {
+    await ReminderNotificationService().initialize();
+    print('✅ Reminder notifications initialized successfully');
+  } catch (e) {
+    print('⚠️ Reminder notification init error: $e');
   }
 
   runApp(const MyApp());
@@ -125,9 +165,21 @@ class _MyAppState extends State<MyApp> {
         return const Center(child: CircularProgressIndicator());
       },
       child: MaterialApp.router(
-        title: 'Marine Analytics Platform',
+        title: 'Nền tảng Phân tích Hàng hải',
         theme: AppTheme.lightTheme,
         routerConfig: appRouter,
+        // Localization - Vietnamese as default
+        locale: const Locale('vi', 'VN'),
+        supportedLocales: const [
+          Locale('vi', 'VN'), // Vietnamese
+          Locale('en', 'US'), // English (for future)
+        ],
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
         builder: (context, child) {
           return child!;
         },

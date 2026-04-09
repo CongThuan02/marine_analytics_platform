@@ -46,7 +46,7 @@ class LimitCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        limit.wasteTypeName ?? 'Waste type not specified',
+                        limit.wasteTypeName ?? 'Chưa chỉ định loại chất thải',
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.grey.shade600,
@@ -67,7 +67,7 @@ class LimitCard extends StatelessWidget {
                 Expanded(
                   child: _InfoItem(
                     icon: Icons.trending_up,
-                    label: 'Daily limit',
+                    label: 'Hạn mức hàng ngày',
                     value: '${limit.dailyLimit} ${limit.wasteTypeUnit ?? 'kg'}',
                   ),
                 ),
@@ -83,12 +83,12 @@ class LimitCard extends StatelessWidget {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Confirm Delete'),
-        content: const Text('Are you sure you want to delete this limit?'),
+        title: const Text('Xác nhận xóa'),
+        content: const Text('Bạn có chắc chắn muốn xóa hạn mức này?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cancel'),
+            child: const Text('Hủy'),
           ),
           TextButton(
             onPressed: () {
@@ -98,9 +98,9 @@ class LimitCard extends StatelessWidget {
               Navigator.pop(dialogContext);
               ScaffoldMessenger.of(
                 context,
-              ).showSnackBar(const SnackBar(content: Text('Limit deleted')));
+              ).showSnackBar(const SnackBar(content: Text('Đã xóa hạn mức')));
             },
-            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+            child: const Text('Xóa', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),

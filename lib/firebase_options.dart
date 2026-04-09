@@ -60,11 +60,11 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyA3XUJ7Wa6gipFbq8b-iheU7Kcq6kVvb7U',
-    appId: '1:311915419198:ios:712955e65eee5140d6a36f',
+    appId: '1:311915419198:ios:819d123f1228c99ad6a36f',
     messagingSenderId: '311915419198',
     projectId: 'marine-analytics-platform',
     storageBucket: 'marine-analytics-platform.firebasestorage.app',
-    iosBundleId: 'marine.analytics.platform.marineAnalyticsPlatform',
+    iosBundleId: 'vn.coquan.test',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(

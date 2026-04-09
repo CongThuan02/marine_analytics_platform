@@ -25,7 +25,7 @@ class _ReminderView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Manage Reminders'),
+        title: const Text('Quản lý nhắc nhở'),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -46,14 +46,10 @@ class _ReminderView extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.error_outline,
-                    size: 64,
-                    color: Colors.red.shade300,
-                  ),
+                  Icon(Icons.error_outline, size: 64, color: Colors.red.shade300),
                   const SizedBox(height: 16),
                   Text(
-                    'Error: ${state.message}',
+                    'Lỗi: ${state.message}',
                     style: TextStyle(color: Colors.red.shade700),
                     textAlign: TextAlign.center,
                   ),
@@ -62,7 +58,7 @@ class _ReminderView extends StatelessWidget {
                     onPressed: () {
                       context.read<ReminderBloc>().add(const LoadReminders());
                     },
-                    child: const Text('Retry'),
+                    child: const Text('Thử lại'),
                   ),
                 ],
               ),
@@ -75,24 +71,11 @@ class _ReminderView extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      Icons.notifications_none,
-                      size: 80,
-                      color: AppTheme.primaryGreenLight,
-                    ),
+                    Icon(Icons.notifications_none, size: 80, color: AppTheme.primaryGreenLight),
                     const SizedBox(height: 16),
-                    const Text(
-                      'No reminders yet',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
+                    const Text('Không có dữ liệu', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
                     const SizedBox(height: 8),
-                    Text(
-                      'Press + button to add a new reminder',
-                      style: TextStyle(color: Colors.grey.shade600),
-                    ),
+                    Text('Nhấn nút + để thêm nhắc nhở mới', style: TextStyle(color: Colors.grey.shade600)),
                   ],
                 ),
               );
@@ -124,9 +107,7 @@ class _ReminderView extends StatelessWidget {
             builder: (bottomSheetContext) => BlocProvider.value(
               value: context.read<ReminderBloc>(),
               child: Padding(
-                padding: EdgeInsets.only(
-                  bottom: MediaQuery.of(bottomSheetContext).viewInsets.bottom,
-                ),
+                padding: EdgeInsets.only(bottom: MediaQuery.of(bottomSheetContext).viewInsets.bottom),
                 child: const CreateReminderBottomSheet(),
               ),
             ),

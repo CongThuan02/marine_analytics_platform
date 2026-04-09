@@ -19,21 +19,20 @@ class CreateWasteType extends StatelessWidget {
         }
       },
       child: ConstrainedBox(
-        constraints: BoxConstraints(
-          maxHeight: MediaQuery.of(context).size.height * 0.8,
-        ),
+        constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.8),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Padding(
             padding: EdgeInsets.only(top: 20.0),
             child: Column(
-              mainAxisSize: .min,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Expanded(
                   child: SingleChildScrollView(
                     child: Column(
                       spacing: 12,
                       children: [
+                        Text("Thêm mới loại chất thải"),
                         BlocSelector<WasteTypeBloc, WasteTypeState, String>(
                           selector: (state) {
                             return state.wasteTypeModel?.name ?? '';
@@ -43,19 +42,15 @@ class CreateWasteType extends StatelessWidget {
                               autofocus: true,
                               value: name,
                               name: 'name',
-                              label: "Name",
+                              label: "Tên loại chất thải",
                               onChanged: (value) {
-                                bloc.add(
-                                  UpdateFieldWasteTypeEvent(
-                                    key: 'name',
-                                    value: value,
-                                  ),
-                                );
+                                bloc.add(UpdateFieldWasteTypeEvent(key: 'name', value: value));
                               },
                             );
                           },
                         ),
                         FormSelect(
+                          label: 'Đơn vị tính',
                           // tableName: 'areas',
                           iniItems: [
                             {'id': 'kg', 'name': 'kg'},
@@ -64,17 +59,10 @@ class CreateWasteType extends StatelessWidget {
                           ],
                           name: 'unit',
                           onChange: (value) {
-                            bloc.add(
-                              UpdateFieldWasteTypeEvent(
-                                key: 'unit',
-                                value: value,
-                              ),
-                            );
+                            bloc.add(UpdateFieldWasteTypeEvent(key: 'unit', value: value));
                           },
                         ),
-                        SizedBox(
-                          height: MediaQuery.of(context).viewInsets.bottom,
-                        ),
+                        SizedBox(height: MediaQuery.of(context).viewInsets.bottom),
                       ],
                     ),
                   ),
@@ -83,7 +71,7 @@ class CreateWasteType extends StatelessWidget {
                   onPressed: () {
                     bloc.add(CreateWasteTypeEvent());
                   },
-                  child: Center(child: Text("Save")),
+                  child: Center(child: Text("Lưu")),
                 ),
                 SizedBox(height: MediaQuery.of(context).viewInsets.bottom),
               ],

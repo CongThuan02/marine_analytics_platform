@@ -46,33 +46,33 @@ class _FormTextFieldState extends State<FormTextField> {
       name: widget.name,
       validator: FormBuilderValidators.compose([...?widget.validators]),
       builder: (field) {
+        // Create controller with initial value
+        final controller = TextEditingController(text: field.value ?? '')
+          ..selection = TextSelection.collapsed(offset: field.value?.length ?? 0);
+
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: TextField(
-                // controller: TextEditingController(text: field.value)
-                //   ..selection = TextSelection.collapsed(offset: field.value?.length ?? 0),
-                obscureText: hidePassword,
-                autofocus: widget.autofocus,
-                onChanged: (value) {
-                  field.didChange(value);
-                  widget.onChanged?.call(value);
-                },
-                decoration: InputDecoration(
-                  border: InputBorder.none,
-                  hintText: widget.hintText,
-                  labelText: widget.label,
-                  suffixIcon: widget.isPassword
-                      ? IconButton(
-                          onPressed: () {
-                            setState(() => hidePassword = !hidePassword);
-                          },
-                          icon: Icon(hidePassword ? Icons.visibility_off : Icons.visibility),
-                        )
-                      : widget.suffixIcon,
-                ),
+            TextField(
+              controller: controller,
+              obscureText: hidePassword,
+              autofocus: widget.autofocus,
+              onChanged: (value) {
+                field.didChange(value);
+                widget.onChanged?.call(value);
+              },
+              decoration: InputDecoration(
+                border: InputBorder.none,
+                hintText: widget.hintText,
+                labelText: widget.label,
+                suffixIcon: widget.isPassword
+                    ? IconButton(
+                        onPressed: () {
+                          setState(() => hidePassword = !hidePassword);
+                        },
+                        icon: Icon(hidePassword ? Icons.visibility_off : Icons.visibility),
+                      )
+                    : widget.suffixIcon,
               ),
             ),
 

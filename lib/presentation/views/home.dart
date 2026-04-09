@@ -54,15 +54,15 @@ class HomePage extends StatelessWidget {
                   labelColor: Colors.white,
                   isScrollable: true,
                   tabs: [
-                    Tab(child: Text("Day")),
-                    Tab(child: Text("Month")),
-                    Tab(child: Text("Year")),
+                    Tab(child: Text("Ngày")),
+                    Tab(child: Text("Tháng")),
+                    Tab(child: Text("Năm")),
                     Tab(
                       child: Row(
                         children: [
                           Icon(Icons.trending_up, size: 16),
                           SizedBox(width: 4),
-                          Text("Trend"),
+                          Text("Xu hướng"),
                         ],
                       ),
                     ),

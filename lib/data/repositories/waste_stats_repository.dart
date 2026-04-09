@@ -193,6 +193,76 @@ class WasteStatsRepository {
     );
   }
 
+  /// Fetch waste type comparison data for current period
+  Future<List<WasteTypeComparison>> fetchWasteTypeComparison({
+    required StatsPeriod period,
+    required DateTime reference,
+  }) async {
+    final stats = await fetchStats(period: period, reference: reference);
+
+    return stats.breakdowns
+        .map(
+          (breakdown) => WasteTypeComparison(
+            name: breakdown.name,
+            quantity: breakdown.quantity,
+            unit: breakdown.unit ?? 'kg',
+          ),
+        )
+        .toList();
+  }
+
+  /// Fetch stacked waste type data across multiple periods
+  Future<StackedWasteData> fetchStackedWasteTypeData({
+    required TrendPeriod trendPeriod,
+    required DateTime endDate,
+    int periodsCount = 12,
+  }) async {
+    final List<String> periods = [];
+    final Map<String, List<double>> wasteTypeData = {};
+
+    for (int i = periodsCount - 1; i >= 0; i--) {
+      final DateTime periodDate;
+      final String periodLabel;
+
+      switch (trendPeriod) {
+        case TrendPeriod.monthly:
+          periodDate = DateTime(endDate.year, endDate.month - i, 1);
+          periodLabel =
+              '${periodDate.month.toString().padLeft(2, '0')}/${periodDate.year}';
+          break;
+        case TrendPeriod.yearly:
+          periodDate = DateTime(endDate.year - i, 1, 1);
+          periodLabel = '${periodDate.year}';
+          break;
+      }
+
+      periods.add(periodLabel);
+
+      final stats = await fetchStats(
+        period: trendPeriod == TrendPeriod.monthly
+            ? StatsPeriod.month
+            : StatsPeriod.year,
+        reference: periodDate,
+      );
+
+      // Collect data for each waste type
+      for (final breakdown in stats.breakdowns) {
+        if (!wasteTypeData.containsKey(breakdown.name)) {
+          wasteTypeData[breakdown.name] = List.filled(periodsCount, 0.0);
+        }
+        wasteTypeData[breakdown.name]![periodsCount - 1 - i] =
+            breakdown.quantity;
+      }
+    }
+
+    // Convert to list of series
+    final series = wasteTypeData.entries
+        .map((entry) => WasteTypeSeries(name: entry.key, data: entry.value))
+        .toList();
+
+    return StackedWasteData(periods: periods, series: series);
+  }
+
   /// Convert different units to kg
   double _convertToKg(double quantity, String? unit) {
     if (unit == null || unit.isEmpty) return quantity;
@@ -213,8 +283,7 @@ class WasteStatsRepository {
         return quantity / 1000000;
       case 't':
       case 'ton':
-      case 'tonne':
-      case 'ton': // Metric ton
+      case 'tonne': // Metric ton
         return quantity * 1000;
       case 'lb':
       case 'pound':
@@ -250,4 +319,30 @@ class TrendDataPoint {
     required this.date,
     required this.entryCount,
   });
+}
+
+class WasteTypeComparison {
+  final String name;
+  final double quantity;
+  final String unit;
+
+  WasteTypeComparison({
+    required this.name,
+    required this.quantity,
+    required this.unit,
+  });
+}
+
+class StackedWasteData {
+  final List<String> periods;
+  final List<WasteTypeSeries> series;
+
+  StackedWasteData({required this.periods, required this.series});
+}
+
+class WasteTypeSeries {
+  final String name;
+  final List<double> data;
+
+  WasteTypeSeries({required this.name, required this.data});
 }

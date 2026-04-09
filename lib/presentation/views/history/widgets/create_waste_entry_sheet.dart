@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:marine_analytics_platform/core/constants/enum_status.dart';
+import 'package:marine_analytics_platform/core/localization/localization_extension.dart';
 import 'package:marine_analytics_platform/data/models/waste_entry_model.dart';
 import 'package:marine_analytics_platform/global.dart';
 import 'package:marine_analytics_platform/presentation/blocs/waste_entry/waste_entry_bloc.dart';
@@ -18,6 +19,7 @@ class CreateWasteEntrySheet extends StatefulWidget {
 
 class _CreateWasteEntrySheetState extends State<CreateWasteEntrySheet> {
   final _formKey = GlobalKey<FormBuilderState>();
+  String? _selectedAreaId;
 
   @override
   Widget build(BuildContext context) {
@@ -30,12 +32,7 @@ class _CreateWasteEntrySheetState extends State<CreateWasteEntrySheet> {
         }
       },
       child: SingleChildScrollView(
-        padding: EdgeInsets.only(
-          left: 16,
-          right: 16,
-          top: 16,
-          bottom: bottom + 24,
-        ),
+        padding: EdgeInsets.only(left: 16, right: 16, top: 16, bottom: bottom + 24),
         child: FormBuilder(
           key: _formKey,
           child: Column(
@@ -45,46 +42,43 @@ class _CreateWasteEntrySheetState extends State<CreateWasteEntrySheet> {
               Container(
                 width: 50,
                 height: 4,
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade400,
-                  borderRadius: BorderRadius.circular(4),
-                ),
+                decoration: BoxDecoration(color: Colors.grey.shade400, borderRadius: BorderRadius.circular(4)),
               ),
               Text(
-                "Record Waste",
-                style: Theme.of(
-                  context,
-                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+                "Thêm mới dữ liệu",
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
               ),
               FormSelect(
                 name: 'area_id',
-                label: 'Area',
+                label: context.l10n.area,
                 tableName: 'areas',
+                onChange: (value) {
+                  setState(() {
+                    _selectedAreaId = value;
+                    // Reset department when area changes
+                    _formKey.currentState?.fields['department_id']?.didChange('select');
+                  });
+                },
                 validators: [
                   (value) {
                     if (value == null || value == 'select') {
-                      return 'Please select an area';
+                      return 'Vui lòng chọn khu vực';
                     }
                     return null;
                   },
                 ],
               ),
               FormSelect(
+                key: ValueKey(_selectedAreaId), // Rebuild when area changes
                 name: 'department_id',
-                label: 'Department',
+                label: context.l10n.department,
                 tableName: 'departments',
-                validators: [
-                  (value) {
-                    if (value == null || value == 'select') {
-                      return 'Please select a department';
-                    }
-                    return null;
-                  },
-                ],
+                filterColumn: 'area_id',
+                filterValue: _selectedAreaId,
               ),
               FormSelect(
                 name: 'waste_type_id',
-                label: 'Waste Type',
+                label: 'Loại chất thải',
                 tableName: 'waste_types',
                 itemLabelBuilder: (item) {
                   final name = item['name']?.toString() ?? 'Select';
@@ -97,7 +91,7 @@ class _CreateWasteEntrySheetState extends State<CreateWasteEntrySheet> {
                 validators: [
                   (value) {
                     if (value == null || value == 'select') {
-                      return 'Please select a waste type';
+                      return 'Vui lòng chọn loại chất thải';
                     }
                     return null;
                   },
@@ -106,24 +100,16 @@ class _CreateWasteEntrySheetState extends State<CreateWasteEntrySheet> {
               _DateField(),
               FormTextField(
                 name: 'quantity',
-                label: 'Quantity',
-                hintText: 'Example: 12.5',
+                label: context.l10n.quantity,
+                hintText: context.l10n.hintQuantity,
                 validators: [
-                  FormBuilderValidators.required(
-                    errorText: 'Please enter quantity',
-                  ),
-                  FormBuilderValidators.numeric(
-                    errorText: 'Quantity must be a number',
-                  ),
+                  FormBuilderValidators.required(errorText: context.l10n.pleaseEnterQuantity),
+                  FormBuilderValidators.numeric(errorText: 'Số lượng phải là số'),
                 ],
               ),
-              FormTextField(name: 'qr_code', label: 'QR Code (optional)'),
               SizedBox(
                 width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _handleSubmit,
-                  child: const Text("Save"),
-                ),
+                child: ElevatedButton(onPressed: _handleSubmit, child: Text(context.l10n.save)),
               ),
             ],
           ),
@@ -141,7 +127,7 @@ class _CreateWasteEntrySheetState extends State<CreateWasteEntrySheet> {
     final quantity = _parseQuantity(quantityString);
 
     if (quantity == null) {
-      _showSnackBar(context, 'Invalid quantity');
+      _showSnackBar(context, 'Số lượng không hợp lệ');
       return;
     }
 
@@ -168,9 +154,7 @@ class _CreateWasteEntrySheetState extends State<CreateWasteEntrySheet> {
   }
 
   void _showSnackBar(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), backgroundColor: Colors.red),
-    );
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message), backgroundColor: Colors.red));
   }
 }
 
@@ -181,7 +165,7 @@ class _DateField extends StatelessWidget {
       name: 'date',
       initialValue: DateTime.now(),
       validator: (value) {
-        if (value == null) return 'Please select entry date';
+        if (value == null) return 'Vui lòng chọn ngày nhập';
         return null;
       },
       builder: (field) {
@@ -202,10 +186,8 @@ class _DateField extends StatelessWidget {
           onTap: pickDate,
           child: InputDecorator(
             decoration: InputDecoration(
-              labelText: 'Entry Date',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
+              labelText: 'Ngày nhập',
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
               errorText: field.errorText,
               suffixIcon: const Icon(Icons.calendar_today),
             ),
@@ -217,7 +199,7 @@ class _DateField extends StatelessWidget {
   }
 
   String _formatDate(DateTime? date) {
-    if (date == null) return 'Select Date';
+    if (date == null) return 'Chọn ngày';
 
     final day = date.day.toString().padLeft(2, '0');
     final month = date.month.toString().padLeft(2, '0');

@@ -5,7 +5,7 @@ class AreaRepository {
   Future<String> CreateArea({required AreaModel area}) async {
     try {
       await supabase.from('areas').insert({'name': area.name});
-      return "Data added successfully";
+      return "Đã thêm dữ liệu thành công";
     } catch (e) {
       print(e);
       return "Failed to add data: $e";
@@ -28,18 +28,18 @@ class AreaRepository {
   Future<String> deleteArea({required String id}) async {
     try {
       var a = await supabase.from('areas').delete().eq('id', id);
-      return "Area deleted successfully";
+      return "Đã xóa khu vực thành công";
     } catch (e) {
-      return "Delete failed";
+      return "Xóa thất bại";
     }
   }
 
   Future<String> updateArea({required String id, required String name}) async {
     try {
       await supabase.from('areas').update({'name': name}).eq('id', id);
-      return "Area updated successfully";
+      return "Đã cập nhật khu vực thành công";
     } catch (e) {
-      return "Update failed: $e";
+      return "Cập nhật thất bại: $e";
     }
   }
 }
